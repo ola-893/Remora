@@ -1,0 +1,14 @@
+[workspace]
+members = ["vault", "test-token"]
+resolver = "2"
+
+[workspace.dependencies]
+near-sdk = { version = "=5.17.2", features = ["legacy"] }
+near-contract-standards = "=5.17.2"
+
+[profile.release]
+codegen-units = 1
+opt-level = "z"
+lto = true
+panic = "abort"
+overflow-checks = true
