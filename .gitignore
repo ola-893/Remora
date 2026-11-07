@@ -1,0 +1,22 @@
+node_modules/
+coverage/
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.netlify/
+.local/
+.agentpay/
+.agentstreams/
+
+# Build products
+vite-project/dist/
+vite-project/.vite/
+near/contracts/target/
+packages/core/runtime/
+packages/cli/ui/
+packages/cli/artifacts/
+packages/cli/wallet-ui/

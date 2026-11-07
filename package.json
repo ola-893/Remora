@@ -1,0 +1,65 @@
+{
+  "name": "agentstreams",
+  "version": "2.0.0",
+  "description": "agentStreams \u2014 native NEAR payment guardrails and prepaid API sessions for AI agents",
+  "private": true,
+  "workspaces": [
+    "packages/core",
+    "packages/cli"
+  ],
+  "scripts": {
+    "agentstreams": "node packages/cli/bin/agentstreams.mjs",
+    "build:distribution": "npm run build:near && npm run build:web && node scripts/build-distribution.mjs",
+    "test:distribution": "node --test packages/test/*.test.mjs",
+    "check:distribution": "tsc --noEmit --strict --module nodenext --target es2022 --skipLibCheck packages/core/examples/usage.mts",
+    "verify:distribution": "node scripts/verify-distribution.mjs",
+    "verify:npm": "node scripts/verify-distribution.mjs --registry",
+    "pack:distribution": "npm run build:distribution && node scripts/pack-distribution.mjs",
+    "test": "npm run test:near && npm run test:distribution && npm --prefix vite-project test",
+    "dev": "npm --prefix vite-project run dev",
+    "build:web": "npm --prefix vite-project run build",
+    "preview": "npm --prefix vite-project run preview",
+    "install:all": "npm install && npm --prefix vite-project install",
+    "demo:provider": "node near/scripts/provider.mjs",
+    "demo:consumer": "node near/cli.mjs",
+    "demo:check": "node near/scripts/check.mjs",
+    "demo:agent": "node near/cli.mjs",
+    "demo:toolbuyer": "node near/toolbuyer.mjs",
+    "demo:spend-review": "node near/spend-review.mjs --sandbox",
+    "dev:live": "node near/dev.mjs",
+    "demo:capture": "node near/cli.mjs --sandbox --capture",
+    "build:near": "cargo build --manifest-path near/contracts/Cargo.toml --target wasm32-unknown-unknown --release --locked",
+    "test:near": "npm run build:near && node scripts/build-distribution.mjs --runtime-only && node --test near/test/*.test.mjs",
+    "deploy:near": "node near/scripts/deploy-testnet.mjs",
+    "preflight:near": "node near/scripts/preflight-testnet.mjs",
+    "recover:near": "node near/cli.mjs",
+    "demo:near:provider": "node near/scripts/provider.mjs",
+    "fund:near": "node near/scripts/fund.mjs",
+    "claim:near": "node near/scripts/claim.mjs",
+    "check:near": "tsc --noEmit --module nodenext --target es2022 --skipLibCheck near/examples/client.mts",
+    "verify:near": "node near/scripts/verify-recording.mjs",
+    "verify:showcase": "node scripts/verify-showcase.mjs",
+    "prepare:submission": "node scripts/prepare-submission.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ai": "6.0.320",
+    "esbuild": "0.25.8",
+    "near-sandbox": "0.3.1",
+    "typescript": "^5.0.0",
+    "@hot-labs/near-connect": "0.12.0"
+  },
+  "dependencies": {
+    "@agentstreams/near": "file:near/sdk",
+    "@ola-893/agentstreams-core": "0.8.0",
+    "dotenv": "^17.2.1",
+    "near-api-js": "7.4.0",
+    "zod": "3.25.76"
+  },
+  "engines": {
+    "node": ">=22.22.2"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@agentstreams/near",
+  "version": "2.0.0",
+  "type": "module",
+  "description": "Native NEAR vault, stream and receipt client for agentStreams",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs"
+    }
+  },
+  "dependencies": {
+    "near-api-js": "7.4.0"
+  },
+  "engines": {
+    "node": ">=22.22.2"
+  },
+  "license": "ISC"
+}

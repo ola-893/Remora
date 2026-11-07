@@ -1,0 +1,59 @@
+{
+  "name": "@ola-893/agentstreams-core",
+  "version": "0.8.0",
+  "type": "module",
+  "description": "Guarded paid API sessions for agents: deterministic policy and native NEAR payments",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ola-893/agentStreams.git",
+    "directory": "packages/core"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.mts",
+      "import": "./src/index.mjs"
+    },
+    "./near": {
+      "types": "./src/near-gateway.d.mts",
+      "import": "./src/near-gateway.mjs"
+    },
+    "./vercel-ai": {
+      "types": "./src/vercel-ai.d.mts",
+      "import": "./src/vercel-ai.mjs"
+    },
+    "./tools": "./src/tools.mjs",
+    "./monitor": "./src/monitor.mjs",
+    "./internal-runtime-policy": "./runtime/near/lib/runtime-policy.mjs",
+    "./internal-config": "./runtime/near/lib/config.mjs",
+    "./internal-provider": "./runtime/near/provider.mjs",
+    "./internal-deployment": "./runtime/near/lib/deployment.mjs",
+    "./internal-preflight": "./runtime/near/lib/testnet-preflight.mjs",
+    "./internal-evidence": "./runtime/near/lib/evidence.mjs",
+    "./internal-evidence-audit": "./runtime/near/lib/audit.mjs",
+    "./internal-session": "./runtime/near/lib/session.mjs"
+  },
+  "files": [
+    "src/",
+    "runtime/",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "near-api-js": "7.4.0"
+  },
+  "peerDependencies": {
+    "ai": ">=6 <7"
+  },
+  "peerDependenciesMeta": {
+    "ai": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22.22.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
