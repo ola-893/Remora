@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-08",
+  "network": "testnet",
+  "activity": "portfolio-rebalance",
+  "ownerWalletFunding": {
+    "browserWallet": "Meteor",
+    "approvalCount": 1,
+    "amountTestNear": "0.15",
+    "transactionHash": "AwQnsmDxAfEPrDpn7V1NCLT4E1Aiwko3izEPSD6UL4Ze"
+  },
+  "executionAccountId": "1b265bb3cf72c455e0e2afbbf258483312e339aba033d8853bc8712d22212548",
+  "execution": {
+    "exchangeStorageTopUp": "37VjUSbRa72hpJEDScX8QHFd3uLLzDYSqyeg5vuFWtyE",
+    "exchangeDeposit": "EaXDTF2gFVdoNser2KsSWQmsVaf2jgCg2sBd63KieX3w",
+    "exchangeDepositRawWnear": "20000000000000000000000",
+    "swapTransaction": "J3EZ4pa6Qcv4w9YxhgAp3WNVXUnhwvcxfZUR2wwFkxcL",
+    "swapInputRawWnear": "2000000000000000000000",
+    "swapOutputRawRft": "18849648",
+    "signing": "grant",
+    "additionalBrowserApprovals": 0,
+    "remainingAfterSwap": 0,
+    "nextExecution": "GRANT_INACTIVE",
+    "otherAgentPreviewAccount": "owner wallet"
+  },
+  "reconciliation": {
+    "unlandedHash": "ekuU6ihcYMahaTEggRuWtE4fQLSnUgjLiVGxwTEZtH8",
+    "unlandedReason": "The execution balance could not cover the initial 150 Tgas precharge plus storage.",
+    "unusedReservationRestoredAfterNonceAdvanced": true,
+    "failedDepositHash": "AQps6ephah3mHMBGccNHxgs75rJ1pQ5rCjrri5EMFckT",
+    "failedDepositReason": "The exchange registration had no available token storage.",
+    "failedDepositRefundRawWnear": "20000000000000000000000",
+    "successfulDepositRecoveredBy": "grant reconcile",
+    "samePreparationTargetThenSubmittedTransactions": 0
+  },
+  "revoke": {
+    "tokenReturnTransaction": "1ucwLGDkCYiXB5DS2m9szA4bY47GiQYRgas17XdPrXk",
+    "returnedRawRft": "18849648",
+    "accountDeletionTransaction": "FeQM6ju2nuEdqcJxMRDqGu97DEaZVfJNzabr44iZ6GaU",
+    "returnedYoctoNear": "137150121958795299999992",
+    "beneficiary": "rudepuma4060.testnet",
+    "executionAccountExistsAfterRevoke": false
+  },
+  "inference": {
+    "local": "Live loopback CLI run completed",
+    "nearAiEligibleModelsAtQa": 11,
+    "nearAiCatalogTotalAtQa": 64,
+    "nearAiCompletionAndAttestation": "Not exercised in this QA run"
+  }
+}

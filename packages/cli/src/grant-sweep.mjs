@@ -4,7 +4,7 @@ import { integerAmount, testnetViews } from './strategy-markets.mjs';
 const WRAP = 'wrap.testnet';
 const ONE = '1';
 const ZERO = '0';
-const gasFor = receiver => receiver === DCL ? '180000000000000' : '150000000000000';
+const gasFor = receiver => receiver === DCL ? '180000000000000' : receiver === LENDING ? '100000000000000' : '60000000000000';
 
 const positive = value => {
   if (typeof value !== 'string' || !/^(0|[1-9][0-9]{0,38})$/.test(value)) return false;

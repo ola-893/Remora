@@ -23,17 +23,21 @@ export async function prepareGrant({ agentId, ownerId, activity, token, balance 
   const account_id = await accountFor(wallet.accountId, agentId, activity);
   if (!account_id) throw new Error('A matching grant is required.');
   const { rpcUrl } = wallet;
-  const read = async (contract, method, args) => (await views(rpcUrl)).view(contract, method, args);
+  let rpc = await views(rpcUrl);
+  const read = (contract, method, args) => rpc.view(contract, method, args);
   const receipts = [];
   async function submit(receiverId, methodName, args, deposit, check) {
+    const gas = methodName === 'ft_transfer_call' ? '60000000000000' : '30000000000000';
     const receipt = await transact({
       ownerId: wallet.accountId, agentId, executionAccountId: account_id, receiverId, rpcUrl,
       context: { kind: 'grant-preparation', activity },
-      actions: [{ type: 'FunctionCall', params: { methodName, args, deposit, gas: '150000000000000' } }],
+      actions: [{ type: 'FunctionCall', params: { methodName, args, deposit, gas } }],
     }, { beforeSubmit: async () => {
+      rpc = await views(rpcUrl);
       if (!await check()) throw new Error('GRANT_PREPARATION_CHANGED: run the same target again.');
     } });
     receipts.push(receipt);
+    rpc = await views(rpcUrl);
     return receipt;
   }
   async function register(contract) {
@@ -44,11 +48,24 @@ export async function prepareGrant({ agentId, ownerId, activity, token, balance 
     await submit(contract, 'storage_deposit', { account_id, registration_only: true }, min, async () => !await registered());
     if (!await registered()) throw new Error('GRANT_STORAGE_UNCONFIRMED');
   }
+  async function reserveExchangeStorage() {
+    const balanceOf = () => read(EXCHANGE, 'storage_balance_of', { account_id });
+    const current = await balanceOf();
+    const available = integerAmount(current?.available ?? '0');
+    // A storage registration alone leaves no room for token entries in the exchange.
+    if (available >= 3n * 10n ** 21n) return;
+    const base = current ? 0n : integerAmount((await read(EXCHANGE, 'storage_balance_bounds', {})).min);
+    const deposit = base + 10n ** 22n - available;
+    await submit(EXCHANGE, 'storage_deposit', { account_id, registration_only: false }, deposit.toString(),
+      async () => JSON.stringify(await balanceOf()) === JSON.stringify(current));
+    if (integerAmount((await balanceOf())?.available ?? '0') < 10n ** 22n) throw new Error('GRANT_STORAGE_UNCONFIRMED');
+  }
   const walletBalance = async () => integerAmount(await read(token, 'ft_balance_of', { account_id }));
   const exchangeBalance = async () => integerAmount((await read(EXCHANGE, 'get_deposits', { account_id }))[token] ?? '0');
   const target = BigInt(balance);
   await register(token);
-  await register(venue);
+  if (venue === EXCHANGE) await reserveExchangeStorage();
+  else await register(venue);
   const deposited = venue === EXCHANGE && target ? await exchangeBalance() : 0n;
   const needed = target > deposited ? target - deposited : 0n;
   if (needed) {

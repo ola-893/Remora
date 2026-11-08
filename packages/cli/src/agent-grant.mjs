@@ -189,9 +189,9 @@ export async function reconcileGrant() {
   try {
     const grant = await readGrant(wallet.accountId);
     if (!grant) throw new Error('NO_AGENT_GRANT');
-    const provider = await testnetProvider(wallet.rpcUrl);
     if (grant.state === 'funding') {
       await requireFundingReconciled();
+      const provider = await testnetProvider(wallet.rpcUrl);
       const key = grant.keys[0];
       const access = await provider.viewAccessKey({ accountId: grant.executionAccountId,
         publicKey: PublicKey.fromString(key.publicKey), blockQuery: { finality: 'final' } });
@@ -202,9 +202,9 @@ export async function reconcileGrant() {
     }
     if (!grant.pending) return { resolved: true, reason: 'NO_PENDING_GRANT_TRANSACTION' };
     const { hash, plan } = grant.pending;
-    const outcome = await provider.viewTransactionStatus({ txHash: hash, accountId: grant.executionAccountId, waitUntil: 'FINAL' });
+    const outcome = await grantTransactionStatus(wallet.rpcUrl, hash, grant.executionAccountId);
     let receipt;
-    try { receipt = verifyOwnerTransaction(outcome, plan, hash); }
+    try { receipt = verifyGrantOutcome(outcome, plan, hash); }
     catch (error) { if (!error.confirmedFailure) throw error; }
     delete grant.pending;
     await writeGrant(grant);
@@ -264,24 +264,57 @@ async function lockGrant(ownerId) {
 }
 
 async function testnetProvider(rpcUrl) {
-  const provider = new JsonRpcProvider({ url: rpcUrl });
+  const provider = new JsonRpcProvider({ url: rpcUrl }, { retries: 1 });
   if ((await provider.viewNodeStatus()).chain_id !== 'testnet') throw new Error('RPC_NETWORK_MISMATCH');
   return provider;
 }
 
+const grantRpcUrls = rpcUrl => [...new Set(['https://test.rpc.fastnear.com', rpcUrl])];
+
+async function grantTransactionStatus(rpcUrl, hash, accountId) {
+  let failure;
+  for (const url of grantRpcUrls(rpcUrl)) {
+    try {
+      const provider = await testnetProvider(url);
+      const outcome = await provider.viewTransactionStatus({ txHash: hash, accountId, waitUntil: 'FINAL' });
+      if (outcome?.final_execution_status === 'FINAL') return outcome;
+      failure = new Error('GRANT_TRANSACTION_NOT_FINAL');
+    } catch (error) { failure = error; }
+  }
+  throw failure;
+}
+
+export function verifyGrantOutcome(outcome, plan, hash) {
+  const action = plan.actions[0];
+  if (plan.actions.length === 1 && action.type === 'DeleteAccount' && plan.receiverId === plan.ownerId &&
+      typeof outcome.status?.SuccessValue === 'string' && outcome.receipts_outcome?.some(({ outcome: child }) =>
+        child.executor_id === action.params.beneficiaryId && typeof child.status?.SuccessValue === 'string')) {
+    // After a successful deletion and beneficiary payout, the signer can no longer receive its own gas refund.
+    const receipts = outcome.receipts_outcome.filter(({ outcome: child }) =>
+      child.executor_id !== plan.ownerId || child.status?.Failure?.ActionError?.kind?.AccountDoesNotExist?.account_id !== plan.ownerId);
+    return verifyOwnerTransaction({ ...outcome, receipts_outcome: receipts }, plan, hash);
+  }
+  return verifyOwnerTransaction(outcome, plan, hash);
+}
+
 async function sendWithKey(request, privateKey, beforeBroadcast) {
-  const provider = await testnetProvider(request.rpcUrl);
+  const urls = grantRpcUrls(request.rpcUrl);
+  const provider = await testnetProvider(urls[0]).catch(async error => {
+    if (urls.length < 2) throw error;
+    return testnetProvider(urls[1]);
+  });
   const account = new Account(request.ownerId, provider, privateKey);
   const signed = await account.createSignedTransaction({ receiverId: request.receiverId, actions: nearActions(request.actions) });
   const hash = baseEncode(createHash('sha256').update(signed.transaction.encode()).digest());
   await beforeBroadcast?.(hash);
-  let outcome;
-  try { outcome = await provider.sendTransactionUntil(signed, 'FINAL'); }
-  catch (error) {
-    outcome = await provider.viewTransactionStatus({ txHash: hash, accountId: request.ownerId, waitUntil: 'FINAL' }).catch(() => null);
-    if (!outcome) throw error;
+  for (const url of urls) {
+    // RPC retries reuse the original signed bytes and nonce.
+    const outcome = await testnetProvider(url)
+      .then(rpc => rpc.sendTransactionUntil(signed, 'FINAL')).catch(() => null);
+    if (outcome?.final_execution_status === 'FINAL') return verifyGrantOutcome(outcome, request, hash);
   }
-  return verifyOwnerTransaction(outcome, request, hash);
+  const outcome = await grantTransactionStatus(request.rpcUrl, hash, request.ownerId);
+  return verifyGrantOutcome(outcome, request, hash);
 }
 
 export async function grantAccount(ownerId, agentId, activity) {

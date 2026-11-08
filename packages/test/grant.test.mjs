@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DCL, EXCHANGE, LENDING } from '../cli/src/strategy-actions.mjs';
-import { activeKey, executionFundingYocto, grantLimits, grantScopes, grantTransactionActions, publicGrant, signGrantedTransaction } from '../cli/src/agent-grant.mjs';
+import { activeKey, executionFundingYocto, grantLimits, grantScopes, grantTransactionActions, publicGrant, signGrantedTransaction, verifyGrantOutcome } from '../cli/src/agent-grant.mjs';
 import { emptySnapshot, nextSweepStep, runSweep } from '../cli/src/grant-sweep.mjs';
 import { activityDeposits, yoctoDeposit } from '../cli/src/activity-deposits.mjs';
 import { promptActivity } from '../cli/src/strategy-actions.mjs';
@@ -127,7 +127,7 @@ test('grant preparation reaches the requested exchange balance and safely retrie
     connect: async () => ({ accountId: request.ownerId, rpcUrl: request.rpcUrl }),
     accountFor: async () => request.executionAccountId,
     views: async () => ({ view: async (contract, method) => {
-      if (method === 'storage_balance_of') return registered.has(contract) ? {} : null;
+      if (method === 'storage_balance_of') return registered.has(contract) ? { available: '10000000000000000000000' } : null;
       if (method === 'storage_balance_bounds') return { min: '12' };
       if (method === 'ft_balance_of') return held;
       if (method === 'get_deposits') return { [token]: deposited };
@@ -252,4 +252,23 @@ test('revoke and grant actions round-trip from the chain view', () => {
   const added = chainAction({ AddKey: { public_key: 'ed25519:abc', access_key: { nonce: 0, permission: { FunctionCall: { receiver_id: EXCHANGE, method_names: ['swap'], allowance: '100' } } } } });
   assert.equal(added.params.accessKey.permission.receiverId, EXCHANGE);
   assert.deepEqual(chainAction({ DeleteAccount: { beneficiary_id: 'owner.testnet' } }), { type: 'DeleteAccount', params: { beneficiaryId: 'owner.testnet' } });
+});
+
+test('a deleted account can miss its own gas refund after the owner payout succeeds', () => {
+  const ownerId = 'exec.testnet', beneficiaryId = 'owner.testnet', hash = 'A'.repeat(44);
+  const plan = { ownerId, receiverId: ownerId, actions: [{ type: 'DeleteAccount', params: { beneficiaryId } }] };
+  const outcome = {
+    final_execution_status: 'FINAL', status: { SuccessValue: '' },
+    transaction: { signer_id: ownerId, receiver_id: ownerId, hash, actions: [{ DeleteAccount: { beneficiary_id: beneficiaryId } }] },
+    receipts_outcome: [
+      { id: 'delete', outcome: { executor_id: ownerId, status: { SuccessValue: '' } } },
+      { id: 'payout', outcome: { executor_id: beneficiaryId, status: { SuccessValue: '' } } },
+      { id: 'gas-refund', outcome: { executor_id: ownerId, status: { Failure: {
+        ActionError: { kind: { AccountDoesNotExist: { account_id: ownerId } } },
+      } } } },
+    ],
+  };
+  assert.equal(verifyGrantOutcome(outcome, plan, hash).hash, hash);
+  outcome.receipts_outcome[1].outcome.status = { Failure: { ActionError: { kind: { AccountDoesNotExist: { account_id: beneficiaryId } } } } };
+  assert.throws(() => verifyGrantOutcome(outcome, plan, hash), /OWNER_TRANSACTION_FAILED/);
 });
