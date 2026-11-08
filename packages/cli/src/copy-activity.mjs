@@ -8,7 +8,7 @@ export const activities = Object.freeze({
   'prediction-markets': 'Mirror outcome positions.',
   'portfolio-rebalance': 'Follow portfolio target weights.',
   'yield-reallocation': 'Follow lending or yield-vault allocations.',
-  'reward-reinvestment': 'Compound rewards following a published strategy.',
+  'limit-orders': 'Mirror Rhea limit-order placement, cancellation and claims.',
 });
 
 export const spot = 'spot-trading';

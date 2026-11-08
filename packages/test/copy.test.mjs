@@ -30,7 +30,7 @@ test('native strategy fills retain their activity and settlement in the signed j
     'liquidity-ranges': { pool: 'usdc.fakes.testnet|wrap.testnet|2000', left: 40, right: 80, amountX: '0', amountY: '100', minX: '0', minY: '90' },
     'portfolio-rebalance': { poolId: 0, base: 'wrap.testnet', amount: '100', weights: { 'rft.tokenfactory.testnet': 5000, 'wrap.testnet': 5000 } },
     'yield-reallocation': { token: 'wrap.testnet', operation: 'supply', amount: '100' },
-    'reward-reinvestment': { operation: 'compound' },
+    'limit-orders': { pool: 'usdc.fakes.testnet|wrap.testnet|2000', operation: 'place', sellToken: 'wrap.testnet', point: 40, amount: '100' },
   };
   for (const [activity, action] of Object.entries(actions)) {
     await createAgent(workspace, activity);

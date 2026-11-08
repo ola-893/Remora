@@ -136,21 +136,74 @@ test('rebalance uses deposited balances, pool reserves, and a fresh Rhea minimum
   await assert.rejects(plan('portfolio-rebalance', input, { ...guard, 'max-inputs': caps([ftAsset(wrap), 474]) }, view), /STRATEGY_INPUT_LIMIT/);
 });
 
-test('reward compounding claims the connected owner’s lending rewards without spending a token balance', async () => {
-  const rewards = [{ rewards: [{ reward_token_id: wrap, unclaimed_amount: '500' }] }];
-  const guard = { targets: LENDING };
-  const checked = await plan('reward-reinvestment', { operation: 'compound' }, guard, async () => ({ farms: rewards }));
-  assert.deepEqual(checked.evidence.unclaimedInternalUnits, { [wrap]: '500' });
-  assert.deepEqual(checked.inputs, {});
-  assert.deepEqual(checked.actions[0].params, { methodName: 'account_farm_claim_all', args: {}, gas: '200000000000000', deposit: '0' });
-  await assert.rejects(plan('reward-reinvestment', { operation: 'compound' }, guard, async () => ({ farms: [] })), /NO_CLAIMABLE_LENDING_REWARDS/);
-  let shares = '5';
-  const result = await plan('reward-reinvestment', { operation: 'compound' }, guard,
-    async () => ({ farms: rewards, supplied: [{ token_id: wrap, shares }] }), {
-      execute: true,
-      transact: async (_tx, { beforeSubmit }) => { await beforeSubmit(); shares = '10'; return { value: null }; },
-    });
-  assert.equal(result.status, 'wallet-confirmed');
+test('limit-order placement checks guards and the latest pool tick before opening an order', async () => {
+  const buyToken = 'usdc.fakes.testnet', pool = buyToken + '|' + wrap + '|2000';
+  const orderClientId = 'a'.repeat(32);
+  const order = { client_id: orderClientId, owner_id: accountId, pool_id: pool, order_id: pool + '#19',
+    point: 80, sell_token: wrap, buy_token: buyToken, original_deposit_amount: '100',
+    original_amount: '100', remain_amount: '100', swap_earn_amount: '0' };
+  const input = { pool, operation: 'place', sellToken: wrap, point: 80, amount: '100' };
+  const guard = { targets: pool, 'max-inputs': caps([ftAsset(wrap), 100]) };
+  let tick = 120, open = [];
+  const view = async (_c, method) => ({
+    get_pool: { pool_id: pool, token_x: buyToken, token_y: wrap, state: 'Running', point_delta: 40, current_point: tick, whitelist: null },
+    get_user_storage_detail: { max_slots: 20, cur_order_slots: 0, cur_liquidity_slots: 0 },
+    storage_balance_of: {}, ft_balance_of: '1000', list_active_orders: open, list_history_orders: [],
+  })[method];
+  await assert.rejects(plan('limit-orders', { ...input, point: 81 }, guard, view, { orderClientId }), /POINT_NOT_ALIGNED/);
+  await assert.rejects(plan('limit-orders', { ...input, amount: '101' }, guard, view, { orderClientId }), /STRATEGY_INPUT_LIMIT/);
+  await assert.rejects(plan('limit-orders', input, guard, view, { orderClientId, execute: true, transact: async (_tx, { beforeSubmit }) => {
+    tick = 80;
+    await beforeSubmit();
+    assert.fail('a crossed order must not reach signing');
+  } }), /ORDER_WOULD_CROSS_MARKET/);
+  tick = 120;
+  const confirmed = await plan('limit-orders', input, guard, view, { orderClientId, execute: true, transact: async (tx, { beforeSubmit }) => {
+    const { args } = tx.actions[0].params;
+    assert.deepEqual(JSON.parse(args.msg), { LimitOrderWithSwap: { pool_id: pool, buy_token: buyToken, point: 80, client_id: orderClientId } });
+    await beforeSubmit();
+    open = [order];
+    return { value: '100' };
+  } });
+  assert.equal(confirmed.order.order_id, order.order_id);
+  await assert.rejects(plan('limit-orders', input, guard, view, { orderClientId }), /ORDER_ALREADY_PLACED/);
+});
+
+test('limit-order cancellation and claim are tied to the wallet and copy placement reference', async () => {
+  const buyToken = 'usdc.fakes.testnet', pool = buyToken + '|' + wrap + '|2000';
+  const orderClientId = 'a'.repeat(32), placement = 'b'.repeat(64);
+  const follower = { client_id: orderClientId, owner_id: accountId, pool_id: pool, order_id: pool + '#23',
+    sell_token: wrap, buy_token: buyToken, remain_amount: '70', unclaimed_amount: '30' };
+  const leader = { ...follower, client_id: 'c'.repeat(32), order_id: pool + '#22' };
+  const otherWallet = { ...follower, owner_id: 'other.testnet', order_id: pool + '#24' };
+  const guards = { targets: pool, 'max-inputs': caps([ftAsset(wrap), 100]) };
+  let open = [leader, follower, otherWallet], closed = [], balance = 100;
+  const view = async (_c, method) => ({
+    list_active_orders: open, list_history_orders: closed, ft_balance_of: String(balance),
+  })[method];
+  const cancel = { pool, operation: 'cancel', placement };
+  const claim = { ...cancel, operation: 'claim' };
+  assert.deepEqual(sizedStrategyAction('limit-orders', cancel, { copyBps: 5000 }), cancel);
+  const claimPreview = await plan('limit-orders', claim, guards, view, { orderClientId });
+  assert.deepEqual(claimPreview.actions[0].params.args, { order_id: follower.order_id, amount: '0' });
+  const claimed = await plan('limit-orders', claim, guards, view, { orderClientId, execute: true, transact: async (_tx, { beforeSubmit }) => {
+    await beforeSubmit();
+    open = [leader, { ...follower, unclaimed_amount: '0' }, otherWallet];
+    balance += 30;
+    return { value: ['0', '30'] };
+  } });
+  assert.equal(claimed.order.remain_amount, '70');
+  await assert.rejects(plan('limit-orders', claim, guards, view, { orderClientId }), /DCL_NO_ORDER_PROCEEDS/);
+  await assert.rejects(plan('limit-orders', cancel, guards, view, { orderClientId: 'd'.repeat(32) }), /DCL_LOCAL_ORDER_NOT_FOUND/);
+  const result = await plan('limit-orders', cancel, guards, view, { orderClientId, execute: true, transact: async (tx, { beforeSubmit }) => {
+    assert.deepEqual(tx.actions[0].params.args, { order_id: follower.order_id, amount: '70' });
+    await beforeSubmit();
+    open = [leader, otherWallet];
+    closed = [{ ...follower, remain_amount: '0', cancel_amount: '70' }];
+    return { value: ['70', '0'], logs: [`Withdraw 70 yoctoNEAR from ${DCL}`] };
+  } });
+  assert.equal(result.order.order_id, follower.order_id);
+  await assert.rejects(plan('limit-orders', cancel, guards, view, { orderClientId }), /DCL_LOCAL_ORDER_NOT_FOUND/);
 });
 
 test('wallet submission checks authority again and an expired authorization prevents broadcast', async () => {

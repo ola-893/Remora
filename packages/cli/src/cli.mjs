@@ -23,6 +23,8 @@ const help = `Named agents and copy trading:
   agentstreams task enable spot-trading --paper-balances ASSET=RAW[,ASSET=RAW]
   agentstreams task enable ACTIVITY            Use the owner wallet on NEAR testnet
   agentstreams task run ACTIVITY --action-json JSON [--execute]
+  agentstreams task run limit-orders --action-json '{"pool":"TOKEN_X|TOKEN_Y|FEE","operation":"place","sellToken":"TOKEN_Y","point":123,"amount":"RAW"}' [--execute]
+  agentstreams task run limit-orders --action-json '{"pool":"TOKEN_X|TOKEN_Y|FEE","operation":"cancel","placement":"PLACEMENT_ACTION_ID"}' [--execute]
   agentstreams task deposit-range --action-json '{"pool":"TOKEN_X|TOKEN_Y|FEE","token":"TOKEN_Y","amount":"RAW"}' [--execute]
   agentstreams guard set execution --activity ACTIVITY --targets TARGETS --max-inputs ASSET=RAW
   agentstreams task portfolio               Virtual holdings and recent 1Click paper fills

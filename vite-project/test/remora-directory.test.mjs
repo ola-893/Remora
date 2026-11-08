@@ -55,3 +55,11 @@ test('fresh health and enabled activity are required for running status', async 
     assert.equal((await probePublisher(entry)).state, 'unconfigured');
   } finally { await new Promise(done => server.close(done)); }
 });
+
+test('Explore accepts signed limit-order history and builds the matching copy command', async () => {
+  const origin = 'https://publisher.example';
+  const verified = await verifyListing(signed({ ...offer(origin), activity: 'limit-orders' }), { id, origin });
+  assert.equal(verified.activity, 'limit-orders');
+  assert.equal(verified.history[0].receipt, offer(origin).history[0].receipt);
+  assert.equal(startCommand(verified), 'agentstream copy start ' + id + ' --url ' + origin + ' --activity limit-orders');
+});

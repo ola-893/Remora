@@ -1,7 +1,7 @@
 import { assetId, rawAmount, spot } from './copy-activity.mjs';
 
 export const nativeWalletActivities = new Set([
-  'staking-moves', 'liquidity-ranges', 'portfolio-rebalance', 'yield-reallocation', 'reward-reinvestment',
+  'staking-moves', 'liquidity-ranges', 'portfolio-rebalance', 'yield-reallocation', 'limit-orders',
 ]);
 export const strategyActivities = new Set([...nativeWalletActivities, 'prediction-markets']);
 export const NEAR_ASSET = 'near:testnet';
@@ -18,6 +18,11 @@ const invalid = () => { throw new Error('INVALID_ACTIVITY_ACTION: see the activi
 const operation = (value, options) => { if (!options.includes(value)) invalid(); return value; };
 const tick = value => Number.isInteger(value) && Math.abs(value) <= 800000;
 
+export function dclPoolTokens(pool) {
+  const [x, y, fee, ...rest] = typeof pool === 'string' ? pool.split('|') : [];
+  if (tokenId(x) && tokenId(y) && x < y && /^\d{1,6}$/.test(fee ?? '') && !rest.length) return [x, y];
+}
+
 export function strategyAction(activity, input) {
   if (!map(input)) invalid();
   const { operation: op, amount } = input;
@@ -26,8 +31,7 @@ export function strategyAction(activity, input) {
       if (!tokenId(input.pool) || !input.pool.endsWith('.testnet') || !rawAmount(amount)) invalid();
       return { pool: input.pool, operation: operation(op, ['stake', 'unstake', 'withdraw']), amount };
     case 'liquidity-ranges': {
-      const [x, y, fee, ...rest] = typeof input.pool === 'string' ? input.pool.split('|') : [];
-      if (!tokenId(x) || !tokenId(y) || x >= y || !/^\d{1,6}$/.test(fee ?? '') || rest.length) invalid();
+      if (!dclPoolTokens(input.pool)) invalid();
       if (op === 'remove') {
         if (!tick(input.left) || !tick(input.right) || input.left >= input.right || !rawAmount(amount) ||
             !amountOrZero(input.minX) || !amountOrZero(input.minY) || (input.minX === '0' && input.minY === '0')) invalid();
@@ -54,9 +58,17 @@ export function strategyAction(activity, input) {
     case 'yield-reallocation':
       if (!tokenId(input.token) || !rawAmount(amount)) invalid();
       return { token: input.token, operation: operation(op, ['supply', 'withdraw']), amount };
-    case 'reward-reinvestment':
-      if (op !== 'compound') invalid();
-      return { operation: op };
+    case 'limit-orders': {
+      const { pool, sellToken, point, placement } = input;
+      const tokens = dclPoolTokens(pool);
+      if (!tokens) invalid();
+      if (op === 'place') {
+        if (!tokens.includes(sellToken) || !tick(point) || !rawAmount(amount)) invalid();
+        return { pool, operation: op, sellToken, point, amount };
+      }
+      if (typeof placement !== 'string' || !/^[a-f0-9]{64}$/.test(placement)) invalid();
+      return { pool, operation: operation(op, ['cancel', 'claim']), placement };
+    }
     default: throw new Error('UNKNOWN_STRATEGY_ACTIVITY');
   }
 }
@@ -65,9 +77,9 @@ export function strategyTarget(activity, action) {
   switch (activity) {
     case 'staking-moves': return action.pool;
     case 'liquidity-ranges': return action.pool;
+    case 'limit-orders': return action.pool;
     case 'portfolio-rebalance': return String(action.poolId);
     case 'yield-reallocation': return action.token;
-    case 'reward-reinvestment': return LENDING;
     default: throw new Error('UNKNOWN_STRATEGY_ACTIVITY');
   }
 }
@@ -86,7 +98,7 @@ export function strategyPolicy(activity, flags, previous = {}) {
   const slippageBps = Number(flags['max-slippage-bps'] ?? previous.slippageBps ?? 100);
   const assets = flags.assets?.split(',') ?? previous.assets;
   if (!targets?.length || targets.length > 32 || !targets.every(target => target && target.length <= 200) ||
-      (activity !== 'reward-reinvestment' && !Object.keys(caps ?? {}).length) || Object.keys(caps ?? {}).length > 32) throw new Error('Set --targets and, for actions with inputs, --max-inputs.');
+      !Object.keys(caps ?? {}).length || Object.keys(caps ?? {}).length > 32) throw new Error('Set --targets and --max-inputs.');
   if (!validInteger(maxAge, 1, 3600) || !validInteger(copyBps, 1, 10000) || !validInteger(slippageBps, 0, 500)) throw new Error('Invalid activity age, sizing or slippage limit.');
   if (activity === 'portfolio-rebalance' && (!assets?.length || assets.length > 5 || !assets.every(assetId))) throw new Error('Set --assets for portfolio rebalancing.');
   return { targets, caps: caps ?? {}, maxAge, copyBps, slippageBps, ...(assets ? { assets } : {}) };

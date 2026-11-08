@@ -18,6 +18,11 @@ function strategyPolicyFor(state, activity) {
   return state.strategyPolicies?.[activity];
 }
 
+function orderClientId(agent, activity, action, id, publisher = 'local') {
+  if (activity !== 'limit-orders') return undefined;
+  return operationKey(agent.id, publisher + ':' + (action.placement ?? id)).slice(0, 32);
+}
+
 async function saveResult(agent, id, result, copiedFrom) {
   for (let attempt = 0; ; attempt++) {
     try {
@@ -46,6 +51,7 @@ export async function runStrategyTask(agent, activity, input, options = {}) {
   const { ownerId } = await agentSetupState(agent);
   const id = operationKey(agent.id, randomUUID());
   const result = await runWalletStrategy(activity, action, policy, { ...options, ownerId, operationId: id,
+    orderClientId: orderClientId(agent, activity, action, id),
     authorize: async inputs => {
       options.signal?.throwIfAborted();
       const current = strategyPolicyFor(await readAgentState(agent), activity);
@@ -86,7 +92,8 @@ export async function observeStrategy(agent, state, entry, emit) {
     const policy = strategyPolicyFor(state, activity);
     const action = sizedStrategyAction(activity, entry.action, policy);
     const { ownerId } = await agentSetupState(agent);
-    const checked = await runWalletStrategy(activity, action, policy, { ownerId });
+    const checked = await runWalletStrategy(activity, action, policy, { ownerId,
+      orderClientId: orderClientId(agent, activity, action, id, entry.publisher) });
     const preview = { action, inputs: checked.inputs, evidence: checked.evidence, transactionHash: entry.settlementRef };
     (state.pending ??= {})[id] = { status: 'pending', action: entry, preview, sessionId: follow.sessionId };
     return record('pending', preview);
@@ -112,6 +119,7 @@ export async function approveStrategy(agent, id) {
     const action = sizedStrategyAction(entry.activity, entry.action, policy);
     const { ownerId } = await agentSetupState(agent);
     const result = await runWalletStrategy(entry.activity, action, policy, { execute: true, operationId: id, ownerId,
+      orderClientId: orderClientId(agent, entry.activity, action, id, entry.publisher),
       authorize: async inputs => {
         const client = await gatewayFor(agent.path);
         try {

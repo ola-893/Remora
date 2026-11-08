@@ -4,7 +4,7 @@ export const activities = {
   'liquidity-ranges': { name: 'Liquidity ranges', action: 'Liquidity actions', focus: 'Inspect the pool and range changes in the receipt. Fees, time in range, and impermanent loss require position data.' },
   'portfolio-rebalance': { name: 'Portfolio rebalance', action: 'Rebalances', focus: 'Inspect rebalance receipts for assets and movements. Weight drift and returns require portfolio snapshots.' },
   'yield-reallocation': { name: 'Yield reallocation', action: 'Lending actions', focus: 'Inspect the supplied or withdrawn asset in the receipt. Realized yield requires balance and valuation data.' },
-  'reward-reinvestment': { name: 'Reward reinvestment', action: 'Reinvestments', focus: 'Inspect the compounding receipt. Net rewards require before-and-after balances and execution costs.' },
+  'limit-orders': { name: 'Limit orders', action: 'Order actions', focus: 'Inspect placement, cancellation, and claim receipts. Placement alone does not establish a fill or return.' },
 };
 export const publisherId = /^ap_[a-f0-9]{64}$/;
 const hashPattern = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;

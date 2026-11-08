@@ -8,7 +8,7 @@ const shape = {
   'liquidity-ranges': '{"pool":"token_x|token_y|fee","left":integer,"right":integer,"amountX":"atomic units","amountY":"atomic units","minX":"atomic units","minY":"atomic units"}',
   'portfolio-rebalance': '{"poolId":integer,"base":"testnet token ID","amount":"maximum base atomic units","weights":{"testnet token ID":basis points}}',
   'yield-reallocation': '{"token":"testnet token ID","operation":"supply|withdraw","amount":"atomic units"}',
-  'reward-reinvestment': '{"operation":"compound"}',
+  'limit-orders': '{"pool":"token_x|token_y|fee","operation":"place","sellToken":"testnet token ID","point":integer,"amount":"atomic units"} or {"pool":"token_x|token_y|fee","operation":"cancel|claim","placement":"confirmed placement action ID"}',
 };
 const actionTool = description => ({ description, properties: { action: { type: 'string', description: 'JSON action using the schema in the system instructions.' } }, required: ['action'] });
 
