@@ -124,7 +124,7 @@ export function RemoraLayout() {
   const { pathname } = useLocation();
   const directory = useDirectory();
   useEffect(() => {
-    const heading = document.querySelector('#remora-main h1')?.textContent;
+    const heading = document.querySelector('#remora-main h1')?.innerText.replace(/\s+/g, ' ').trim();
     document.title = heading ? heading + ' · Remora' : 'Remora';
     window.scrollTo(0, 0);
     document.getElementById('remora-main')?.focus({ preventScroll: true });
