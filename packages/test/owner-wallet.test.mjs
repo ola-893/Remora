@@ -34,6 +34,8 @@ test('wallet session rejects foreign origins and forged callbacks, then accepts 
     assert.equal((await fetch(origin + '/api/session')).status, 403);
     assert.equal((await fetch(origin + '/api/connect', { method: 'POST', headers: { ...headers, origin: 'https://attacker.example' }, body: '{}' })).status, 403);
     const info = await (await fetch(origin + '/api/session', { headers })).json();
+    assert.match(info.challenge.message, /^Connect your wallet to Remora on NEAR testnet/);
+    assert.equal(info.challenge.recipient, 'agentstreams.local');
     const forged = { ...signed(info.challenge), accountId: 'owner.testnet', signature: Buffer.alloc(64).toString('base64') };
     assert.equal((await fetch(origin + '/api/connect', { method: 'POST', headers, body: JSON.stringify(forged) })).status, 400);
     const extraField = await fetch(origin + '/api/connect', {

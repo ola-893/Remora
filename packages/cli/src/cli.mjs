@@ -9,11 +9,10 @@ import { projectPath, readProject, liveProfile, gatewayFor, setPayments } from '
 import { showSettings, setRuntime, setService, setInference, setLimits, reconcileLimits, usdc, durationSeconds } from './settings.mjs';
 import { readInferenceProfile } from './inference-profile.mjs';
 import { inferenceConfig } from './inference.mjs';
+import { renderHelp } from './brand.mjs';
 
 const version = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')).version;
-const help = `agentStreams ${version} — configure and run agents with native NEAR payment streams
-
-Named agents and copy trading:
+const help = `Named agents and copy trading:
   agentstreams agent create NAME | list | use NAME | show [NAME]
   agentstreams wallet connect --network testnet [--owner-id ACCOUNT]
                                                 Connect an owner or publisher wallet
@@ -110,7 +109,7 @@ export async function run(argv) {
   } });
   const emit = value => process.stdout.write(typeof value === 'string' ? value + '\n' : JSON.stringify(value, (_, item) => typeof item === 'bigint' ? item.toString() : item, 2) + '\n');
   if (v.version) return emit(version);
-  if (v.help || !p.length) return emit(help);
+  if (v.help || !p.length) return emit(renderHelp(version, help, { plain: v.json }));
   const allowed = {
     ...copyFlags,
     'wallet:connect': 'network rpc port owner-id', 'wallet:show': '', 'wallet:disconnect': '', 'wallet:reconcile': 'hash cancel',

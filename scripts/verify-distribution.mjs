@@ -37,7 +37,7 @@ try {
   const run = async args => JSON.parse((await exec(bin, args, { cwd: project, env: { ...process.env, NEAR_CONFIG: '/not-a-checkout', AGENTSTREAMS_HOME: join(root, 'private') } })).stdout);
   assert.equal((await exec(bin, ['--version'], { cwd: project })).stdout.trim(), manifest.find(m => m.name.endsWith('/agentstreams-cli')).version);
   const help = (await exec(bin, ['--help'], { cwd: project })).stdout;
-  assert.match(help, /^agentStreams /);
+  assert.match(help, values.registry ? /^(?:agentStreams|Remora CLI) / : /^Remora CLI /);
   assert.equal((await exec(join(prefix, 'bin/agentpay'), ['--version'], { cwd: project })).stdout.trim(), (await exec(bin, ['--version'], { cwd: project })).stdout.trim());
   assert.equal((await exec(join(prefix, 'bin/agentstream'), ['--version'], { cwd: project })).stdout.trim(), manifest.find(m => m.name.endsWith('/agentstreams-cli')).version);
   assert.match(help, /config limits/);
@@ -46,8 +46,15 @@ try {
     assert.equal((await run(['wallet', 'show'])).connected, false);
     assert.equal((await run(['wallet', 'reconcile'])).resolved, true);
     assert.match(help, /withdraw USDC\|all/);
-    const walletPage = await readFile(join(prefix, 'lib/node_modules/@ola-893/agentstreams-cli/wallet-ui/index.html'), 'utf8');
+    const walletUi = join(prefix, 'lib/node_modules/@ola-893/agentstreams-cli/wallet-ui');
+    const walletPage = await readFile(join(walletUi, 'index.html'), 'utf8');
     assert.match(walletPage, /Owner wallet/);
+    if (help.startsWith('Remora CLI ')) {
+      assert.match(walletPage, /<title>Remora · Owner wallet<\/title>/);
+      for (const asset of ['remora-icon.svg', 'remora-lockup-color.svg']) {
+        assert.match(await readFile(join(walletUi, asset), 'utf8'), /^<svg /);
+      }
+    }
   }
   assert.doesNotMatch(help, /agentpay demo|agentstreams simulate/);
   for (const command of ['unknown-command', 'demo', 'simulate']) await assert.rejects(run([command]), error => error.code === 1 && /Unknown command/.test(error.stderr));
@@ -105,7 +112,7 @@ try {
   try {
     const page = await (await fetch(ui.url)).text();
     assert.match(page, /__AGENTSTREAMS_RECORDED_ONLY__/);
-    assert.match(page, /<title>agentStreams/);
+    assert.match(page, values.registry ? /<title>(?:agentStreams|Remora)/ : /<title>Remora · Payment evidence<\/title>/);
     assert.equal((await fetch(ui.url + '/agentstreams.svg')).status, 200);
     assert.equal((await (await fetch(ui.url + '/near/latest.json')).json()).network, 'testnet');
     assert.equal((await fetch(ui.url + '/api/near/state')).status, 404);

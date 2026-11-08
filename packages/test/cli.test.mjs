@@ -25,7 +25,9 @@ test('CLI exposes operational controls and rejects removed scripted commands', a
   const help = (await run(cwd, '--help')).stdout;
   assert.match(help, /config limits/);
   assert.match(help, /agent run/);
-  assert.match(help, /^agentStreams /);
+  assert.match(help, /^Remora CLI /);
+  assert.match(help, /remora-agents\.pages\.dev\/explore/);
+  assert.doesNotMatch(help, /\x1b/);
   assert.doesNotMatch(help, /--(?:owner|recipient)-key/);
   assert.doesNotMatch(help, /--no-open/);
   assert.doesNotMatch(help, /agentstreams (?:demo|simulate)/);

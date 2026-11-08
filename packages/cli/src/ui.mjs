@@ -29,7 +29,9 @@ export async function startUi({ port = 0, recording = 'testnet', runFile } = {})
       const file = await realpath(resolve(uiRoot, `.${path}`));
       if (!file.startsWith(resolve(uiRoot) + sep)) return send(403, 'Path denied.');
       let content = await readFile(file);
-      if (path === '/index.html') content = content.toString().replace('<head>', '<head><script>window.__AGENTSTREAMS_RECORDED_ONLY__=true;</script>');
+      if (path === '/index.html') content = content.toString()
+        .replace('<head>', '<head><script>window.__AGENTSTREAMS_RECORDED_ONLY__=true;</script>')
+        .replace(/<title>[^<]*<\/title>/, '<title>Remora · Payment evidence</title>');
       send(200, content, mime[extname(file)] || 'application/octet-stream');
     } catch { send(404, 'Not found. Build the distribution before opening the viewer.'); }
   });

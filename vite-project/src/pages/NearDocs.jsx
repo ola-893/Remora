@@ -7,7 +7,7 @@ export default function NearDocs() {
       <div className="near-kicker">AGENTSTREAMS / DOCUMENTATION</div>
       <h1>Agent payments with a human limit.</h1>
       <p>
-        agentStreams gives an AI agent a funded API session on NEAR. The owner
+        Remora uses AgentStreams to give an AI agent a funded API session on NEAR. The owner
         controls the money and policy. The agent can request access, reuse its
         session and submit approved lifecycle actions.
       </p>

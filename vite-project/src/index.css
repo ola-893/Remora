@@ -688,8 +688,8 @@ summary {
 /* Workflow cockpit: one surface, compact controls, evidence-driven visuals. */
 .app-header { position: sticky; top: 0; z-index: 40; border-bottom: 1px solid #ffffff14; background: #0b101cf5; }
 .app-header-inner { max-width: 1200px; margin: auto; min-height: 64px; padding: 8px 16px; display: flex; align-items: center; gap: 32px; }
-.app-brand { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 650; }
-.app-brand > span { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid #ffffff30; border-radius: 8px; }
+.app-brand { display: flex; align-items: center; flex: 0 0 auto; }
+.app-brand img { width: 125px; max-width: 29vw; height: auto; }
 .app-header nav { display: flex; align-items: center; gap: 24px; font-size: 13px; color: #94a3b8; }
 .app-header nav a { min-height: 40px; display: inline-flex; align-items: center; }
 .app-header nav a[aria-current=page] { color: #f1f5f9; }

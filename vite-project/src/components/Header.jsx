@@ -1,12 +1,13 @@
 import { Link, useLocation } from "react-router-dom";
 import { navigation, isCurrentPage } from "../lib/navigation";
+import remoraLogo from "../../../brand/remora/assets/remora-lockup-color.svg";
 export default function Header() {
   const { pathname } = useLocation();
   return (
     <header className="app-header">
       <div className="app-header-inner">
-        <Link to="/" aria-label="agentStreams home" className="app-brand">
-          <span aria-hidden="true">A</span>agentStreams
+        <Link to="/" aria-label="Remora home" className="app-brand">
+          <img src={remoraLogo} alt="" width="125" height="39" />
         </Link>
         <nav aria-label="Main navigation">
           {navigation.map(({ path, label }) => (

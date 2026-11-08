@@ -29,7 +29,7 @@ try {
   $('network').textContent = 'NEAR testnet';
   $('description').textContent = session.kind === 'connect' ? 'Choose your wallet and approve a sign-in message. This does not grant spending access or send a transaction.' : 'Review this owner-only operation, then approve it in your wallet. Your private key stays in your wallet.';
   $('owner').textContent = session.plan?.ownerId ?? session.challenge.accountId ?? 'Choose a named .testnet account';
-  $('receiver').textContent = session.plan?.receiverId ?? 'agentStreams owner connection';
+  $('receiver').textContent = session.plan?.receiverId ?? 'Remora owner connection';
   if (session.plan) {
     const details = session.plan.actions.map(action => action.type === 'DeployContract' ? { type: action.type, bytes: atob(action.params.codeBase64).length } : action);
     $('details').textContent = JSON.stringify(details, null, 2);

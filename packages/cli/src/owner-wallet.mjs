@@ -19,6 +19,13 @@ const rpcDefault = 'https://near-testnet.drpc.org';
 const explorer = hash => `https://testnet.nearblocks.io/txns/${hash}`;
 const hashPattern = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 const accountPattern = /^[a-z0-9]+(?:[-_.][a-z0-9]+)*\.testnet$/;
+const walletAssetTypes = new Map([
+  ['/', 'text/html; charset=utf-8'],
+  ['/wallet.js', 'text/javascript; charset=utf-8'],
+  ['/wallet.css', 'text/css; charset=utf-8'],
+  ['/remora-icon.svg', 'image/svg+xml'],
+  ['/remora-lockup-color.svg', 'image/svg+xml'],
+]);
 const callbackFields = new Map([
   ['/api/connect', ['accountId', 'publicKey', 'signature', 'walletId']],
   ['/api/transaction', ['hash']],
@@ -115,7 +122,7 @@ export async function startOwnerSession({ kind, plan, minBlockHeight, rpcUrl = r
   const done = new Promise((resolve, reject) => { resolveDone = resolve; rejectDone = reject; });
   // Callers may inspect the server before attaching their completion handler.
   done.catch(() => {});
-  const challenge = { message: `Connect your wallet to agentStreams on NEAR testnet. Session ${id}. No transaction or spending approval.`, nonce, recipient: 'agentstreams.local', ...(accountId ? { accountId } : {}) };
+  const challenge = { message: `Connect your wallet to Remora on NEAR testnet. Session ${id}. No transaction or spending approval.`, nonce, recipient: 'agentstreams.local', ...(accountId ? { accountId } : {}) };
   const server = createServer(async (req, res) => {
     const send = (status, data, type = 'application/json') => {
       res.writeHead(status, { 'content-type': type, 'cache-control': 'no-store', 'x-content-type-options': 'nosniff', 'referrer-policy': 'no-referrer', 'x-frame-options': 'DENY' });
@@ -125,9 +132,10 @@ export async function startOwnerSession({ kind, plan, minBlockHeight, rpcUrl = r
     try {
       if (req.headers.host !== `127.0.0.1:${server.address().port}`) return send(403, { error: 'HOST_REJECTED' });
       const path = new URL(req.url, 'http://127.0.0.1').pathname;
-      if (req.method === 'GET' && ['/', '/wallet.js', '/wallet.css'].includes(path)) {
+      const assetType = walletAssetTypes.get(path);
+      if (req.method === 'GET' && assetType) {
         const file = path === '/' ? 'index.html' : path.slice(1);
-        return send(200, await readFile(new URL(file, assets), 'utf8'), file.endsWith('.html') ? 'text/html; charset=utf-8' : file.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'text/css; charset=utf-8');
+        return send(200, await readFile(new URL(file, assets), 'utf8'), assetType);
       }
       if (!equalSecret(req.headers.authorization, `Bearer ${token}`)) return send(403, { error: 'SESSION_REQUIRED' });
       if (req.headers.origin && req.headers.origin !== `http://127.0.0.1:${server.address().port}`) return send(403, { error: 'ORIGIN_REJECTED' });

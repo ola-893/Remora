@@ -18,7 +18,7 @@ const agentAllowance = '250000000000000000000000';
 
 export function browserDeploymentSteps({ plan, ownerPublicKey, agentPublicKey, policyPublicKey, wasm }) {
   return [
-    { name: 'create-vault', receiverId: plan.vaultId, label: 'Create and initialize your agentStreams vault (5 test NEAR)', actions: [
+    { name: 'create-vault', receiverId: plan.vaultId, label: 'Create and initialize your Remora vault (5 test NEAR)', actions: [
       { type: 'CreateAccount' }, { type: 'Transfer', params: { deposit: vaultDeposit } }, full(ownerPublicKey),
       { type: 'DeployContract', params: { codeBase64: Buffer.from(wasm).toString('base64') } },
       call('new', vaultArgs(plan, agentPublicKey, policyPublicKey)),
@@ -163,7 +163,7 @@ export async function setupWithBrowser(project, options, { wasmFile, transact = 
     if (implicit) {
       for (const [role, deposit, amount] of [['vault', vaultDeposit, '5'], ['agent', agentDeposit, '0.5']]) {
         const accountId = plan[`${role}Id`];
-        await step({ name: `fund-${role}-account`, receiverId: accountId, label: `Create your agentStreams ${role} account (${amount} test NEAR)`, actions: [{ type: 'Transfer', params: { deposit } }] }, async () => {
+        await step({ name: `fund-${role}-account`, receiverId: accountId, label: `Create your Remora ${role} account (${amount} test NEAR)`, actions: [{ type: 'Transfer', params: { deposit } }] }, async () => {
           const existing = await provider.viewAccount({ accountId, blockQuery: { finality: 'final' } }).catch(error => {
             if (error.name !== 'AccountDoesNotExistError') throw error;
           });

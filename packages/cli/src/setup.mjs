@@ -39,7 +39,7 @@ export async function fundProject(project, { amount, decimal = false }) {
   const vault = await client.getVault();
   if (vault.owner_id !== config.ownerId || vault.token_id !== config.tokenId) throw new Error('VAULT_IDENTITY_MISMATCH');
   if (BigInt(await client.tokenBalance(config.ownerId, config.tokenId)) < BigInt(amount)) throw new Error(`OWNER_USDC_INSUFFICIENT: fund ${config.ownerId} at https://faucet.circle.com/ (Near Testnet).`);
-  const receipt = await ownerTransaction({ ownerId: config.ownerId, receiverId: config.tokenId, rpcUrl: config.rpcUrl, label: `Fund your agentStreams vault with ${formatUSDC(amount)} test USDC`,
+  const receipt = await ownerTransaction({ ownerId: config.ownerId, receiverId: config.tokenId, rpcUrl: config.rpcUrl, label: `Fund your Remora vault with ${formatUSDC(amount)} test USDC`,
     actions: [{ type: 'FunctionCall', params: { methodName: 'ft_transfer_call', args: { receiver_id: config.vaultId, amount, msg: 'fund' }, gas: '100000000000000', deposit: '1' } }], context: { kind: 'funding', vaultId: config.vaultId, amount } });
   if (receipt.value !== amount) throw new Error(`FUNDING_NOT_CONFIRMED: ${receipt.explorerUrl}`);
   return { network: 'testnet', amountRawUSDC: amount, transactionHash: receipt.hash, explorerUrl: receipt.explorerUrl, signing: 'browser-wallet' };

@@ -9,8 +9,8 @@ export default function Layout() {
   useEffect(() => {
     const heading = document.querySelector("main h1")?.textContent;
     document.title = heading
-      ? `${heading} · agentStreams`
-      : "agentStreams — Deterministic payment guardrails";
+      ? `${heading} · Remora`
+      : "Remora · Payment evidence";
     if (previous.current !== pathname) {
       window.scrollTo({ top: 0, behavior: "instant" });
       document.getElementById("main-content")?.focus({ preventScroll: true });
@@ -31,7 +31,7 @@ export default function Layout() {
       {pathname !== "/" && (
         <footer className="app-footer mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 pt-8 text-xs text-slate-400 sm:px-6 lg:px-8">
           <p>
-            agentStreams · NEAR · Testnet tokens have no monetary value.
+            Remora · NEAR · Testnet tokens have no monetary value.
           </p>
           <Link
             to="/docs"
