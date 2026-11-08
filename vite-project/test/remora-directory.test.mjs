@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { createHash, generateKeyPairSync, sign } from 'node:crypto';
 import { createServer } from 'node:http';
 import test from 'node:test';
-import { canonical } from '../../packages/core/runtime/near/lib/audit.mjs';
+import { canonical } from '../../near/lib/audit.mjs';
 import { directoryEntries, previewCommand, probePublisher, usdcPerSecond, verifyListing } from '../src/pages/remora/directory.mjs';
 
 const { publicKey, privateKey } = generateKeyPairSync('ed25519');
