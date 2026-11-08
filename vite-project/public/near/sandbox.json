@@ -1,0 +1,528 @@
+{
+  "schemaVersion": 1,
+  "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+  "recordedAt": "2026-10-30T14:18:11.142Z",
+  "network": "sandbox",
+  "agentMode": "model",
+  "vaultId": "vault.sandbox",
+  "ok": true,
+  "results": {
+    "basic": {
+      "decision": "COMPLETED",
+      "successfulRequests": 10,
+      "deposit": "10000",
+      "earned": "20",
+      "refundedToVault": "9980",
+      "providerPayment": "claimable",
+      "openHash": "C2e8cqYYYuCBC9yymCoMwp6awpsCmceWpZ7s34NcDoSm",
+      "closeHash": "BqQm62i1ZDz8hn1xYFBAXPjN7BYBBdHfp6qA6K2VxGdd",
+      "sessionId": "1a8e62f8-basic"
+    },
+    "premium": {
+      "decision": "DENY",
+      "reason": "RATE_LIMIT"
+    }
+  },
+  "events": [
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 1,
+      "at": "2026-10-30T14:17:54.065Z",
+      "type": "started",
+      "network": "sandbox",
+      "agentMode": "model",
+      "vaultId": "vault.sandbox",
+      "agentId": "agent.sandbox",
+      "recipientId": "provider.sandbox",
+      "previousHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "eventHash": "82362b592e03c2866f7058eaafe04642b6f4d81d3a9cad6917e198566d0f185a"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 2,
+      "at": "2026-10-30T14:17:57.875Z",
+      "type": "model",
+      "provider": "qwen",
+      "model": "qwen3.5-plus",
+      "responseId": "resp_5477b910-b642-9610-9531-d82a929a1274",
+      "previousHash": "82362b592e03c2866f7058eaafe04642b6f4d81d3a9cad6917e198566d0f185a",
+      "eventHash": "a460c6d69e31362cb509f8555a0d1d1cd9505d4889ded32ca7e22af24226b394"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 3,
+      "at": "2026-10-30T14:17:57.886Z",
+      "type": "proposal",
+      "tier": "basic",
+      "sessionId": "1a8e62f8-basic",
+      "previousHash": "a460c6d69e31362cb509f8555a0d1d1cd9505d4889ded32ca7e22af24226b394",
+      "eventHash": "eabda3edc30dc4073bf852a9434437f8d4f2b33ff823eea8a576f4154b906d6f"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 4,
+      "at": "2026-10-30T14:17:57.948Z",
+      "type": "policy",
+      "tier": "basic",
+      "sessionId": "1a8e62f8-basic",
+      "decision": "OPEN",
+      "reason": "WITHIN_POLICY",
+      "quote": {
+        "version": 1,
+        "vault_id": "vault.sandbox",
+        "token_id": "token.sandbox",
+        "recipient_id": "provider.sandbox",
+        "tier": "basic",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "expires_at": 1793370177
+      },
+      "prices": {
+        "decision": "ALLOW",
+        "reason": "SANDBOX_FIXTURE_NO_MARKET_PRICE",
+        "samples": []
+      },
+      "previousHash": "eabda3edc30dc4073bf852a9434437f8d4f2b33ff823eea8a576f4154b906d6f",
+      "eventHash": "c8673f98fb8cb99109bf3938ab848e34d7b7eacca61c0327f21f3957e5dd08b2"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 5,
+      "at": "2026-10-30T14:17:58.613Z",
+      "type": "transaction",
+      "action": "OPEN",
+      "hash": "C2e8cqYYYuCBC9yymCoMwp6awpsCmceWpZ7s34NcDoSm",
+      "signerId": "agent.sandbox",
+      "receiverId": "vault.sandbox",
+      "value": {
+        "session_id": "1a8e62f8-basic",
+        "recipient_id": "provider.sandbox",
+        "quote_hash": "22fa126d9016eb73d9d467ccc38e3d5bbae3bca5ea76ea2d90addd5a5d4f7844",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1793369878",
+        "closed_at": null,
+        "earned": "0",
+        "refunded": "0"
+      },
+      "receiptFailures": [],
+      "receiptIds": [
+        "GemZV4n3ocDVrwdfYrab2uur42eFbtVc92yLDUqRgwfv",
+        "EWa7jQB423dT6ZkLwxV8g6cbYapJX5iJub6p5ogiJCXq"
+      ],
+      "logs": [
+        "EVENT_JSON:{\"data\":[{\"closed_at\":null,\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"0\",\"quote_hash\":\"22fa126d9016eb73d9d467ccc38e3d5bbae3bca5ea76ea2d90addd5a5d4f7844\",\"rate\":\"10\",\"recipient_id\":\"provider.sandbox\",\"refunded\":\"0\",\"session_id\":\"1a8e62f8-basic\",\"started_at\":\"1793369878\"}],\"event\":\"opened\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+      ],
+      "previousHash": "c8673f98fb8cb99109bf3938ab848e34d7b7eacca61c0327f21f3957e5dd08b2",
+      "eventHash": "73466f5f1c2c5fb2be113b55036e7886c7c6c34c40fbc616c87f5b32f4104517"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 6,
+      "at": "2026-10-30T14:17:58.629Z",
+      "type": "request",
+      "sessionId": "1a8e62f8-basic",
+      "count": 1,
+      "status": 200,
+      "previousHash": "73466f5f1c2c5fb2be113b55036e7886c7c6c34c40fbc616c87f5b32f4104517",
+      "eventHash": "d421f19f80b4566ccfd85bd489cdc5ab67da5f416d55daf198b60dffefbf8c41"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 7,
+      "at": "2026-10-30T14:17:58.761Z",
+      "type": "request",
+      "sessionId": "1a8e62f8-basic",
+      "count": 2,
+      "status": 200,
+      "previousHash": "d421f19f80b4566ccfd85bd489cdc5ab67da5f416d55daf198b60dffefbf8c41",
+      "eventHash": "dc3be1d3e7d39a52a9d37e3ba1bbc2527f1ff48441e13a1870868722e5848041"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 8,
+      "at": "2026-10-30T14:17:58.894Z",
+      "type": "request",
+      "sessionId": "1a8e62f8-basic",
+      "count": 3,
+      "status": 200,
+      "previousHash": "dc3be1d3e7d39a52a9d37e3ba1bbc2527f1ff48441e13a1870868722e5848041",
+      "eventHash": "9d37d2b5472ace372eb075a38d291d7a113a2c7f9e46ee650dd781e565fe8c81"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 9,
+      "at": "2026-10-30T14:17:59.027Z",
+      "type": "request",
+      "sessionId": "1a8e62f8-basic",
+      "count": 4,
+      "status": 200,
+      "previousHash": "9d37d2b5472ace372eb075a38d291d7a113a2c7f9e46ee650dd781e565fe8c81",
+      "eventHash": "7ee3a4e348962ca6f1437f2a9177fc1a56ea0edd46bad7e8a3ffa9ad59ecdfe9"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 10,
+      "at": "2026-10-30T14:17:59.162Z",
+      "type": "request",
+      "sessionId": "1a8e62f8-basic",
+      "count": 5,
+      "status": 200,
+      "previousHash": "7ee3a4e348962ca6f1437f2a9177fc1a56ea0edd46bad7e8a3ffa9ad59ecdfe9",
+      "eventHash": "5dbb8b419ea7fd906a66ec1d4bd96649eb09925dc2935e65af56927bb3f67cb8"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 11,
+      "at": "2026-10-30T14:17:59.296Z",
+      "type": "request",
+      "sessionId": "1a8e62f8-basic",
+      "count": 6,
+      "status": 200,
+      "previousHash": "5dbb8b419ea7fd906a66ec1d4bd96649eb09925dc2935e65af56927bb3f67cb8",
+      "eventHash": "7b795f86744e0ac33d354651d0de2c5cf0ea5eeb65c0aae3baab8e2c86b4f729"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 12,
+      "at": "2026-10-30T14:17:59.429Z",
+      "type": "request",
+      "sessionId": "1a8e62f8-basic",
+      "count": 7,
+      "status": 200,
+      "previousHash": "7b795f86744e0ac33d354651d0de2c5cf0ea5eeb65c0aae3baab8e2c86b4f729",
+      "eventHash": "74686f9c384ae66e2279923b996f99871726c0a63016919da8c6b867fbfb0a79"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 13,
+      "at": "2026-10-30T14:17:59.564Z",
+      "type": "request",
+      "sessionId": "1a8e62f8-basic",
+      "count": 8,
+      "status": 200,
+      "previousHash": "74686f9c384ae66e2279923b996f99871726c0a63016919da8c6b867fbfb0a79",
+      "eventHash": "048f1b14514930fa6238c41151a743a524ca86d7502617cd169e2a0cf1f95958"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 14,
+      "at": "2026-10-30T14:17:59.696Z",
+      "type": "request",
+      "sessionId": "1a8e62f8-basic",
+      "count": 9,
+      "status": 200,
+      "previousHash": "048f1b14514930fa6238c41151a743a524ca86d7502617cd169e2a0cf1f95958",
+      "eventHash": "40997548dbf055c60babeaa9d82b2cb741aad20a531a59c790421c3b7b883336"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 15,
+      "at": "2026-10-30T14:17:59.828Z",
+      "type": "request",
+      "sessionId": "1a8e62f8-basic",
+      "count": 10,
+      "status": 200,
+      "previousHash": "40997548dbf055c60babeaa9d82b2cb741aad20a531a59c790421c3b7b883336",
+      "eventHash": "0e8fcbbe2ceeac825988618a6c81694cdebafb1f0859966862939ec0aba27f05"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 16,
+      "at": "2026-10-30T14:17:59.956Z",
+      "type": "reuse_verified",
+      "sessionId": "1a8e62f8-basic",
+      "successfulRequests": 10,
+      "nonceBefore": "48000001",
+      "nonceAfter": "48000001",
+      "extraPaymentTransactions": 0,
+      "previousHash": "0e8fcbbe2ceeac825988618a6c81694cdebafb1f0859966862939ec0aba27f05",
+      "eventHash": "4578e7e5cafc23893fd89679c31f13e852f2ba6b76b5b552fe25b425ed3956a8"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 17,
+      "at": "2026-10-30T14:17:59.972Z",
+      "type": "policy",
+      "sessionId": "1a8e62f8-basic",
+      "decision": "CONTINUE",
+      "reason": "SERVICE_HEALTHY",
+      "previousHash": "4578e7e5cafc23893fd89679c31f13e852f2ba6b76b5b552fe25b425ed3956a8",
+      "eventHash": "2aabdeda60e88d4e9f71cfd0f27f669461bc2b68da647df42e6f323d4b30e3ff"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 18,
+      "at": "2026-10-30T14:17:59.976Z",
+      "type": "outage",
+      "sessionId": "1a8e62f8-basic",
+      "injected": true,
+      "previousHash": "2aabdeda60e88d4e9f71cfd0f27f669461bc2b68da647df42e6f323d4b30e3ff",
+      "eventHash": "3cc384d4afe1d613955349622a529bd54889947bbf9e3099bfa1a8720e356f71"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 19,
+      "at": "2026-10-30T14:17:59.992Z",
+      "type": "policy",
+      "sessionId": "1a8e62f8-basic",
+      "decision": "CLOSE",
+      "reason": "SERVICE_UNAVAILABLE",
+      "previousHash": "3cc384d4afe1d613955349622a529bd54889947bbf9e3099bfa1a8720e356f71",
+      "eventHash": "2c6f03db52cf80a78446de4096d38946812a4903830991ee558634535a80c851"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 20,
+      "at": "2026-10-30T14:18:00.749Z",
+      "type": "transaction",
+      "action": "CLOSE",
+      "hash": "BqQm62i1ZDz8hn1xYFBAXPjN7BYBBdHfp6qA6K2VxGdd",
+      "signerId": "agent.sandbox",
+      "receiverId": "vault.sandbox",
+      "value": {
+        "session_id": "1a8e62f8-basic",
+        "recipient_id": "provider.sandbox",
+        "quote_hash": "22fa126d9016eb73d9d467ccc38e3d5bbae3bca5ea76ea2d90addd5a5d4f7844",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1793369878",
+        "closed_at": "1793369880",
+        "earned": "20",
+        "refunded": "9980"
+      },
+      "receiptFailures": [],
+      "receiptIds": [
+        "9QJGTohfgBumXykwKzrQPVUcRbXh7Pyw3rc7pkpPu7Y2",
+        "A5jf9uzdmvr3ao4pfZsggs4987Z3tHvVXD4Kai6zPkYY"
+      ],
+      "logs": [
+        "EVENT_JSON:{\"data\":[{\"closed_at\":\"1793369880\",\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"20\",\"quote_hash\":\"22fa126d9016eb73d9d467ccc38e3d5bbae3bca5ea76ea2d90addd5a5d4f7844\",\"rate\":\"10\",\"recipient_id\":\"provider.sandbox\",\"refunded\":\"9980\",\"session_id\":\"1a8e62f8-basic\",\"started_at\":\"1793369878\"}],\"event\":\"closed\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+      ],
+      "previousHash": "2c6f03db52cf80a78446de4096d38946812a4903830991ee558634535a80c851",
+      "eventHash": "142f85986a139eab76a2430d1f84d44a8f515cca4808520b8c040d1974d5261a"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 21,
+      "at": "2026-10-30T14:18:00.758Z",
+      "type": "settled",
+      "stream": {
+        "session_id": "1a8e62f8-basic",
+        "recipient_id": "provider.sandbox",
+        "quote_hash": "22fa126d9016eb73d9d467ccc38e3d5bbae3bca5ea76ea2d90addd5a5d4f7844",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1793369878",
+        "closed_at": "1793369880",
+        "earned": "20",
+        "refunded": "9980"
+      },
+      "previousHash": "142f85986a139eab76a2430d1f84d44a8f515cca4808520b8c040d1974d5261a",
+      "eventHash": "5c275483856bd8e4c960a5c5c5900083dd635b5bdb46877c14aa8e7f37737099"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 22,
+      "at": "2026-10-30T14:18:02.164Z",
+      "type": "model",
+      "provider": "qwen",
+      "model": "qwen3.5-plus",
+      "responseId": "resp_08432f23-56c5-9032-ace6-172f22820637",
+      "previousHash": "5c275483856bd8e4c960a5c5c5900083dd635b5bdb46877c14aa8e7f37737099",
+      "eventHash": "25042ad1bf2da83828e322ba2f0f28eef57c687f6fa8c01e2d3ae22479930c4e"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 23,
+      "at": "2026-10-30T14:18:02.171Z",
+      "type": "proposal",
+      "tier": "premium",
+      "sessionId": "1a8e62f8-premium",
+      "previousHash": "25042ad1bf2da83828e322ba2f0f28eef57c687f6fa8c01e2d3ae22479930c4e",
+      "eventHash": "34c9716acb46bdbefa47a3343c49f944ad6ac86cc093e5b38529e45cd31b030f"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 24,
+      "at": "2026-10-30T14:18:02.183Z",
+      "type": "policy",
+      "tier": "premium",
+      "sessionId": "1a8e62f8-premium",
+      "decision": "DENY",
+      "reason": "RATE_LIMIT",
+      "quote": {
+        "version": 1,
+        "vault_id": "vault.sandbox",
+        "token_id": "token.sandbox",
+        "recipient_id": "provider.sandbox",
+        "tier": "premium",
+        "rate": "200",
+        "duration_seconds": 1000,
+        "expires_at": 1793370182
+      },
+      "previousHash": "34c9716acb46bdbefa47a3343c49f944ad6ac86cc093e5b38529e45cd31b030f",
+      "eventHash": "0b3b519d1c26dfee7578d96f26a73ae96695f30a836f5e02776646ef016c432a"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 25,
+      "at": "2026-10-30T14:18:11.130Z",
+      "type": "model",
+      "provider": "qwen",
+      "model": "qwen3.5-plus",
+      "responseId": "resp_dd37dba1-8aef-9065-bd2a-e51c55df0246",
+      "previousHash": "0b3b519d1c26dfee7578d96f26a73ae96695f30a836f5e02776646ef016c432a",
+      "eventHash": "573f6a08a7e2a3773059623d9d2849847f8e497abb0c9f86bf047748415ef91e"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 26,
+      "at": "2026-10-30T14:18:11.137Z",
+      "type": "summary",
+      "text": "### Transaction Analysis\n\n**1. Basic Tier Purchase (Success)**\n*   **Payment & Escrow:** The transaction initiated a deposit of **10,000** units (representing the 0.01 test USDC basic deposit) into the native NEAR vault. This acts as an escrow, not a direct payment to the provider.\n*   **Reuse & Execution:** The session (`sessionId: 1a8e62f8-basic`) successfully processed **10 requests**. This demonstrates the time-based stream reuse capability where multiple API calls are covered under a single deposit window.\n*   **Refund & Earnings:** Upon the explicitly injected outage causing closure:\n    *   **Earned Tokens:** **20** units were marked as `claimable` for the provider based on actual usage.\n    *   **Refund:** The remaining **9,980** units were automatically returned to the vault (`refundedToVault`), ensuring no funds were lost due to the premature termination.\n*   **Verification:**\n    *   Open Transaction: `C2e8cqYYYuCBC9yymCoMwp6awpsCmceWpZ7s34NcDoSm`\n    *   Close Transaction: `BqQm62i1ZDz8hn1xYFBAXPjN7BYBBdHfp6qA6K2VxGdd`\n\n**2. Premium Tier Attempt (Denial)**\n*   **Result:** The request for the premium tier was **DENIED**.\n*   **Reason:** The deterministic policy worker returned `RATE_LIMIT`. Despite the basic session completing, the system enforced a restriction preventing the upgrade or parallel execution of the premium tier, adhering to the requirement that \"Premium must be denied.\"\n\n**Summary of Observations**\nThe system correctly handled the lifecycle of a test token deposit: locking funds in escrow, tracking usage via a reusable stream, calculating provider earnings versus user refunds upon forced closure, and strictly enforcing access policies by denying the premium tier request. No production decentralization or Chainlink execution was claimed; all operations occurred within the defined NEAR test environment constraints.",
+      "previousHash": "573f6a08a7e2a3773059623d9d2849847f8e497abb0c9f86bf047748415ef91e",
+      "eventHash": "3c354461f60f8a59fc3e6e8220c9a4f03039ff48adcec7687f7742ea8555c933"
+    },
+    {
+      "schemaVersion": 1,
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "sequence": 27,
+      "at": "2026-10-30T14:18:11.144Z",
+      "type": "finished",
+      "ok": true,
+      "previousHash": "3c354461f60f8a59fc3e6e8220c9a4f03039ff48adcec7687f7742ea8555c933",
+      "eventHash": "dcf7a6d79c00b0baabcaa156f125fc24cca68b3798c90ae58b37cb9be56ae88e"
+    }
+  ],
+  "receipts": [
+    {
+      "action": "OPEN",
+      "hash": "C2e8cqYYYuCBC9yymCoMwp6awpsCmceWpZ7s34NcDoSm",
+      "signerId": "agent.sandbox",
+      "receiverId": "vault.sandbox",
+      "value": {
+        "session_id": "1a8e62f8-basic",
+        "recipient_id": "provider.sandbox",
+        "quote_hash": "22fa126d9016eb73d9d467ccc38e3d5bbae3bca5ea76ea2d90addd5a5d4f7844",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1793369878",
+        "closed_at": null,
+        "earned": "0",
+        "refunded": "0"
+      },
+      "receiptFailures": [],
+      "receiptIds": [
+        "GemZV4n3ocDVrwdfYrab2uur42eFbtVc92yLDUqRgwfv",
+        "EWa7jQB423dT6ZkLwxV8g6cbYapJX5iJub6p5ogiJCXq"
+      ],
+      "logs": [
+        "EVENT_JSON:{\"data\":[{\"closed_at\":null,\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"0\",\"quote_hash\":\"22fa126d9016eb73d9d467ccc38e3d5bbae3bca5ea76ea2d90addd5a5d4f7844\",\"rate\":\"10\",\"recipient_id\":\"provider.sandbox\",\"refunded\":\"0\",\"session_id\":\"1a8e62f8-basic\",\"started_at\":\"1793369878\"}],\"event\":\"opened\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+      ]
+    },
+    {
+      "action": "CLOSE",
+      "hash": "BqQm62i1ZDz8hn1xYFBAXPjN7BYBBdHfp6qA6K2VxGdd",
+      "signerId": "agent.sandbox",
+      "receiverId": "vault.sandbox",
+      "value": {
+        "session_id": "1a8e62f8-basic",
+        "recipient_id": "provider.sandbox",
+        "quote_hash": "22fa126d9016eb73d9d467ccc38e3d5bbae3bca5ea76ea2d90addd5a5d4f7844",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1793369878",
+        "closed_at": "1793369880",
+        "earned": "20",
+        "refunded": "9980"
+      },
+      "receiptFailures": [],
+      "receiptIds": [
+        "9QJGTohfgBumXykwKzrQPVUcRbXh7Pyw3rc7pkpPu7Y2",
+        "A5jf9uzdmvr3ao4pfZsggs4987Z3tHvVXD4Kai6zPkYY"
+      ],
+      "logs": [
+        "EVENT_JSON:{\"data\":[{\"closed_at\":\"1793369880\",\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"20\",\"quote_hash\":\"22fa126d9016eb73d9d467ccc38e3d5bbae3bca5ea76ea2d90addd5a5d4f7844\",\"rate\":\"10\",\"recipient_id\":\"provider.sandbox\",\"refunded\":\"9980\",\"session_id\":\"1a8e62f8-basic\",\"started_at\":\"1793369878\"}],\"event\":\"closed\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+      ]
+    }
+  ],
+  "finalVault": {
+    "version": "2.0.0",
+    "owner_id": "owner.sandbox",
+    "token_id": "token.sandbox",
+    "agent_id": "agent.sandbox",
+    "agent_key": "ed25519:BRZ4qvRBe7qJ4M1FT6pWVeW35MZcCjY68VxYrtRroNV",
+    "policy_key": "ed25519:AiZe9a7HoCxBgBrE2K97ucBAx6wpoVSkEZUtFFvY2HLn",
+    "policy": {
+      "budget": "100000",
+      "max_deposit": "10000",
+      "max_rate": "100",
+      "max_duration_seconds": 1000,
+      "recipients": [
+        "provider.sandbox",
+        "outsider.sandbox"
+      ]
+    },
+    "available": "999980",
+    "spent": "20",
+    "reserved": "0",
+    "claimable_total": "0",
+    "pending_total": "0",
+    "next_nonce": "2",
+    "active_session": null,
+    "paused": false,
+    "now": "1793369891"
+  },
+  "providerPayout": {
+    "hash": "AJr1qQUNtuUPNCfK9u3shv4k1TWS56qqPsYBfBP6SzM9",
+    "signerId": "provider.sandbox",
+    "receiverId": "vault.sandbox",
+    "value": true,
+    "receiptFailures": [],
+    "receiptIds": [
+      "3eYg7M8Kw6t65oNoxwEZCEybabSzVtEPDdoSFKKvMber",
+      "e6SiH1oLgssdx6BgitvvCM3vQB2KuofVzA31M8pYovt",
+      "A8AmGKcfMdnsm8CSNSbt3XMmPLD8FfRL4im4W4ALdtST",
+      "7URMvNoupSnXGNjWy4aNNVNvUXFywTPTEjnA3627MxvX",
+      "2JBdU2wFu4vjz7Z5RBXqEoviYggiQHxpi5nfMEUZfHxY",
+      "GDhwYDJtJ8NUJbo7WY2C2X48JjK29izC56PQ2BXxpoxh"
+    ],
+    "logs": [
+      "EVENT_JSON:{\"standard\":\"nep141\",\"version\":\"1.0.0\",\"event\":\"ft_transfer\",\"data\":[{\"old_owner_id\":\"vault.sandbox\",\"new_owner_id\":\"provider.sandbox\",\"amount\":\"20\",\"memo\":\"AgentPay payout\"}]}",
+      "EVENT_JSON:{\"data\":[{\"amount\":\"20\",\"payout_id\":\"0\",\"receiver_id\":\"provider.sandbox\",\"success\":true}],\"event\":\"payout\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+    ]
+  },
+  "providerBalance": "20"
+}

@@ -1,0 +1,875 @@
+{
+  "schemaVersion": 1,
+  "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+  "network": "testnet",
+  "agentMode": "mixed",
+  "recordedAt": "2026-11-07T12:49:25.186Z",
+  "serviceKind": "repository-analysis",
+  "receipts": [
+    {
+      "hash": "4Wnj2Yxwubbm1D45Bo2V6cR93jZM9hdZJSPj1hkxRXGG",
+      "signerId": "review-agent1107.agentpay-owner-20261102-adf970.testnet",
+      "receiverId": "review1107.agentpay-owner-20261102-adf970.testnet",
+      "value": {
+        "session_id": "9f3553f7-be94-4548-b6dc-be22a06d36e6",
+        "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+        "quote_hash": "c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1794055834",
+        "closed_at": null,
+        "earned": "0",
+        "refunded": "0"
+      },
+      "receiptFailures": [],
+      "receiptIds": [
+        "6xSyGtMwk8gBGfuNdjFi8xkesytHYZZKT7vnGRVuGx8P",
+        "2Ndkn6iFRwDJGimkjwEFSbnRGLpvJpg1Z37HKpxLMYAn"
+      ],
+      "logs": [
+        "EVENT_JSON:{\"data\":[{\"closed_at\":null,\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"0\",\"quote_hash\":\"c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1\",\"rate\":\"10\",\"recipient_id\":\"agentpay-provider-20261102-b685bb.testnet\",\"refunded\":\"0\",\"session_id\":\"9f3553f7-be94-4548-b6dc-be22a06d36e6\",\"started_at\":\"1794055834\"}],\"event\":\"opened\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+      ]
+    },
+    {
+      "hash": "2vnefbuitrVoVpNm9SRm75n5dV9YN7nM16DuYyfcQsEw",
+      "signerId": "review-agent1107.agentpay-owner-20261102-adf970.testnet",
+      "receiverId": "review1107.agentpay-owner-20261102-adf970.testnet",
+      "value": {
+        "session_id": "9f3553f7-be94-4548-b6dc-be22a06d36e6",
+        "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+        "quote_hash": "c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1794055834",
+        "closed_at": "1794055863",
+        "earned": "290",
+        "refunded": "9710"
+      },
+      "receiptFailures": [],
+      "receiptIds": [
+        "8WT8zDnN59NvgKdJ7tEKR6oegee19yaktUXw8EcaWo6Y",
+        "6A27F9MGVUm5w7yPczzChXsFk6xii7DmiTp4vVZVucXM"
+      ],
+      "logs": [
+        "EVENT_JSON:{\"data\":[{\"closed_at\":\"1794055863\",\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"290\",\"quote_hash\":\"c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1\",\"rate\":\"10\",\"recipient_id\":\"agentpay-provider-20261102-b685bb.testnet\",\"refunded\":\"9710\",\"session_id\":\"9f3553f7-be94-4548-b6dc-be22a06d36e6\",\"started_at\":\"1794055834\"}],\"event\":\"closed\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+      ]
+    },
+    {
+      "hash": "8HEFg1A2yBWfXTa3AdenDgNupyt2j3EJaCybgYYci42h",
+      "signerId": "review-agent1107.agentpay-owner-20261102-adf970.testnet",
+      "receiverId": "review1107.agentpay-owner-20261102-adf970.testnet",
+      "value": {
+        "session_id": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+        "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+        "quote_hash": "c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1794055874",
+        "closed_at": null,
+        "earned": "0",
+        "refunded": "0"
+      },
+      "receiptFailures": [],
+      "receiptIds": [
+        "C5caVntM4eAMwzK8e7aWrfSkdK19tYahAa9KL14a8Bxw",
+        "FxHRqQrfSVyieaDSsFF8bJ1bLme5ZddRfJvXE6MjrGTy"
+      ],
+      "logs": [
+        "EVENT_JSON:{\"data\":[{\"closed_at\":null,\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"0\",\"quote_hash\":\"c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1\",\"rate\":\"10\",\"recipient_id\":\"agentpay-provider-20261102-b685bb.testnet\",\"refunded\":\"0\",\"session_id\":\"4eca839d-5fba-47e8-b791-f036a39a7b00\",\"started_at\":\"1794055874\"}],\"event\":\"opened\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+      ]
+    },
+    {
+      "hash": "7Nkpr5ViXUyKLrBMe32yCVXrYGteLLjQNEEAnmBWnavM",
+      "signerId": "review-agent1107.agentpay-owner-20261102-adf970.testnet",
+      "receiverId": "review1107.agentpay-owner-20261102-adf970.testnet",
+      "value": {
+        "session_id": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+        "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+        "quote_hash": "c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1794055874",
+        "closed_at": "1794055906",
+        "earned": "320",
+        "refunded": "9680"
+      },
+      "receiptFailures": [],
+      "receiptIds": [
+        "2FV135AvcnVC37uBnV5dhHD8VvgNzrfTz9Ctw5vpo8Qx",
+        "466mGQ76V8bNvDdCYWRLYbgRwJZ9EBRYHHTDjLwc2cWQ"
+      ],
+      "logs": [
+        "EVENT_JSON:{\"data\":[{\"closed_at\":\"1794055906\",\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"320\",\"quote_hash\":\"c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1\",\"rate\":\"10\",\"recipient_id\":\"agentpay-provider-20261102-b685bb.testnet\",\"refunded\":\"9680\",\"session_id\":\"4eca839d-5fba-47e8-b791-f036a39a7b00\",\"started_at\":\"1794055874\"}],\"event\":\"closed\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "agentMode": "mixed",
+      "model": "hf.co/unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_M",
+      "message": "Local model and operator-selected local service; public NEAR testnet settlement. Operator separately injects failures and tests contract rejection.",
+      "type": "started",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 1,
+      "at": "2026-11-07T12:49:50.589Z",
+      "previousHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "eventHash": "b732f2b284d3a14a9606d016b9bfd3e8d4700b309cb3ce17cf60fd4f2a8ccbca"
+    },
+    {
+      "decision": "DENY",
+      "reason": "RATE_LIMIT",
+      "actor": "operator",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 2,
+      "at": "2026-11-07T12:49:53.937Z",
+      "previousHash": "b732f2b284d3a14a9606d016b9bfd3e8d4700b309cb3ce17cf60fd4f2a8ccbca",
+      "eventHash": "26bea11f9934ef1759b5e7b9daf5deb1cdc98ed22d5133852cb9220b583e9f10"
+    },
+    {
+      "decision": "DENY",
+      "reason": "RATE_LIMIT",
+      "enforcement": "NEAR contract: correctly policy-signed invalid proposal rejected",
+      "failedTransactionHash": "BCSoxUpKCD5qZdQKuoEoKWVcKnPL13qFRz6DorP3ACYi",
+      "actor": "operator",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 3,
+      "at": "2026-11-07T12:49:59.480Z",
+      "previousHash": "26bea11f9934ef1759b5e7b9daf5deb1cdc98ed22d5133852cb9220b583e9f10",
+      "eventHash": "e6aa25308a53f8db113ef53574c37c32bf5c793d979eabdde214d0229903023d"
+    },
+    {
+      "decision": "DENY",
+      "reason": "RECIPIENT_DENIED",
+      "enforcement": "NEAR contract: correctly policy-signed invalid proposal rejected",
+      "failedTransactionHash": "3eyNseHB1ju2csEzShBVn6EEBr7pmbtcxkrzgCCnzT4b",
+      "actor": "operator",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 4,
+      "at": "2026-11-07T12:50:03.859Z",
+      "previousHash": "e6aa25308a53f8db113ef53574c37c32bf5c793d979eabdde214d0229903023d",
+      "eventHash": "0b030aa9d19d661b58a8f8c70f7fedbbd807c8dc7214fc20dc2980b7d08d4052"
+    },
+    {
+      "tool": "agentpay_fetch",
+      "actor": "model",
+      "type": "model",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 5,
+      "at": "2026-11-07T12:51:06.495Z",
+      "previousHash": "0b030aa9d19d661b58a8f8c70f7fedbbd807c8dc7214fc20dc2980b7d08d4052",
+      "eventHash": "2590a0cff933520dcfcfbf7d00b4198f4e665b0e9e25866a348a619fc4e82653"
+    },
+    {
+      "decision": "OPEN",
+      "reason": "WITHIN_POLICY",
+      "actor": "model",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 6,
+      "at": "2026-11-07T12:51:06.499Z",
+      "previousHash": "2590a0cff933520dcfcfbf7d00b4198f4e665b0e9e25866a348a619fc4e82653",
+      "eventHash": "930649f3db64d7024f5de8c3e1a80ecfbb72bc913000be3d296e3afc344275d3"
+    },
+    {
+      "decision": "CONTINUE",
+      "sessionId": "9f3553f7-be94-4548-b6dc-be22a06d36e6",
+      "actor": "model",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 7,
+      "at": "2026-11-07T12:51:06.499Z",
+      "previousHash": "930649f3db64d7024f5de8c3e1a80ecfbb72bc913000be3d296e3afc344275d3",
+      "eventHash": "ed1592e31ff6e815a86aff06baaec2cb6ce47e65dc599e10b2f0422b77343687"
+    },
+    {
+      "hash": "4Wnj2Yxwubbm1D45Bo2V6cR93jZM9hdZJSPj1hkxRXGG",
+      "signerId": "review-agent1107.agentpay-owner-20261102-adf970.testnet",
+      "receiverId": "review1107.agentpay-owner-20261102-adf970.testnet",
+      "value": {
+        "session_id": "9f3553f7-be94-4548-b6dc-be22a06d36e6",
+        "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+        "quote_hash": "c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1794055834",
+        "closed_at": null,
+        "earned": "0",
+        "refunded": "0"
+      },
+      "receiptFailures": [],
+      "receiptIds": [
+        "6xSyGtMwk8gBGfuNdjFi8xkesytHYZZKT7vnGRVuGx8P",
+        "2Ndkn6iFRwDJGimkjwEFSbnRGLpvJpg1Z37HKpxLMYAn"
+      ],
+      "logs": [
+        "EVENT_JSON:{\"data\":[{\"closed_at\":null,\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"0\",\"quote_hash\":\"c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1\",\"rate\":\"10\",\"recipient_id\":\"agentpay-provider-20261102-b685bb.testnet\",\"refunded\":\"0\",\"session_id\":\"9f3553f7-be94-4548-b6dc-be22a06d36e6\",\"started_at\":\"1794055834\"}],\"event\":\"opened\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+      ],
+      "action": "OPEN",
+      "type": "transaction",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 8,
+      "at": "2026-11-07T12:51:06.499Z",
+      "previousHash": "ed1592e31ff6e815a86aff06baaec2cb6ce47e65dc599e10b2f0422b77343687",
+      "eventHash": "948e63d9118fb0b1cd7d2a68330bc7910c3d621d890d3be14a64fd7dcf93d3d8"
+    },
+    {
+      "decision": "CONTINUE",
+      "reason": "REQUEST_WITHIN_POLICY",
+      "sessionId": "9f3553f7-be94-4548-b6dc-be22a06d36e6",
+      "actor": "model",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 9,
+      "at": "2026-11-07T12:51:06.500Z",
+      "previousHash": "948e63d9118fb0b1cd7d2a68330bc7910c3d621d890d3be14a64fd7dcf93d3d8",
+      "eventHash": "4514b6de2412999744a19ef30aad6bdbdd0f79cebf86a94e1b2efd234c6d92fe"
+    },
+    {
+      "status": 200,
+      "count": 1,
+      "sessionId": "9f3553f7-be94-4548-b6dc-be22a06d36e6",
+      "body": {
+        "request": 1,
+        "session_id": "9f3553f7-be94-4548-b6dc-be22a06d36e6",
+        "source": "AgentPay repository analysis",
+        "generatedAt": "2026-11-07T12:50:39.586Z",
+        "fingerprint": "4decb91770193cda806affbcd49114dc923b190a4714197d7eded729b448fa75",
+        "scope": "Bounded syntax-based JS/TS heuristics, not a security audit or dataflow analysis. Other source languages contribute inventory only. No source code is executed. Findings need human review; absence of findings does not establish safety.",
+        "coverage": {
+          "files": 114,
+          "lines": 21515,
+          "bytes": 795429,
+          "skipped": 0,
+          "limited": false,
+          "maxFiles": 500,
+          "maxBytes": 3000000,
+          "maxFileBytes": 200000,
+          "entriesVisited": 308,
+          "maxEntries": 10000,
+          "maxFindings": 300,
+          "findingLimitReached": false
+        },
+        "view": "overview",
+        "languages": {
+          ".ts": 68,
+          ".json": 12,
+          ".tsx": 20,
+          ".mjs": 14
+        },
+        "findingCounts": {
+          "high": 0,
+          "medium": 42,
+          "info": 0
+        },
+        "dependencyCount": 91
+      },
+      "actor": "model",
+      "type": "request",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 10,
+      "at": "2026-11-07T12:51:06.501Z",
+      "previousHash": "4514b6de2412999744a19ef30aad6bdbdd0f79cebf86a94e1b2efd234c6d92fe",
+      "eventHash": "bac69300a531c3954cbb8ea4792659bb11535ff3db1683cb53ec192768ae1115"
+    },
+    {
+      "tool": "agentpay_fetch",
+      "actor": "model",
+      "type": "model",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 11,
+      "at": "2026-11-07T12:51:06.502Z",
+      "previousHash": "bac69300a531c3954cbb8ea4792659bb11535ff3db1683cb53ec192768ae1115",
+      "eventHash": "226b2d0672f9e3c0b4c587dda26b2e96f11f08dfba495ee5240319a2d5052994"
+    },
+    {
+      "decision": "CONTINUE",
+      "reason": "SERVICE_HEALTHY_OR_WITHIN_FAILURE_LIMIT",
+      "sessionId": "9f3553f7-be94-4548-b6dc-be22a06d36e6",
+      "actor": "model",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 12,
+      "at": "2026-11-07T12:51:06.502Z",
+      "previousHash": "226b2d0672f9e3c0b4c587dda26b2e96f11f08dfba495ee5240319a2d5052994",
+      "eventHash": "29bac9cb8dc1a9b701cbe96b652fb07fa0c77d0d2d54793aeb06706ab43f609a"
+    },
+    {
+      "decision": "CONTINUE",
+      "reason": "REQUEST_WITHIN_POLICY",
+      "sessionId": "9f3553f7-be94-4548-b6dc-be22a06d36e6",
+      "actor": "model",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 13,
+      "at": "2026-11-07T12:51:06.502Z",
+      "previousHash": "29bac9cb8dc1a9b701cbe96b652fb07fa0c77d0d2d54793aeb06706ab43f609a",
+      "eventHash": "ade8ba3e4b329b25a95d9124917f3764ac6a541abe739b0ac16965ca4b83d8f4"
+    },
+    {
+      "status": 200,
+      "count": 2,
+      "sessionId": "9f3553f7-be94-4548-b6dc-be22a06d36e6",
+      "body": {
+        "request": 2,
+        "session_id": "9f3553f7-be94-4548-b6dc-be22a06d36e6",
+        "source": "AgentPay repository analysis",
+        "generatedAt": "2026-11-07T12:50:46.854Z",
+        "fingerprint": "4decb91770193cda806affbcd49114dc923b190a4714197d7eded729b448fa75",
+        "scope": "Bounded syntax-based JS/TS heuristics, not a security audit or dataflow analysis. Other source languages contribute inventory only. No source code is executed. Findings need human review; absence of findings does not establish safety.",
+        "coverage": {
+          "files": 114,
+          "lines": 21515,
+          "bytes": 795429,
+          "skipped": 0,
+          "limited": false,
+          "maxFiles": 500,
+          "maxBytes": 3000000,
+          "maxFileBytes": 200000,
+          "entriesVisited": 308,
+          "maxEntries": 10000,
+          "maxFindings": 300,
+          "findingLimitReached": false
+        },
+        "view": "findings",
+        "findings": [
+          {
+            "id": "298b2c4d0582d193",
+            "rule": "fetch-deadline",
+            "severity": "medium",
+            "file": "apps/memforks-chat/src/components/chat-app.tsx",
+            "line": 100,
+            "title": "Fetch deadline needs review",
+            "recommendation": "No explicit AbortSignal is present at this call. Check whether the Request already carries a deadline; otherwise add AbortSignal.timeout or an owner-controlled cancellation signal so a stalled service cannot hold the operation indefinitely."
+          },
+          {
+            "id": "495b91a192dbdea7",
+            "rule": "fetch-deadline",
+            "severity": "medium",
+            "file": "apps/memforks-chat/src/components/chat-app.tsx",
+            "line": 170,
+            "title": "Fetch deadline needs review",
+            "recommendation": "No explicit AbortSignal is present at this call. Check whether the Request already carries a deadline; otherwise add AbortSignal.timeout or an owner-controlled cancellation signal so a stalled service cannot hold the operation indefinitely."
+          },
+          {
+            "id": "f5e92c31f5ded98e",
+            "rule": "fetch-deadline",
+            "severity": "medium",
+            "file": "apps/memforks-chat/src/components/diff-panel.tsx",
+            "line": 40,
+            "title": "Fetch deadline needs review",
+            "recommendation": "No explicit AbortSignal is present at this call. Check whether the Request already carries a deadline; otherwise add AbortSignal.timeout or an owner-controlled cancellation signal so a stalled service cannot hold the operation indefinitely."
+          },
+          {
+            "id": "3d8e62ae96fa33f4",
+            "rule": "fetch-deadline",
+            "severity": "medium",
+            "file": "apps/memforks-research/src/agents/tools.ts",
+            "line": 17,
+            "title": "Fetch deadline needs review",
+            "recommendation": "No explicit AbortSignal is present at this call. Check whether the Request already carries a deadline; otherwise add AbortSignal.timeout or an owner-controlled cancellation signal so a stalled service cannot hold the operation indefinitely."
+          },
+          {
+            "id": "61314094d2585387",
+            "rule": "shell-execution",
+            "severity": "medium",
+            "file": "packages/cli/scripts/bundle-ui.mjs",
+            "line": 27,
+            "title": "Shell execution needs input review",
+            "recommendation": "Prefer execFile with a fixed executable and separate arguments; inspect any user-controlled command interpolation."
+          }
+        ],
+        "matching": 42,
+        "offset": 0,
+        "limit": 5,
+        "truncated": true
+      },
+      "actor": "model",
+      "type": "request",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 14,
+      "at": "2026-11-07T12:51:06.502Z",
+      "previousHash": "ade8ba3e4b329b25a95d9124917f3764ac6a541abe739b0ac16965ca4b83d8f4",
+      "eventHash": "157e73df10040aab47e9920680364afd41ba69a17732a6c0f8f98c3e0bada27c"
+    },
+    {
+      "text": "Based on the repository analysis, here are three priority review items identified from the medium-severity findings:\n\n### 1. `apps/memforks-chat/src/components/chat-app.tsx` (Line 100 & 170)\n*   **Issue:** Missing fetch deadline/timeout.\n*   **Priority:** High (potential for stalled UI/service operations).\n*   **Suggested Fix:** Implement an `AbortSignal` for these fetch calls. You can use `AbortSignal.timeout(ms)` to provide a hard deadline or pass a signal from a controller that allows the component to cancel the request upon unmounting. This prevents a stalled service from holding the application state indefinitely.\n\n### 2. `apps/memforks-chat/src/components/diff-panel.tsx` (Line 40)\n*   **Issue:** Missing fetch deadline/timeout.\n*   **Priority:** Medium.\n*   **Suggested Fix:** Similar to the chat app, ensure the fetch call includes an `AbortSignal`. This ensures that if the diff generation service hangs, the UI can recover or time out rather than remaining in a loading state.\n\n### 3. `packages/cli/scripts/bundle-ui.mjs` (Line 27)\n*   **Issue:** Potentially unsafe shell execution.\n*   **Priority:** Medium (security/robustness).\n*   **Suggested Fix:** Review how commands are being executed. Instead of using generic shell execution methods (like `child_process.exec`) which can be vulnerable to command injection if any part of the command is dynamically constructed, prefer `child_process.execFile`. This allows you to pass a fixed executable and an array of arguments, minimizing the risk of malicious interpolation.",
+      "actor": "model",
+      "type": "summary",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 15,
+      "at": "2026-11-07T12:51:06.502Z",
+      "previousHash": "157e73df10040aab47e9920680364afd41ba69a17732a6c0f8f98c3e0bada27c",
+      "eventHash": "eabec6255d11d703328b4f898300747402d3c03e2513de941ae1793adb23bce0"
+    },
+    {
+      "hash": "2vnefbuitrVoVpNm9SRm75n5dV9YN7nM16DuYyfcQsEw",
+      "signerId": "review-agent1107.agentpay-owner-20261102-adf970.testnet",
+      "receiverId": "review1107.agentpay-owner-20261102-adf970.testnet",
+      "value": {
+        "session_id": "9f3553f7-be94-4548-b6dc-be22a06d36e6",
+        "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+        "quote_hash": "c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1794055834",
+        "closed_at": "1794055863",
+        "earned": "290",
+        "refunded": "9710"
+      },
+      "receiptFailures": [],
+      "receiptIds": [
+        "8WT8zDnN59NvgKdJ7tEKR6oegee19yaktUXw8EcaWo6Y",
+        "6A27F9MGVUm5w7yPczzChXsFk6xii7DmiTp4vVZVucXM"
+      ],
+      "logs": [
+        "EVENT_JSON:{\"data\":[{\"closed_at\":\"1794055863\",\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"290\",\"quote_hash\":\"c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1\",\"rate\":\"10\",\"recipient_id\":\"agentpay-provider-20261102-b685bb.testnet\",\"refunded\":\"9710\",\"session_id\":\"9f3553f7-be94-4548-b6dc-be22a06d36e6\",\"started_at\":\"1794055834\"}],\"event\":\"closed\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+      ],
+      "action": "CLOSE",
+      "reason": "AGENT_EXIT",
+      "type": "transaction",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 16,
+      "at": "2026-11-07T12:51:06.503Z",
+      "previousHash": "eabec6255d11d703328b4f898300747402d3c03e2513de941ae1793adb23bce0",
+      "eventHash": "e6d8c793a13b2eb35554c55ce107787e26ee912a73e18ad22c2c0f85734b9e1f"
+    },
+    {
+      "stream": {
+        "session_id": "9f3553f7-be94-4548-b6dc-be22a06d36e6",
+        "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+        "quote_hash": "c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1794055834",
+        "closed_at": "1794055863",
+        "earned": "290",
+        "refunded": "9710"
+      },
+      "type": "settled",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 17,
+      "at": "2026-11-07T12:51:06.503Z",
+      "previousHash": "e6d8c793a13b2eb35554c55ce107787e26ee912a73e18ad22c2c0f85734b9e1f",
+      "eventHash": "72cb552c07d805ddfe3c0faab181f23645e4e99fc7f014f87de6f412e2a6da5b"
+    },
+    {
+      "successfulRequests": 2,
+      "extraPaymentTransactions": 0,
+      "sessionId": "9f3553f7-be94-4548-b6dc-be22a06d36e6",
+      "actor": "model",
+      "type": "reuse_verified",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 18,
+      "at": "2026-11-07T12:51:06.504Z",
+      "previousHash": "72cb552c07d805ddfe3c0faab181f23645e4e99fc7f014f87de6f412e2a6da5b",
+      "eventHash": "2623573f56b266421388a47ee2ef7c2f7436b3d9ffb951d72a0136695c2e1728"
+    },
+    {
+      "decision": "OPEN",
+      "reason": "WITHIN_POLICY",
+      "actor": "operator",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 19,
+      "at": "2026-11-07T12:51:19.947Z",
+      "previousHash": "2623573f56b266421388a47ee2ef7c2f7436b3d9ffb951d72a0136695c2e1728",
+      "eventHash": "cccf4abd21364178a04f72727a825edf8f06eb85b15c443c34897649d02cdfb9"
+    },
+    {
+      "decision": "CONTINUE",
+      "sessionId": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+      "actor": "operator",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 20,
+      "at": "2026-11-07T12:51:19.947Z",
+      "previousHash": "cccf4abd21364178a04f72727a825edf8f06eb85b15c443c34897649d02cdfb9",
+      "eventHash": "6768859a8b80727aec1923a4169f1558b7ecb475f7bca046620b685a921592e9"
+    },
+    {
+      "hash": "8HEFg1A2yBWfXTa3AdenDgNupyt2j3EJaCybgYYci42h",
+      "signerId": "review-agent1107.agentpay-owner-20261102-adf970.testnet",
+      "receiverId": "review1107.agentpay-owner-20261102-adf970.testnet",
+      "value": {
+        "session_id": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+        "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+        "quote_hash": "c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1794055874",
+        "closed_at": null,
+        "earned": "0",
+        "refunded": "0"
+      },
+      "receiptFailures": [],
+      "receiptIds": [
+        "C5caVntM4eAMwzK8e7aWrfSkdK19tYahAa9KL14a8Bxw",
+        "FxHRqQrfSVyieaDSsFF8bJ1bLme5ZddRfJvXE6MjrGTy"
+      ],
+      "logs": [
+        "EVENT_JSON:{\"data\":[{\"closed_at\":null,\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"0\",\"quote_hash\":\"c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1\",\"rate\":\"10\",\"recipient_id\":\"agentpay-provider-20261102-b685bb.testnet\",\"refunded\":\"0\",\"session_id\":\"4eca839d-5fba-47e8-b791-f036a39a7b00\",\"started_at\":\"1794055874\"}],\"event\":\"opened\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+      ],
+      "action": "OPEN",
+      "type": "transaction",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 21,
+      "at": "2026-11-07T12:51:19.947Z",
+      "previousHash": "6768859a8b80727aec1923a4169f1558b7ecb475f7bca046620b685a921592e9",
+      "eventHash": "89a8b872d04b9834d748b7052cdfb708b3c81186703bc707dfe6c30be3422da1"
+    },
+    {
+      "decision": "CONTINUE",
+      "reason": "REQUEST_WITHIN_POLICY",
+      "sessionId": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+      "actor": "operator",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 22,
+      "at": "2026-11-07T12:51:19.947Z",
+      "previousHash": "89a8b872d04b9834d748b7052cdfb708b3c81186703bc707dfe6c30be3422da1",
+      "eventHash": "085397f0ca8f6167a9b8291e9f1d7f28226ebb0368a152b904a0c5b62438fdd3"
+    },
+    {
+      "status": 200,
+      "count": 1,
+      "sessionId": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+      "body": {
+        "request": 1,
+        "session_id": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+        "source": "AgentPay repository analysis",
+        "generatedAt": "2026-11-07T12:51:18.439Z",
+        "fingerprint": "4decb91770193cda806affbcd49114dc923b190a4714197d7eded729b448fa75",
+        "scope": "Bounded syntax-based JS/TS heuristics, not a security audit or dataflow analysis. Other source languages contribute inventory only. No source code is executed. Findings need human review; absence of findings does not establish safety.",
+        "coverage": {
+          "files": 114,
+          "lines": 21515,
+          "bytes": 795429,
+          "skipped": 0,
+          "limited": false,
+          "maxFiles": 500,
+          "maxBytes": 3000000,
+          "maxFileBytes": 200000,
+          "entriesVisited": 308,
+          "maxEntries": 10000,
+          "maxFindings": 300,
+          "findingLimitReached": false
+        },
+        "view": "overview",
+        "languages": {
+          ".ts": 68,
+          ".json": 12,
+          ".tsx": 20,
+          ".mjs": 14
+        },
+        "findingCounts": {
+          "high": 0,
+          "medium": 42,
+          "info": 0
+        },
+        "dependencyCount": 91
+      },
+      "actor": "operator",
+      "type": "request",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 23,
+      "at": "2026-11-07T12:51:19.947Z",
+      "previousHash": "085397f0ca8f6167a9b8291e9f1d7f28226ebb0368a152b904a0c5b62438fdd3",
+      "eventHash": "03aba9cc68094ac955f0b2d0fca03ec9d6b863ccafbdd5089ed863ce67d8bf8c"
+    },
+    {
+      "injected": true,
+      "message": "Operator injected paid-request HTTP 503s. Health probes remain healthy.",
+      "actor": "operator",
+      "type": "outage",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 24,
+      "at": "2026-11-07T12:51:20.050Z",
+      "previousHash": "03aba9cc68094ac955f0b2d0fca03ec9d6b863ccafbdd5089ed863ce67d8bf8c",
+      "eventHash": "bcec1d206f32103dfe85434754501fc2ef8c118d8163b9593985767c60452fbf"
+    },
+    {
+      "decision": "CONTINUE",
+      "reason": "SERVICE_HEALTHY_OR_WITHIN_FAILURE_LIMIT",
+      "sessionId": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+      "actor": "operator",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 25,
+      "at": "2026-11-07T12:51:26.268Z",
+      "previousHash": "bcec1d206f32103dfe85434754501fc2ef8c118d8163b9593985767c60452fbf",
+      "eventHash": "e034fbb5b84c1ac09bf10be86411b77aed4cd4fa3ef53aa60b619a52647e994e"
+    },
+    {
+      "decision": "CONTINUE",
+      "reason": "REQUEST_WITHIN_POLICY",
+      "sessionId": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+      "actor": "operator",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 26,
+      "at": "2026-11-07T12:51:26.269Z",
+      "previousHash": "e034fbb5b84c1ac09bf10be86411b77aed4cd4fa3ef53aa60b619a52647e994e",
+      "eventHash": "92829b39609b224e8fdd2efc9c62efe1664545c3546332b16e94578ddf5c0654"
+    },
+    {
+      "status": 503,
+      "body": {
+        "error": "DEMO_OUTAGE",
+        "injected": true
+      },
+      "actor": "operator",
+      "type": "request",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 27,
+      "at": "2026-11-07T12:51:26.269Z",
+      "previousHash": "92829b39609b224e8fdd2efc9c62efe1664545c3546332b16e94578ddf5c0654",
+      "eventHash": "1cffc4424fcaaa2aec74c63c1a0cf9e8ee7870044897fb63e441dccb3bb48cb3"
+    },
+    {
+      "decision": "CONTINUE",
+      "reason": "SERVICE_HEALTHY_OR_WITHIN_FAILURE_LIMIT",
+      "sessionId": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+      "actor": "operator",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 28,
+      "at": "2026-11-07T12:51:34.679Z",
+      "previousHash": "1cffc4424fcaaa2aec74c63c1a0cf9e8ee7870044897fb63e441dccb3bb48cb3",
+      "eventHash": "c3f9051537e73bb9464cea1e1b2689838c3e470cc432f09063b80add1e77dcb5"
+    },
+    {
+      "decision": "CONTINUE",
+      "reason": "REQUEST_WITHIN_POLICY",
+      "sessionId": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+      "actor": "operator",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 29,
+      "at": "2026-11-07T12:51:34.680Z",
+      "previousHash": "c3f9051537e73bb9464cea1e1b2689838c3e470cc432f09063b80add1e77dcb5",
+      "eventHash": "f2914f76a313f48a27ff624ef9f15b7d293ec3e38799f6f5eef6069c928dbe2d"
+    },
+    {
+      "status": 503,
+      "body": {
+        "error": "DEMO_OUTAGE",
+        "injected": true
+      },
+      "actor": "operator",
+      "type": "request",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 30,
+      "at": "2026-11-07T12:51:34.680Z",
+      "previousHash": "f2914f76a313f48a27ff624ef9f15b7d293ec3e38799f6f5eef6069c928dbe2d",
+      "eventHash": "2db7058bff68bbaaaf8ddea933fcd5bf876adfd2b7a680498910f04f10f865cc"
+    },
+    {
+      "decision": "CONTINUE",
+      "reason": "SERVICE_HEALTHY_OR_WITHIN_FAILURE_LIMIT",
+      "sessionId": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+      "actor": "operator",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 31,
+      "at": "2026-11-07T12:51:48.817Z",
+      "previousHash": "2db7058bff68bbaaaf8ddea933fcd5bf876adfd2b7a680498910f04f10f865cc",
+      "eventHash": "c53b993e40c2905ed59beccbbe2c274cc482941e5fc5a7e14fb0a559743a156c"
+    },
+    {
+      "decision": "CLOSE",
+      "reason": "SERVICE_5XX_LIMIT",
+      "sessionId": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+      "actor": "operator",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 32,
+      "at": "2026-11-07T12:51:48.817Z",
+      "previousHash": "c53b993e40c2905ed59beccbbe2c274cc482941e5fc5a7e14fb0a559743a156c",
+      "eventHash": "97e1dac029c759d7ac3394d581b205d098633f3ea9b00118f25d09130c1fa7ef"
+    },
+    {
+      "decision": "CLOSE",
+      "reason": "SERVICE_5XX_LIMIT",
+      "sessionId": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+      "actor": "operator",
+      "type": "policy",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 33,
+      "at": "2026-11-07T12:51:48.817Z",
+      "previousHash": "97e1dac029c759d7ac3394d581b205d098633f3ea9b00118f25d09130c1fa7ef",
+      "eventHash": "5187dd858ea00fbb72a9013f94f9a3740b6d445706b24a387328c22d1d454dd0"
+    },
+    {
+      "hash": "7Nkpr5ViXUyKLrBMe32yCVXrYGteLLjQNEEAnmBWnavM",
+      "signerId": "review-agent1107.agentpay-owner-20261102-adf970.testnet",
+      "receiverId": "review1107.agentpay-owner-20261102-adf970.testnet",
+      "value": {
+        "session_id": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+        "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+        "quote_hash": "c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1794055874",
+        "closed_at": "1794055906",
+        "earned": "320",
+        "refunded": "9680"
+      },
+      "receiptFailures": [],
+      "receiptIds": [
+        "2FV135AvcnVC37uBnV5dhHD8VvgNzrfTz9Ctw5vpo8Qx",
+        "466mGQ76V8bNvDdCYWRLYbgRwJZ9EBRYHHTDjLwc2cWQ"
+      ],
+      "logs": [
+        "EVENT_JSON:{\"data\":[{\"closed_at\":\"1794055906\",\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"320\",\"quote_hash\":\"c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1\",\"rate\":\"10\",\"recipient_id\":\"agentpay-provider-20261102-b685bb.testnet\",\"refunded\":\"9680\",\"session_id\":\"4eca839d-5fba-47e8-b791-f036a39a7b00\",\"started_at\":\"1794055874\"}],\"event\":\"closed\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+      ],
+      "action": "CLOSE",
+      "reason": "SERVICE_5XX_LIMIT",
+      "type": "transaction",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 34,
+      "at": "2026-11-07T12:51:48.817Z",
+      "previousHash": "5187dd858ea00fbb72a9013f94f9a3740b6d445706b24a387328c22d1d454dd0",
+      "eventHash": "153d42776c6b446d8fb0bc886bf4cdf17852288ff59ed180cf30bc4d6526c7d2"
+    },
+    {
+      "stream": {
+        "session_id": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+        "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+        "quote_hash": "c04fa8c9b0abb5630b3122c82491ff60e8a7d7a75f5bf1fbc6da7f6991e506e1",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1794055874",
+        "closed_at": "1794055906",
+        "earned": "320",
+        "refunded": "9680"
+      },
+      "type": "settled",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 35,
+      "at": "2026-11-07T12:51:48.817Z",
+      "previousHash": "153d42776c6b446d8fb0bc886bf4cdf17852288ff59ed180cf30bc4d6526c7d2",
+      "eventHash": "22d8cae2d9956e9fcf7fc24f6583dac5558f12742d49439b8f6d18a798ad1262"
+    },
+    {
+      "status": 503,
+      "body": {
+        "error": "DEMO_OUTAGE",
+        "injected": true
+      },
+      "actor": "operator",
+      "type": "request",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 36,
+      "at": "2026-11-07T12:51:48.817Z",
+      "previousHash": "22d8cae2d9956e9fcf7fc24f6583dac5558f12742d49439b8f6d18a798ad1262",
+      "eventHash": "271ee8b54a80df1e4635d56afbad05fe41b07e4a8a3e8992df3e30f718cac9ec"
+    },
+    {
+      "ok": true,
+      "type": "finished",
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "sequence": 37,
+      "at": "2026-11-07T12:51:57.663Z",
+      "previousHash": "271ee8b54a80df1e4635d56afbad05fe41b07e4a8a3e8992df3e30f718cac9ec",
+      "eventHash": "e50ffca4884de495d21c4ffdb1bffbe4fc680e57706adf7c88723e5a3ffdb05b"
+    }
+  ],
+  "results": {
+    "9f3553f7-be94-4548-b6dc-be22a06d36e6": {
+      "sessionId": "9f3553f7-be94-4548-b6dc-be22a06d36e6",
+      "providerPayment": "claimable"
+    },
+    "4eca839d-5fba-47e8-b791-f036a39a7b00": {
+      "sessionId": "4eca839d-5fba-47e8-b791-f036a39a7b00",
+      "providerPayment": "claimable"
+    }
+  },
+  "simulation": false,
+  "vaultId": "review1107.agentpay-owner-20261102-adf970.testnet",
+  "runtimePolicy": {
+    "maxConsecutive5xx": 3,
+    "maxConsecutiveTransportErrors": 2,
+    "maxConsecutiveHealthFailures": 2,
+    "idleTimeoutSeconds": 180,
+    "maxRequestsPerStream": 20,
+    "healthPollSeconds": 10,
+    "failureCooldownSeconds": 1,
+    "reuseStream": true,
+    "closeOnExit": true
+  },
+  "service": {
+    "source": "Repository analysis",
+    "repositoryName": "agentpay-review-memforks",
+    "serviceUrl": "http://127.0.0.1:49524",
+    "pricing": {
+      "basicRateRawPerSecond": "10",
+      "premiumRateRawPerSecond": "200",
+      "leaseSeconds": 1000
+    },
+    "scope": "Local model and operator-selected local service; public NEAR testnet settlement. Operator separately injects failures and tests contract rejection."
+  },
+  "agent": {
+    "model": "hf.co/unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_M",
+    "provider": "Ollama local",
+    "apiKeyUsed": false
+  },
+  "providerPayout": {
+    "hash": "61839ZyxuhpKJX1Jm2mSo3j9h6ihCic8ABCGyCUnNE2d",
+    "signerId": "agentpay-provider-20261102-b685bb.testnet",
+    "receiverId": "review1107.agentpay-owner-20261102-adf970.testnet",
+    "value": true,
+    "receiptFailures": [],
+    "receiptIds": [
+      "9h2e7qoTb3DKZiH5ZPxNNWbPCJq6B3hzdCX13mro76P9",
+      "DRkL5wpUPL7hjWQcX6U25u8rwbU6wd45iact2N5neYQd",
+      "tiv3XejPkmA131gKubFPy6jsnJG9krrsMfUkHPRHs2z",
+      "2FdqM5EBsMooeq7HccgAcddBBAqY3EYR6JbwmgfBT8AY",
+      "3JaZJhEwD3kFwjWQWEWWgjKnDcuWfLBqVbckDnJj5ibY",
+      "GMrWyvL5VrF7Xfn6AWJiWoqevsR1FCs7aiSwYrBp23d2"
+    ],
+    "logs": [
+      "EVENT_JSON:{\"standard\":\"nep141\",\"version\":\"1.0.0\",\"event\":\"ft_transfer\",\"data\":[{\"old_owner_id\":\"review1107.agentpay-owner-20261102-adf970.testnet\",\"new_owner_id\":\"agentpay-provider-20261102-b685bb.testnet\",\"amount\":\"610\",\"memo\":\"AgentPay payout\"}]}",
+      "EVENT_JSON:{\"data\":[{\"amount\":\"610\",\"payout_id\":\"0\",\"receiver_id\":\"agentpay-provider-20261102-b685bb.testnet\",\"success\":true}],\"event\":\"payout\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+    ]
+  },
+  "finalVault": {
+    "version": "2.0.0",
+    "owner_id": "agentpay-owner-20261102-adf970.testnet",
+    "token_id": "3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af",
+    "agent_id": "review-agent1107.agentpay-owner-20261102-adf970.testnet",
+    "agent_key": "ed25519:EKe43EMb5o36nTySgTWVVSK8y9iGcT6DCxYNtD7x6rHo",
+    "policy_key": "ed25519:Borfo8aDTrppPdcq3mdeP1P6oELrhZSMohQC4CRDHeKa",
+    "policy": {
+      "budget": "50000",
+      "max_deposit": "10000",
+      "max_rate": "100",
+      "max_duration_seconds": 1000,
+      "recipients": [
+        "agentpay-provider-20261102-b685bb.testnet"
+      ]
+    },
+    "available": "49390",
+    "spent": "610",
+    "reserved": "0",
+    "claimable_total": "0",
+    "pending_total": "0",
+    "next_nonce": "7",
+    "active_session": null,
+    "paused": false,
+    "now": "1794055915"
+  },
+  "ok": true
+}
