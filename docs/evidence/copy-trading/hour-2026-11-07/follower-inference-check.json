@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-11-08",
+  "scope": "Read-only check of the archived profile from the recorded hour run using its installed CLI",
+  "cliVersion": "0.6.0",
+  "agent": "hour-copier",
+  "agentId": "ap_61b68754b4b7122cb0af3214be602302118000ed01fcc4828332a1801cc234be",
+  "command": "agentstream inference show --agent hour-copier",
+  "output": {
+    "configured": false
+  },
+  "archivedFollowerPaperFills": 14
+}
