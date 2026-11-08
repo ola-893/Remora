@@ -22,7 +22,7 @@
     .topbar nav { display: flex; gap: 24px; }
     .hero { position: relative; background: var(--remora-abyss); color: var(--remora-salt); border-radius: 23px; overflow: hidden; }
     .hero video { display: block; width: 100%; aspect-ratio: 16/9; object-fit: cover; }
-    .hero-caption { padding: 13px 21px; border-top: 1px solid #36555A; color: var(--remora-silt); display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+    .hero-caption { padding: 13px 21px; border-top: 1px solid #2D435C; color: var(--remora-silt); display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
     .hero-caption a { color: var(--remora-foam); }
     .section { padding: 60px 0 52px; border-bottom: 1px solid #C8D8D5; }
     .section-title { display: grid; grid-template-columns: 200px 1fr; gap: 22px; align-items: baseline; margin-bottom: 25px; }
@@ -47,7 +47,7 @@
     .swatch { min-height: 116px; border: 1px solid #AFC4C2; border-radius: 10px; padding: 11px; display: flex; flex-direction: column; justify-content: space-between; background: var(--sample); color: var(--sample-ink,var(--remora-ink)); }
     .spec { margin: 19px 0 0; color: #486465; }
     .motion { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(260px, 2fr); gap: 22px; align-items: stretch; }
-    .loader-stage { border-radius: 16px; background: #DDEDE7; padding: 18px; display: grid; place-items: center; text-align: center; }
+    .loader-stage { border-radius: 16px; background: #DEE8EF; padding: 18px; display: grid; place-items: center; text-align: center; }
     .loader-stage img { display: block; width: 137px; height: 137px; margin: 0 auto 8px; }
     .motion-copy { min-width: 0; padding: 14px 0; }
     .motion-copy h3 { margin: 0 0 7px; font-size: 26px; line-height: 1.15; letter-spacing: -.045em; }
@@ -80,7 +80,7 @@
 <body>
 <div class="shell">
   <header class="topbar">
-    <a class="identity" href="#top" aria-label="Remora brand kit"><img src="assets/remora-mark-mono.svg" alt="">Remora</a>
+    <a class="identity" href="#top" aria-label="Remora brand kit"><img src="assets/remora-mark-mono.svg" alt="">remora</a>
     <nav class="mono" aria-label="Brand kit sections"><a href="#story">Story</a><a href="#identity">Identity</a><a href="#motion">Motion</a></nav>
   </header>
   <main id="top">
@@ -109,21 +109,21 @@
     </section>
 
     <section id="identity" class="section">
-      <div class="section-title"><span class="mono">02 / IDENTITY</span><h2>Two fins, one signal.</h2></div>
+      <div class="section-title"><span class="mono">02 / IDENTITY</span><h2>The shark and the remora.</h2></div>
       <div class="marks">
         <div class="mark"><div class="mark-plate dark"><img class="lockup" src="assets/remora-lockup-color.svg" alt="Remora color lockup"></div><div class="mark-links mono"><a href="assets/remora-lockup-color.svg" download>Color lockup ↓</a><a href="assets/remora-mark.svg" download>Mark ↓</a></div></div>
         <div class="mark"><div class="mark-plate"><img class="lockup" src="assets/remora-lockup-ink.svg" alt="Remora ink lockup"></div><div class="mark-links mono"><a href="assets/remora-lockup-ink.svg" download>Ink lockup ↓</a><a href="assets/remora-mark-mono.svg" download>Mark ↓</a></div></div>
         <div class="mark"><div class="mark-plate"><img class="app" src="assets/remora-icon.svg" alt="Remora app icon"></div><div class="mark-links mono"><a href="assets/remora-icon.svg" download>App icon ↓</a></div></div>
       </div>
       <div class="swatches mono">
-        <div class="swatch" style="--sample:var(--remora-abyss);--sample-ink:var(--remora-salt)"><span>Abyss</span><span>#071D23</span></div>
-        <div class="swatch" style="--sample:var(--remora-depth);--sample-ink:var(--remora-salt)"><span>Depth</span><span>#10313A</span></div>
-        <div class="swatch" style="--sample:var(--remora-foam)"><span>Foam</span><span>#A9FCE0</span></div>
-        <div class="swatch" style="--sample:var(--remora-signal)"><span>Signal</span><span>#74A7FF</span></div>
+        <div class="swatch" style="--sample:var(--remora-abyss);--sample-ink:var(--remora-salt)"><span>Abyss</span><span>#051020</span></div>
+        <div class="swatch" style="--sample:var(--remora-depth);--sample-ink:var(--remora-salt)"><span>Depth</span><span>#0D2239</span></div>
+        <div class="swatch" style="--sample:var(--remora-foam)"><span>Ion</span><span>#67F5FF</span></div>
+        <div class="swatch" style="--sample:var(--remora-signal)"><span>Teal</span><span>#2BE0C7</span></div>
         <div class="swatch" style="--sample:var(--remora-salt)"><span>Salt</span><span>#F4F9F7</span></div>
         <div class="swatch" style="--sample:var(--remora-coral)"><span>Coral</span><span>#FFAC90</span></div>
       </div>
-      <p class="spec">Use Inter for headlines and body copy, JetBrains Mono for status and measurements. Foam marks the leader’s signal. Blue marks the follower lanes. Reserve coral for denied or interrupted actions. Pair both accents with Abyss or Ink. <a href="assets/tokens.css" download>Download CSS tokens</a>.</p>
+      <p class="spec">Use Inter for headlines and body copy, JetBrains Mono for status and measurements. The shark’s steel armor carries ion-blue circuitry. The remora uses teal and has a short attachment pad above its head. Reserve coral for denied or interrupted actions. <a href="assets/tokens.css" download>Download CSS tokens</a>.</p>
     </section>
 
     <section id="motion" class="section">
@@ -135,12 +135,12 @@
               <source srcset="assets/remora-loader-still.svg" media="(prefers-reduced-motion: reduce)">
               <img src="assets/remora-loader.svg" alt="" width="137" height="137">
             </picture>
-            <span class="mono">SIGNAL IN TRANSIT</span>
+            <span class="mono">SWIMMING IN FORMATION</span>
           </div>
         </div>
         <div class="motion-copy">
           <h3>Loading loop · 2.4 seconds</h3>
-          <p>A mint pulse travels down the leader lane. A blue pulse follows into its own boundary. The browser selects a still when reduced motion is enabled.</p>
+          <p>The shark glides forward while the smaller remora follows with a slight delay. The browser selects a still when reduced motion is enabled.</p>
           <pre><code>&lt;picture&gt;
   &lt;source media="(prefers-reduced-motion: reduce)"
           srcset="remora-loader-still.svg"&gt;
@@ -149,7 +149,7 @@
 &lt;span role="status"&gt;Loading leader signal…&lt;/span&gt;</code></pre>
           <p><a href="assets/remora-loader.svg" download>Animated SVG</a> · <a href="assets/remora-loader-still.svg" download>Still SVG</a> · <a href="exports/remora-loader.webm" download>Transparent WebM</a></p>
           <h3>Landing hero · 12 seconds</h3>
-          <p>Keep the headline and controls in HTML on the landing page. Use the hero as a full-width brand vignette, with its still as the reduced-motion fallback. The frame’s labels describe the concept.</p>
+          <p>Keep the headline and controls in HTML on the landing page. Use the hero as a full-width brand vignette, with its still as the reduced-motion fallback. The hero uses the supplied cybernetic shark and remora artwork. The SVG marks simplify the pair for smaller surfaces.</p>
           <p><a href="exports/remora-hero.mp4" download>MP4</a> · <a href="exports/remora-hero.webm" download>WebM</a> · <a href="exports/remora-hero-poster.png" download>Poster PNG</a></p>
           <p>To edit either composition, open its <code>hero</code> or <code>loader</code> folder in HyperFrames Studio, or run <code>npm run dev</code> from that folder.</p>
         </div>

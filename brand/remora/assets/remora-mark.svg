@@ -1,4 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" role="img" aria-label="Remora">
-  <path fill="#A9FCE0" d="M8 51C28 23 60 11 110 17 92 23 81 33 70 47 54 67 35 70 8 62l18-6Z"/>
-  <path fill="#74A7FF" d="M30 78c15-3 28-12 41-27-3 13-10 24-23 31-9 5-18 5-28 2Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 180" role="img" aria-label="Cybernetic shark with a remora">
+  <g class="shark">
+    <path d="M44 85C65 73 91 64 115 58C126 45 130 30 123 12C149 19 165 35 185 52C223 51 260 61 286 78Q298 86 286 97C266 114 232 124 195 127L150 151L158 125C117 125 80 114 50 100C39 107 30 126 15 145C13 120 18 101 25 92C16 77 10 61 9 47C27 55 37 68 44 85Z" fill="#789BC6" stroke="#051020" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M44 93C76 81 106 73 140 65L181 55C223 54 261 64 286 80L251 78L232 71L199 71L179 87L133 92L101 105Z" fill="#A7BFDD"/>
+    <path d="M52 97C98 106 124 111 164 108L174 98L210 100L230 89L286 94C263 113 231 121 193 124L151 147L159 123C115 121 83 114 52 97Z" fill="#45668C"/>
+    <path d="M83 103L122 109L154 108L145 119C122 118 101 113 83 103ZM195 121L214 104L242 96L281 96C258 111 227 120 195 121Z" fill="#DAE5F3"/>
+    <path d="M125 24L147 50L159 51M101 105L132 92L176 86L198 71L232 71L252 78M159 123L175 102L194 101M241 95L258 91L284 91" fill="none" stroke="#102742" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M217 81l-6 8m-4-8l-6 8m-4-8l-6 8m-56-10l18-4" fill="none" stroke="#67F5FF" stroke-width="3.8" stroke-linecap="round"/>
+    <path d="M248 80l19 4-7 4-9-2Z" fill="#67F5FF" stroke="#102742" stroke-width="2" stroke-linejoin="round"/>
+  </g>
+  <g class="remora">
+    <path d="M106 143C124 148 152 142 176 134C192 129 210 127 221 131Q231 133 233 139C226 146 213 151 199 153L186 167L190 155C159 160 126 160 105 154L85 167L89 151L78 136Z" fill="#2BE0C7" stroke="#051020" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M185 132l8-5 17-3 12 6-14 1Z" fill="#67F5FF" stroke="#051020" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M106 150l33 1 21-4 14-7m10 11l8-11" fill="none" stroke="#087B83" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="217" cy="138" r="3.2" fill="#051020"/>
+  </g>
 </svg>
