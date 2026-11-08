@@ -1,0 +1,8 @@
+root: ./
+
+structure:
+  readme: NEAR_DEMO.md
+
+redirects:
+  quickstart: NEAR_DEMO.md
+  install: NEAR.md
