@@ -80,6 +80,7 @@ export function chainAction(action) {
     const a = action.AddKey, p = a.access_key.permission;
     return { type: 'AddKey', params: { publicKey: a.public_key, accessKey: { nonce: a.access_key.nonce, permission: p === 'FullAccess' ? 'FullAccess' : { receiverId: p.FunctionCall.receiver_id, methodNames: p.FunctionCall.method_names, allowance: p.FunctionCall.allowance } } } };
   }
+  if (action.DeleteKey) return { type: 'DeleteKey', params: { publicKey: action.DeleteKey.public_key } };
   throw new Error('UNEXPECTED_OWNER_ACTION');
 }
 export function verifyOwnerTransaction(outcome, plan, expectedHash) {

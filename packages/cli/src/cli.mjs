@@ -47,6 +47,11 @@ const help = `Named agents and copy trading:
   agentstreams guard set execution --activity spot-trading --assets A,B --input-asset A --max-input-raw UNITS --copy-input-raw UNITS
   agentstreams guard set feed --stale-seconds 45 --feed-failures 3
   agentstreams guard show
+  agentstreams grant create --transactions 10 --hours 6 --activities portfolio-rebalance
+  agentstreams grant create --transactions 10 --hours 6 --activities staking-moves,liquidity-ranges,yield-reallocation,limit-orders --staking-pool lst.ref-dev.testnet --tokens wrap.testnet
+  agentstreams grant show | revoke
+                                                One owner signature adds restricted function-call keys.
+                                                The agent signs those methods until the count or time runs out.
   agentstreams fund USDC                         Owner approves funding in the browser wallet
   agentstreams withdraw USDC|all [--agent NAME]   Return available vault USDC to its owner
   agentstreams agent withdraw USDC|all             Same withdrawal for the selected agent
@@ -103,7 +108,7 @@ const integer = value => { if (!/^[0-9]+$/.test(value || '')) throw new Error('E
 const boolean = value => { if (!['true', 'false'].includes(value)) throw new Error('Use true or false.'); return value === 'true'; };
 
 export async function run(argv) {
-  const strings = ['action-json', 'targets', 'max-inputs', 'copy-bps', 'hash', 'paper-balances', 'agent', 'activity', 'id', 'activities', 'rate', 'intents-agent-id', 'intents-key-env', 'intents-grant-env', 'from', 'to', 'amount-raw', 'nova-group', 'nova-account', 'nova-network', 'nova-key-env', 'performance-file', 'assets', 'input-asset', 'max-input-raw', 'copy-input-raw', 'max-age', 'max-slippage-bps', 'max-notional', 'stale-seconds', 'feed-failures', 'network', 'deployment', 'session', 'owner-id', 'recipient', 'amount', 'budget', 'max-stream', 'max-rate', 'max-duration', 'max-5xx', 'max-transport-errors', 'max-health-failures', 'idle-timeout', 'max-requests', 'reuse', 'poll-seconds', 'close-on-exit', 'url', 'health-path', 'quote-path', 'request-path', 'tiers', 'base-url', 'model', 'max-steps', 'prompt', 'tier', 'query', 'thinking', 'failure-cooldown', 'provider', 'reasoning-effort', 'max-output-tokens', 'repository', 'basic-rate', 'premium-rate', 'duration', 'run', 'timeout-seconds'];
+  const strings = ['action-json', 'targets', 'max-inputs', 'copy-bps', 'hash', 'paper-balances', 'agent', 'activity', 'id', 'activities', 'rate', 'intents-agent-id', 'intents-key-env', 'intents-grant-env', 'from', 'to', 'amount-raw', 'nova-group', 'nova-account', 'nova-network', 'nova-key-env', 'performance-file', 'assets', 'input-asset', 'max-input-raw', 'copy-input-raw', 'max-age', 'max-slippage-bps', 'max-notional', 'stale-seconds', 'feed-failures', 'network', 'deployment', 'session', 'owner-id', 'recipient', 'amount', 'budget', 'max-stream', 'max-rate', 'max-duration', 'max-5xx', 'max-transport-errors', 'max-health-failures', 'idle-timeout', 'max-requests', 'reuse', 'poll-seconds', 'close-on-exit', 'url', 'health-path', 'quote-path', 'request-path', 'tiers', 'base-url', 'model', 'max-steps', 'prompt', 'tier', 'query', 'thinking', 'failure-cooldown', 'provider', 'reasoning-effort', 'max-output-tokens', 'repository', 'basic-rate', 'premium-rate', 'duration', 'run', 'timeout-seconds', 'transactions', 'hours', 'staking-pool', 'tokens'];
   const booleans = ['api-key', 'cancel', 'resume', 'once', 'live', 'confidential', 'execute', 'json', 'help', 'version', 'enable', 'disable', 'dry-run', 'deploy', 'public-history'];
   const { values: v, positionals: p, tokens } = parseArgs({ args: argv, allowPositionals: true, strict: true, tokens: true, options: {
     ...Object.fromEntries(strings.map(k => [k, { type: 'string' }])), ...Object.fromEntries(booleans.map(k => [k, { type: 'boolean' }])),
@@ -125,8 +130,9 @@ export async function run(argv) {
     request: 'tier query', 'stream:check': 'tier', 'stream:open': 'tier', 'stream:status': '', 'stream:close': 'session',
     monitor: '', reconcile: '', close: 'session', verify: 'rpc run', fund: 'amount', doctor: '', payments: 'enable disable',
     install: 'dry-run', mcp: '', ui: 'recording port run',
+    'grant:show': '', 'grant:create': 'transactions hours activities staking-pool tokens', 'grant:revoke': '',
   };
-  const grouped = ['wallet', 'config', 'service', 'inference', 'agent', 'stream', 'task', 'publish', 'earnings', 'guard', 'copy'];
+  const grouped = ['wallet', 'config', 'service', 'inference', 'agent', 'stream', 'task', 'publish', 'earnings', 'guard', 'copy', 'grant'];
   let command = grouped.includes(p[0]) && p[1] ? `${p[0]}:${p[1]}` : p[0];
   if (p[0] === 'copy' && /^ap_[a-f0-9]{64}$/.test(p[1] ?? '')) command = 'copy:preview';
   const maxPositionals = copyPositionals.has(command) ? 3 : grouped.includes(p[0]) || ['install', 'fund', 'withdraw'].includes(p[0]) ? 2 : 1;
@@ -149,6 +155,13 @@ export async function run(argv) {
     return;
   }
   switch (p[0]) {
+    case 'grant': {
+      const grant = await import('./agent-grant.mjs');
+      if (p[1] === 'show' || !p[1]) return emit(await grant.showGrant());
+      if (p[1] === 'create') return emit(await grant.createGrant({ transactions: v.transactions, hours: v.hours, activities: v.activities, stakingPool: v['staking-pool'], tokens: v.tokens }));
+      if (p[1] === 'revoke') return emit(await grant.revokeGrant());
+      throw new Error('Use grant show, create or revoke.');
+    }
     case 'wallet': {
       const wallet = await import('./owner-wallet.mjs');
       if (p[1] === 'connect') {

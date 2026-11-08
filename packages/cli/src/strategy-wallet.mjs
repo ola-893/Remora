@@ -1,4 +1,5 @@
-import { connectedOwner, ownerTransaction } from './owner-wallet.mjs';
+import { signStrategyTransaction } from './agent-grant.mjs';
+import { connectedOwner } from './owner-wallet.mjs';
 import { activityBlocker, DCL, EXCHANGE, LENDING, NEAR_ASSET, RNEAR, dclPoolTokens, enforceStrategyPolicy, ftAsset } from './strategy-actions.mjs';
 import { rawAmount } from './copy-activity.mjs';
 import { integerAmount, lendingMarket, liquidityMarket, stakingMarket, testnetViews } from './strategy-markets.mjs';
@@ -226,7 +227,7 @@ const builders = {
 };
 
 export async function prepareRangeDeposit(input, policy, {
-  execute, ownerId, authorize, connect = connectedOwner, views = testnetViews, transact = ownerTransaction,
+  execute, ownerId, authorize, connect = connectedOwner, views = testnetViews, transact = signStrategyTransaction,
 } = {}) {
   const { pool, token, amount } = input ?? {};
   const tokens = dclPoolTokens(pool);
@@ -277,7 +278,7 @@ export async function prepareRangeDeposit(input, policy, {
 }
 
 export async function runWalletStrategy(activity, action, policy, {
-  execute, operationId, orderClientId, authorize, ownerId, connect = connectedOwner, views = testnetViews, transact = ownerTransaction,
+  execute, operationId, orderClientId, authorize, ownerId, connect = connectedOwner, views = testnetViews, transact = signStrategyTransaction,
 } = {}) {
   const build = builders[activity];
   if (!build) throw new Error(activityBlocker);
