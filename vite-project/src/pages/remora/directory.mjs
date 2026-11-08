@@ -117,10 +117,12 @@ export function usdcPerSecond(raw) {
   return value.slice(0, -6) + (decimal ? '.' + decimal : '');
 }
 
-export function previewCommand(agent) {
+function copyTarget(agent) {
   const origin = /^[A-Za-z0-9.:/-]+$/.test(agent.origin)
     ? agent.origin
     : "'" + agent.origin.replaceAll("'", "'\\''") + "'";
-  return 'agentstream copy ' + agent.id + ' --url ' + origin;
+  return agent.id + ' --url ' + origin;
 }
+export const previewCommand = agent => 'agentstream copy ' + copyTarget(agent);
+export const startCommand = agent => 'agentstream copy start ' + copyTarget(agent) + ' --activity ' + agent.activity;
 export const explorerUrl = hash => 'https://testnet.nearblocks.io/txns/' + hash;

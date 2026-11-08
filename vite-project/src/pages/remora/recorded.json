@@ -1,5 +1,6 @@
 {
   "id": "hour-leader-recording",
+  "publisherId": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
   "name": "Hour Leader",
   "activity": "spot-trading",
   "execution": "paper",

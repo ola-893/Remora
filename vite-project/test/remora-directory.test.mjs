@@ -3,7 +3,7 @@ import { createHash, generateKeyPairSync, sign } from 'node:crypto';
 import { createServer } from 'node:http';
 import test from 'node:test';
 import { canonical } from '../../near/lib/audit.mjs';
-import { directoryEntries, previewCommand, probePublisher, usdcPerSecond, verifyListing } from '../src/pages/remora/directory.mjs';
+import { directoryEntries, previewCommand, probePublisher, startCommand, usdcPerSecond, verifyListing } from '../src/pages/remora/directory.mjs';
 
 const { publicKey, privateKey } = generateKeyPairSync('ed25519');
 const bytes = publicKey.export({ format: 'der', type: 'spki' }).subarray(-32);
@@ -28,6 +28,7 @@ test('signed listings bind the rate and activity to the publisher ID and origin'
   assert.equal(verified.history[0].kind, 'wallet-action');
   assert.equal(usdcPerSecond(verified.rate), '0.000001');
   assert.equal(previewCommand(verified), 'agentstream copy ' + id + ' --url ' + origin);
+  assert.equal(startCommand(verified), 'agentstream copy start ' + id + ' --url ' + origin + ' --activity staking-moves');
   await assert.rejects(verifyListing({ ...listing, body: { ...listing.body, rate: '2' } }, { id, origin }), /signature/i);
   await assert.rejects(verifyListing(listing, { id, origin: 'https://elsewhere.example' }), /invalid/i);
   assert.deepEqual(directoryEntries([{ id, origin: 'https://publisher.example/path' }]), []);

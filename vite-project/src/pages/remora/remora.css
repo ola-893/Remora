@@ -172,7 +172,14 @@
 .rm-offer > p:not(.rm-kicker) { font-size:13px; margin-bottom:12px; }
 .rm-id,.rm-preview-cmd { display:grid; gap:7px; margin:14px 0 8px; min-width:0; }
 .rm-id > span,.rm-preview-cmd > span:first-child { font-size:13px; color:var(--rm-muted); }
+.rm-id-row { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:8px; }
 .rm-id code,.rm-preview-cmd code { background:#06121e; border:1px solid var(--rm-line); padding:10px; font-size:12px; border-radius:7px; overflow-wrap:anywhere; user-select:all; }
+.rm-id-row .rm-button { color:#05181a; background:var(--rm-teal); border-color:var(--rm-teal); }
+.rm-id-row .rm-button:hover { background:#8af5e5; }
+.rm-id-row .rm-copy-status { max-width:92px; }
+.rm-start-cmd { border-top:1px solid var(--rm-line); margin:14px 0; padding-top:10px; font-size:13px; }
+.rm-start-cmd summary { color:var(--rm-teal); cursor:pointer; }
+.rm-start-cmd p { margin-top:8px; }
 .rm-copy-blocked { display:flex; align-items:start; gap:8px; border:1px solid var(--rm-line); padding:11px; border-radius:8px; font-size:13px; background:#132338; margin:12px 0; }
 .rm-copy-blocked svg { flex:none; color:#aac5e3; }
 .rm-offer dl { display:grid; gap:10px; padding-top:13px; border-top:1px solid var(--rm-line); font-size:13px; }

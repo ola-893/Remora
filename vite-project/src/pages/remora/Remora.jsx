@@ -6,7 +6,7 @@ import mark from '../../../../brand/remora/assets/remora-mark.svg';
 import loader from '../../../../brand/remora/assets/remora-loader.svg';
 import art from '../../../../brand/remora/hero/assets/cybernetic-pair.png';
 import recorded from './recorded.json';
-import { activities, directoryEntries, explorerUrl, feedOrigin, previewCommand, probePublisher, publisherId, usdcPerSecond } from './directory.mjs';
+import { activities, directoryEntries, explorerUrl, feedOrigin, previewCommand, probePublisher, publisherId, startCommand, usdcPerSecond } from './directory.mjs';
 import './remora.css';
 
 const archive = { ...recorded, state: 'recorded' };
@@ -248,7 +248,7 @@ export function RemoraExplore() {
         </tr>)}</tbody>
       </table></div>
       {!rows.length && <div className="rm-empty"><Search size={24} /><h2>{state === 'running' && !running.length ? 'No running publishers found' : 'No matching agents'}</h2><p>Change your filters or check a publisher using its ID and feed URL.</p><button className="rm-button rm-outline" onClick={reset}>Reset filters</button></div>}
-      <div className="rm-table-footer">{rows.length} of {agents.length} shown<span>Only a fresh, signed offer from a running feed can be copied.</span></div>
+      <div className="rm-table-footer">{rows.length} of {agents.length} shown<span>Starting a copy subscription requires a running feed with a verified offer.</span></div>
     </div>
     <section className="rm-coverage"><div><p className="rm-kicker">Activity coverage</p><h2>What leaders can publish</h2></div><div className="rm-activity-grid">
       {Object.entries(activities).map(([id, item]) => <button type="button" aria-pressed={activity === id} key={id} onClick={() => { setActivity(id); document.querySelector('.rm-filters input')?.focus(); }}>
@@ -333,6 +333,7 @@ function Evidence({ agent, activity }) {
 
 function CopyOffer({ agent }) {
   const running = agent.state === 'running';
+  const agentId = agent.publisherId ?? agent.id;
   async function recheck() {
     const current = await probePublisher({ id: agent.id, origin: agent.origin }).catch(() => { throw new Error('The publisher’s live offer could not be verified.'); });
     if (current.state !== 'running') throw new Error('This publisher is no longer running.');
@@ -341,14 +342,19 @@ function CopyOffer({ agent }) {
   return <aside className="rm-panel rm-offer">
     <p className="rm-kicker"><Terminal size={15} /> Use in your CLI</p>
     <h2>Copy this agent</h2>
+    <div className="rm-id">
+      <span>Agent ID</span>
+      <div className="rm-id-row"><code>{agentId}</code><CopyButton value={agentId} label="Copy ID" /></div>
+    </div>
     <div className="rm-rate"><strong>{usdcPerSecond(agent.rate)}</strong><span>USDC / second</span></div>
     <p className="rm-muted">{agent.state === 'recorded' ? 'Historical stream rate' : agent.rate ? 'Rate from the latest signed offer' : 'Rate unavailable'}</p>
-    {agent.state !== 'recorded' && <div className="rm-id"><span>Publisher ID</span><code>{agent.id}</code></div>}
     {running ? <>
-      <CopyButton value={agent.id} label="Copy agent ID" beforeCopy={recheck} />
       <div className="rm-preview-cmd"><span>Preview this offer in your terminal</span><code>{previewCommand(agent)}</code><CopyButton value={previewCommand(agent)} label="Copy preview command" beforeCopy={recheck} /></div>
-      <p>Preview the terms first. Set your guards and approve payment in the CLI before starting a stream.</p>
-    </> : <div className="rm-copy-blocked"><Clock3 size={18} /><p>{agent.state === 'recorded' ? 'This run is archived.' : 'This offer is currently unavailable.'} Only running publishers can be copied.</p></div>}
+      <details className="rm-start-cmd"><summary>Start copying in your CLI</summary>
+        <p>Preview the terms and set your payment guards first.</p>
+        <div className="rm-preview-cmd"><code>{startCommand(agent)}</code><CopyButton value={startCommand(agent)} label="Copy start command" beforeCopy={recheck} /></div>
+      </details>
+    </> : <div className="rm-copy-blocked"><Clock3 size={18} /><p>{agent.state === 'recorded' ? 'Archived run. The ID is available for reference.' : 'This offer is currently unavailable.'} A running feed is required to start copying.</p></div>}
     {!!agent.rate && <dl><div><dt>Duration</dt><dd>{agent.duration ? num.format(agent.duration) + ' sec' : 'Until closed or depleted'}</dd></div>{agent.recipient && <div><dt>Recipient</dt><dd>{agent.recipient}</dd></div>}</dl>}
   </aside>;
 }
