@@ -23,7 +23,12 @@ export async function readInferenceProfile(project, { withKey = false } = {}) {
     catch { throw new Error('INVALID_INFERENCE_PROFILE'); }
     if (saved?.version !== 1 || !saved.inference) throw new Error('INVALID_INFERENCE_PROFILE');
     // A legacy credential reference should block inference, not inspection of the agent.
-    const inference = inferenceConfig(withKey ? saved.inference : { ...saved.inference, apiKeyEnv: undefined });
+    let inference;
+    try { inference = inferenceConfig(withKey ? saved.inference : { ...saved.inference, apiKeyEnv: undefined }); }
+    catch (error) {
+      if (!withKey && /^INFERENCE_(PROVIDER|ENDPOINT)_UNSUPPORTED/.test(error.message)) return null;
+      throw error;
+    }
     if (inference.apiKeyStored) validateInferenceKey(saved.apiKey);
     return { inference, ...(withKey && inference.apiKeyStored ? { apiKey: saved.apiKey } : {}) };
   } finally { await file.close(); }

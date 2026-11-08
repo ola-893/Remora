@@ -1,4 +1,4 @@
-import { strategyActivities } from './strategy-actions.mjs';
+import { promptActivity, strategyActivities } from './strategy-actions.mjs';
 import { copyFlags, copyPositionals, runCopyCommand } from './copy-commands.mjs';
 import { agentSetupState, readAgentState, selectedAgent } from './agents.mjs';
 import { dirname } from 'node:path';
@@ -8,7 +8,7 @@ import { readFile } from 'node:fs/promises';
 import { projectPath, readProject, liveProfile, gatewayFor, setPayments } from './config.mjs';
 import { showSettings, setRuntime, setService, setInference, setLimits, reconcileLimits, usdc, durationSeconds } from './settings.mjs';
 import { readInferenceProfile } from './inference-profile.mjs';
-import { inferenceConfig } from './inference.mjs';
+import { assertInferenceModel, inferenceConfig } from './inference.mjs';
 import { renderHelp } from './brand.mjs';
 
 const version = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')).version;
@@ -49,9 +49,13 @@ const help = `Named agents and copy trading:
   agentstreams guard show
   agentstreams grant create --transactions 10 --hours 6 --activities portfolio-rebalance
   agentstreams grant create --transactions 10 --hours 6 --activities staking-moves,liquidity-ranges,yield-reallocation,limit-orders --staking-pool lst.ref-dev.testnet --tokens wrap.testnet
-  agentstreams grant show | revoke
+  agentstreams grant show | reconcile | revoke
+  agentstreams grant prepare --activity ACTIVITY --token TOKEN [--balance-raw RAW]
                                                 One owner signature funds a separate execution account.
                                                 The agent signs the granted methods from that account.
+                                                On-chain limit: the execution account balance. A leaked key can spend it.
+                                                CLI-only limits: transaction count, expiry, receivers and methods.
+                                                Exhaustion, expiry and revoke sweep funds back before deleting the account.
   agentstreams fund USDC                         Owner approves funding in the browser wallet
   agentstreams withdraw USDC|all [--agent NAME]   Return available vault USDC to its owner
   agentstreams agent withdraw USDC|all             Same withdrawal for the selected agent
@@ -77,11 +81,12 @@ Connect inference, then run an agent:
   agentstreams inference set --base-url http://localhost:11434/v1 --model YOUR_MODEL
                                               Optional --max-output-tokens N --timeout-seconds 120 (10-600)
   agentstreams inference models --provider near-ai  List current models and tool/privacy metadata
-  agentstreams inference set --provider near-ai --model MODEL_ID
+  agentstreams inference set --provider local --model MODEL [--base-url LOOPBACK_URL]
+  agentstreams inference set --provider near-ai --model MODEL --api-key
                                                 Enter your API key at a hidden prompt to save it locally
   agentstreams inference set --base-url https://api.openai.com/v1 --model YOUR_MODEL --api-key
-  agentstreams agent run [--activity spot-trading|paid-api] --prompt "Use the paid API to research my question."
-  agentstreams install cursor|codex [--dry-run]   Use that harness's existing inference
+  agentstreams agent run --prompt "What you want the enabled activity to do."
+                                                Uses the one enabled activity. Pass --activity when several are enabled.
   agentstreams install mcp                       Print stdio config for other MCP clients
   agentstreams mcp                               Stdio tools and background health monitor
 
@@ -108,7 +113,7 @@ const integer = value => { if (!/^[0-9]+$/.test(value || '')) throw new Error('E
 const boolean = value => { if (!['true', 'false'].includes(value)) throw new Error('Use true or false.'); return value === 'true'; };
 
 export async function run(argv) {
-  const strings = ['action-json', 'targets', 'max-inputs', 'copy-bps', 'hash', 'paper-balances', 'agent', 'activity', 'id', 'activities', 'rate', 'intents-agent-id', 'intents-key-env', 'intents-grant-env', 'from', 'to', 'amount-raw', 'nova-group', 'nova-account', 'nova-network', 'nova-key-env', 'performance-file', 'assets', 'input-asset', 'max-input-raw', 'copy-input-raw', 'max-age', 'max-slippage-bps', 'max-notional', 'stale-seconds', 'feed-failures', 'network', 'deployment', 'session', 'owner-id', 'recipient', 'amount', 'budget', 'max-stream', 'max-rate', 'max-duration', 'max-5xx', 'max-transport-errors', 'max-health-failures', 'idle-timeout', 'max-requests', 'reuse', 'poll-seconds', 'close-on-exit', 'url', 'health-path', 'quote-path', 'request-path', 'tiers', 'base-url', 'model', 'max-steps', 'prompt', 'tier', 'query', 'thinking', 'failure-cooldown', 'provider', 'reasoning-effort', 'max-output-tokens', 'repository', 'basic-rate', 'premium-rate', 'duration', 'run', 'timeout-seconds', 'transactions', 'hours', 'staking-pool', 'tokens'];
+  const strings = ['action-json', 'targets', 'max-inputs', 'copy-bps', 'hash', 'paper-balances', 'agent', 'activity', 'id', 'activities', 'rate', 'intents-agent-id', 'intents-key-env', 'intents-grant-env', 'from', 'to', 'amount-raw', 'nova-group', 'nova-account', 'nova-network', 'nova-key-env', 'performance-file', 'assets', 'input-asset', 'max-input-raw', 'copy-input-raw', 'max-age', 'max-slippage-bps', 'max-notional', 'stale-seconds', 'feed-failures', 'network', 'deployment', 'session', 'owner-id', 'recipient', 'amount', 'budget', 'max-stream', 'max-rate', 'max-duration', 'max-5xx', 'max-transport-errors', 'max-health-failures', 'idle-timeout', 'max-requests', 'reuse', 'poll-seconds', 'close-on-exit', 'url', 'health-path', 'quote-path', 'request-path', 'tiers', 'base-url', 'model', 'max-steps', 'prompt', 'tier', 'query', 'thinking', 'failure-cooldown', 'provider', 'reasoning-effort', 'max-output-tokens', 'repository', 'basic-rate', 'premium-rate', 'duration', 'run', 'timeout-seconds', 'transactions', 'hours', 'staking-pool', 'tokens', 'fund-near', 'token', 'balance-raw'];
   const booleans = ['api-key', 'cancel', 'resume', 'once', 'live', 'confidential', 'execute', 'json', 'help', 'version', 'enable', 'disable', 'dry-run', 'deploy', 'public-history'];
   const { values: v, positionals: p, tokens } = parseArgs({ args: argv, allowPositionals: true, strict: true, tokens: true, options: {
     ...Object.fromEntries(strings.map(k => [k, { type: 'string' }])), ...Object.fromEntries(booleans.map(k => [k, { type: 'boolean' }])),
@@ -130,7 +135,8 @@ export async function run(argv) {
     request: 'tier query', 'stream:check': 'tier', 'stream:open': 'tier', 'stream:status': '', 'stream:close': 'session',
     monitor: '', reconcile: '', close: 'session', verify: 'rpc run', fund: 'amount', doctor: '', payments: 'enable disable',
     install: 'dry-run', mcp: '', ui: 'recording port run',
-    'grant:show': '', 'grant:create': 'transactions hours activities staking-pool tokens', 'grant:revoke': '',
+    'grant:show': '', 'grant:create': 'transactions hours activities staking-pool tokens fund-near', 'grant:revoke': '', 'grant:reconcile': '',
+    'grant:prepare': 'activity token balance-raw',
   };
   const grouped = ['wallet', 'config', 'service', 'inference', 'agent', 'stream', 'task', 'publish', 'earnings', 'guard', 'copy', 'grant'];
   let command = grouped.includes(p[0]) && p[1] ? `${p[0]}:${p[1]}` : p[0];
@@ -158,9 +164,17 @@ export async function run(argv) {
     case 'grant': {
       const grant = await import('./agent-grant.mjs');
       if (p[1] === 'show' || !p[1]) return emit(await grant.showGrant());
-      if (p[1] === 'create') return emit(await grant.createGrant({ transactions: v.transactions, hours: v.hours, activities: v.activities, stakingPool: v['staking-pool'], tokens: v.tokens }));
+      if (p[1] === 'create') return emit(await grant.createGrant({ agentId: agent?.id, ownerId: agent && (await agentSetupState(agent)).ownerId,
+        transactions: v.transactions, hours: v.hours, activities: v.activities, stakingPool: v['staking-pool'], tokens: v.tokens, fundNear: v['fund-near'] }));
+      if (p[1] === 'reconcile') return emit(await grant.reconcileGrant());
+      if (p[1] === 'prepare') {
+        if (!agent) throw new Error('Select a named agent before preparing its grant.');
+        const { prepareGrant } = await import('./grant-prepare.mjs');
+        return emit(await prepareGrant({ agentId: agent.id, ownerId: (await agentSetupState(agent)).ownerId,
+          activity: v.activity, token: v.token, balance: v['balance-raw'] }));
+      }
       if (p[1] === 'revoke') return emit(await grant.revokeGrant());
-      throw new Error('Use grant show, create or revoke.');
+      throw new Error('Use grant show, create, prepare, reconcile or revoke.');
     }
     case 'wallet': {
       const wallet = await import('./owner-wallet.mjs');
@@ -228,7 +242,12 @@ export async function run(argv) {
         if (agent) return emit((await agentSetupState(agent)).inference || { configured: false });
         return emit((await readInferenceProfile(project))?.inference ?? (await liveProfile(project)).inference ?? { configured: false });
       }
-      if (p[1] === 'models') { const { listInferenceModels } = await import('./inference.mjs'); return emit(await listInferenceModels({ provider: v.provider })); }
+      if (p[1] === 'models') {
+        const { listInferenceModels } = await import('./inference.mjs');
+        const catalog = await listInferenceModels({ provider: v.provider });
+        const models = catalog.models.filter(model => model.confidentialEligible);
+        return emit({ ...catalog, catalogTotal: catalog.total, total: models.length, models });
+      }
       if (p[1] !== 'set') throw new Error('Use inference show, set or models.');
       return emit(await setInference(project, { provider: v.provider, baseUrl: v['base-url'], model: v.model, maxSteps: v['max-steps'] ? integer(v['max-steps']) : undefined,
         ...(v.thinking !== undefined ? { thinking: boolean(v.thinking) } : {}),
@@ -238,15 +257,17 @@ export async function run(argv) {
     }
     case 'agent': {
       if (p[1] !== 'run') throw new Error('Use agent run --prompt "...".');
-      const strategy = strategyActivities.has(v.activity);
-      if (v.activity && !strategy && !['spot-trading', 'paid-api'].includes(v.activity)) throw new Error('Choose an activity from task list or paid-api.');
+      const activity = v.activity ?? (agent ? promptActivity(await readAgentState(agent)) : null);
+      const strategy = strategyActivities.has(activity);
+      if (activity && !strategy && !['spot-trading', 'paid-api'].includes(activity)) throw new Error('Choose an activity from task list or paid-api.');
       if (strategy && !agent) throw new Error('Select a named agent first.');
-      const spot = v.activity === 'spot-trading' || (!v.activity && agent && (await readAgentState(agent)).tasks['spot-trading']?.mode === 'paper');
+      const spot = activity === 'spot-trading';
       if (spot && !agent) throw new Error('Create a named agent with agentstreams agent create NAME first.');
       const savedInference = await readInferenceProfile(project, { withKey: true });
       const inference = savedInference?.inference ?? (agent ? (await agentSetupState(agent)).inference : (await liveProfile(project)).inference);
-      if (!inference) throw new Error('Configure inference first with agentstreams inference set, or install the MCP integration in your harness.');
+      if (!inference) throw new Error('Configure local or NEAR AI inference with agentstreams inference set.');
       const config = inferenceConfig({ ...inference, ...(v['max-steps'] ? { maxSteps: integer(v['max-steps']) } : {}) });
+      await assertInferenceModel(config);
       const controller = new AbortController();
       const options = { prompt: v.prompt, signal: controller.signal, storedApiKey: savedInference?.apiKey };
       const stop = () => controller.abort(new Error('AGENT_INTERRUPTED'));
@@ -262,7 +283,7 @@ export async function run(argv) {
         if (strategy) {
           const { runStrategyAgent } = await import('./strategy-agent.mjs');
           const events = [];
-          const result = await runStrategyAgent(agent, v.activity, config, { ...options, emit: v.json ? event => events.push(event) : emit });
+          const result = await runStrategyAgent(agent, activity, config, { ...options, emit: v.json ? event => events.push(event) : emit });
           return emit({ ...result, ...(v.json ? { events } : {}) });
         }
         const { runAgent } = await import('./agent.mjs');
@@ -340,8 +361,7 @@ export async function run(argv) {
     case 'payments': { if (Boolean(v.enable) === Boolean(v.disable)) throw new Error('Choose exactly one of --enable or --disable.'); return emit(await setPayments(project, v.enable)); }
     case 'install': {
       if (p[1] === 'mcp') { const { mcpServer } = await import('./install.mjs'); return emit({ mcpServers: { agentstreams: mcpServer(workspace, fileURLToPath(new URL('../bin/agentstreams.mjs', import.meta.url)), { agent: agent?.name }) } }); }
-      const { installAgent } = await import('./install.mjs');
-      return emit(await installAgent(p[1], workspace, fileURLToPath(new URL('../bin/agentstreams.mjs', import.meta.url)), { dryRun: v['dry-run'], agent: agent?.name }));
+      throw new Error('Use install mcp for the tool server configuration.');
     }
     case 'mcp': { const { startMcp } = await import('./mcp.mjs'); return startMcp(await gatewayFor(project)); }
     case 'ui': {

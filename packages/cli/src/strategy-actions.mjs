@@ -122,6 +122,14 @@ export function enforceStrategyPolicy(activity, action, policy, inputs) {
   }
 }
 
+export function promptActivity(state) {
+  const wallet = [...nativeWalletActivities].filter(activity => state?.tasks?.[activity]?.mode === 'wallet').sort();
+  if (wallet.length > 1) throw new Error('Several NEAR activities are enabled. Pass --activity.');
+  if (wallet.length === 1) return wallet[0];
+  if (state?.tasks?.[spot]?.mode === 'paper') return spot;
+  return null;
+}
+
 export const activityMode = (state, activity) => activity === spot
   ? state.tasks[spot]?.mode ?? (state.tasks[spot] ? 'agent-connect' : null)
   : nativeWalletActivities.has(activity) && state.tasks[activity]?.mode === 'wallet' ? 'wallet' : null;

@@ -31,6 +31,9 @@ export async function runModelAgent(inference, {
     if (!message || (!message.tool_calls?.length && typeof message.content !== 'string')) throw new Error('INVALID_INFERENCE_RESPONSE');
     if (message.tool_calls?.length > 16 || (message.content?.length || 0) > 64000) throw new Error('INFERENCE_RESPONSE_LIMIT');
     onResponse?.({ provider: inference.provider, model: data.model ?? inference.model, responseId: data.id });
+    if (inference.provider === 'near-ai' && typeof data.id === 'string' && /^[a-zA-Z0-9._:-]{1,160}$/.test(data.id)) {
+      emit({ type: 'inference', provider: 'near-ai', model: inference.model, responseId: data.id, attestationVerified: false });
+    }
     messages.push({ role: 'assistant', content: message.content ?? null, ...(message.tool_calls?.length ? { tool_calls: message.tool_calls } : {}) });
     if (!message.tool_calls?.length) { emit({ type: 'answer', text: message.content, steps: step + 1 }); return { completed: true, steps: step + 1 }; }
     for (const call of message.tool_calls) {

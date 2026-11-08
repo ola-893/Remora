@@ -6,7 +6,7 @@ import { atomicWrite, readOptional } from './files.mjs';
 import { readConfig } from '@ola-893/agentstreams-core/internal-config';
 import { runtimePolicy, serviceConfig } from '@ola-893/agentstreams-core/internal-runtime-policy';
 import { inspectNearProfile, NearAgentStreamsClient } from '@ola-893/agentstreams-core/near';
-import { inferenceConfig } from './inference.mjs';
+import { assertInferenceModel, inferenceConfig } from './inference.mjs';
 import { promptInferenceKey, readInferenceProfile, writeInferenceProfile } from './inference-profile.mjs';
 export { inferenceConfig } from './inference.mjs';
 
@@ -51,9 +51,11 @@ export async function setService(project, patch) {
   await atomicWrite(profile.configPath, JSON.stringify(validated, null, 2));
   return { service: { url: validated.serviceUrl, recipient: validated.recipientId, ...validated.service }, restartRequired: 'Restart running agents/MCP servers after service changes.' };
 }
-export async function setInference(project, input, agent, { enterApiKey = false } = {}) {
+export async function setInference(project, input, agent, { enterApiKey = false, fetchImpl } = {}) {
+  if (input.provider && !['local', 'near-ai'].includes(input.provider)) throw new Error('Choose --provider local or near-ai.');
   const needsKey = enterApiKey || input.provider === 'near-ai';
   const inference = inferenceConfig({ ...input, apiKeyStored: needsKey });
+  await assertInferenceModel(inference, fetchImpl);
   if (!agent) await liveProfile(project);
   const apiKey = needsKey ? await promptInferenceKey() : undefined;
   await writeInferenceProfile(project, inference, apiKey);

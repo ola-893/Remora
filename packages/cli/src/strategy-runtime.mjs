@@ -50,7 +50,7 @@ export async function runStrategyTask(agent, activity, input, options = {}) {
   const policy = strategyPolicyFor(await readAgentState(agent), activity);
   const { ownerId } = await agentSetupState(agent);
   const id = operationKey(agent.id, randomUUID());
-  const result = await runWalletStrategy(activity, action, policy, { ...options, ownerId, operationId: id,
+  const result = await runWalletStrategy(activity, action, policy, { ...options, ownerId, agentId: agent.id, operationId: id,
     orderClientId: orderClientId(agent, activity, action, id),
     authorize: async inputs => {
       options.signal?.throwIfAborted();
@@ -66,7 +66,7 @@ export async function prepareStrategyDeposit(agent, action, { execute } = {}) {
   const activity = 'liquidity-ranges';
   const policy = strategyPolicyFor(await readAgentState(agent), activity);
   const { ownerId } = await agentSetupState(agent);
-  return prepareRangeDeposit(action, policy, { execute, ownerId, authorize: async inputs => {
+  return prepareRangeDeposit(action, policy, { execute, ownerId, agentId: agent.id, authorize: async inputs => {
     const current = strategyPolicyFor(await readAgentState(agent), activity);
     enforceStrategyPolicy(activity, action, current, inputs);
     if (JSON.stringify(current) !== JSON.stringify(policy)) throw new Error('STRATEGY_POLICY_CHANGED: run a new preview.');
@@ -92,9 +92,9 @@ export async function observeStrategy(agent, state, entry, emit) {
     const policy = strategyPolicyFor(state, activity);
     const action = sizedStrategyAction(activity, entry.action, policy);
     const { ownerId } = await agentSetupState(agent);
-    const checked = await runWalletStrategy(activity, action, policy, { ownerId,
+    const checked = await runWalletStrategy(activity, action, policy, { ownerId, agentId: agent.id,
       orderClientId: orderClientId(agent, activity, action, id, entry.publisher) });
-    const preview = { action, inputs: checked.inputs, evidence: checked.evidence, transactionHash: entry.settlementRef };
+    const preview = { action, inputs: checked.inputs, evidence: checked.evidence, executionAccountId: checked.executionAccountId, transactionHash: entry.settlementRef };
     (state.pending ??= {})[id] = { status: 'pending', action: entry, preview, sessionId: follow.sessionId };
     return record('pending', preview);
   } catch (error) {
@@ -112,13 +112,14 @@ export async function approveStrategy(agent, id) {
     const policy = strategyPolicyFor(state, item.action.activity);
     checkAge(item.action, policy);
     item.status = 'awaiting-wallet';
-    return { entry: item.action, sessionId: item.sessionId, policy };
+    return { entry: item.action, sessionId: item.sessionId, policy, executionAccountId: item.preview?.executionAccountId };
   });
-  const { entry, sessionId, policy } = prepared;
+  const { entry, sessionId, policy, executionAccountId } = prepared;
   try {
     const action = sizedStrategyAction(entry.activity, entry.action, policy);
     const { ownerId } = await agentSetupState(agent);
-    const result = await runWalletStrategy(entry.activity, action, policy, { execute: true, operationId: id, ownerId,
+    const result = await runWalletStrategy(entry.activity, action, policy, { execute: true, operationId: id, ownerId, agentId: agent.id,
+      expectedExecutionAccountId: executionAccountId ?? ownerId,
       orderClientId: orderClientId(agent, entry.activity, action, id, entry.publisher),
       authorize: async inputs => {
         const client = await gatewayFor(agent.path);

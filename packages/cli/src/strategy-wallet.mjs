@@ -1,4 +1,4 @@
-import { readGrant, signStrategyTransaction } from './agent-grant.mjs';
+import { grantAccount, signStrategyTransaction } from './agent-grant.mjs';
 import { connectedOwner } from './owner-wallet.mjs';
 import { activityBlocker, DCL, EXCHANGE, LENDING, NEAR_ASSET, RNEAR, dclPoolTokens, enforceStrategyPolicy, ftAsset } from './strategy-actions.mjs';
 import { rawAmount } from './copy-activity.mjs';
@@ -227,7 +227,7 @@ const builders = {
 };
 
 export async function prepareRangeDeposit(input, policy, {
-  execute, ownerId, authorize, connect = connectedOwner, views = testnetViews, transact = signStrategyTransaction,
+  execute, ownerId, agentId, authorize, connect = connectedOwner, views = testnetViews, transact = signStrategyTransaction,
 } = {}) {
   const { pool, token, amount } = input ?? {};
   const tokens = dclPoolTokens(pool);
@@ -239,7 +239,9 @@ export async function prepareRangeDeposit(input, policy, {
   const inputs = { [ftAsset(token)]: amount };
   enforceStrategyPolicy(activity, { pool }, policy, inputs);
   const wallet = await connect({ required: true, ownerId });
-  const { accountId, rpcUrl } = wallet;
+  const { rpcUrl } = wallet;
+  const executionAccountId = await grantAccount(wallet.accountId, agentId, activity);
+  const accountId = executionAccountId ?? wallet.accountId;
   async function depositBalance() {
     const { view } = await views(rpcUrl);
     const [market, storage, deposits, balance, receiverStorage] = await Promise.all([
@@ -259,9 +261,9 @@ export async function prepareRangeDeposit(input, policy, {
   let before = await depositBalance();
   // The testnet DCL receiver used about 920 Tgas in the confirmed deposit receipt.
   const actions = [call('ft_transfer_call', { receiver_id: DCL, amount, msg: '"Deposit"' }, '1000000000000000', '1')];
-  const plan = { activity, operation: 'deposit', pool, token, amount, receiverId: token, venue: DCL, actions, inputs };
+  const plan = { activity, operation: 'deposit', pool, token, amount, receiverId: token, venue: DCL, actions, inputs, executionAccountId: accountId };
   if (!execute) return { ...plan, status: 'preview', signedTransactions: 0 };
-  const receipt = await transact({ ownerId: accountId, receiverId: token, actions, rpcUrl,
+  const receipt = await transact({ ownerId: wallet.accountId, agentId, executionAccountId, receiverId: token, actions, rpcUrl,
     label: `Deposit ${token} into your Rhea liquidity balance on NEAR testnet`,
     context: { kind: 'activity-preparation', activity, pool, token, amount },
   }, {
@@ -278,23 +280,22 @@ export async function prepareRangeDeposit(input, policy, {
 }
 
 export async function runWalletStrategy(activity, action, policy, {
-  execute, operationId, orderClientId, authorize, ownerId, connect = connectedOwner, views = testnetViews, transact = signStrategyTransaction,
+  execute, operationId, orderClientId, authorize, ownerId, agentId, expectedExecutionAccountId,
+  connect = connectedOwner, views = testnetViews, transact = signStrategyTransaction,
 } = {}) {
   const build = builders[activity];
   if (!build) throw new Error(activityBlocker);
   enforceStrategyPolicy(activity, action, policy, {});
   const wallet = await connect({ required: true, ownerId });
   const rpc = await views(wallet.rpcUrl);
-  let accountId = wallet.accountId;
-  try {
-    const grant = await readGrant(wallet.accountId);
-    if (grant?.executionAccountId && grant.remaining > 0 && Date.now() < grant.expiresAt) accountId = grant.executionAccountId;
-  } catch { /* A missing grant store keeps the connected owner as the signer. */ }
+  const executionAccountId = await grantAccount(wallet.accountId, agentId, activity);
+  const accountId = executionAccountId ?? wallet.accountId;
+  if (expectedExecutionAccountId && expectedExecutionAccountId !== accountId) throw new Error('STRATEGY_SIGNER_CHANGED: preview again.');
   let { confirms, ...plan } = await build(action, accountId, rpc, policy, orderClientId);
   enforceStrategyPolicy(activity, action, policy, plan.inputs);
-  if (!execute) return { status: 'preview', mode: 'wallet', activity, action, network: 'testnet', ownerId: wallet.accountId, ...plan, signedTransactions: 0 };
+  if (!execute) return { status: 'preview', mode: 'wallet', activity, action, network: 'testnet', ownerId: wallet.accountId, executionAccountId: accountId, ...plan, signedTransactions: 0 };
   const method = plan.actions.at(-1).params.methodName;
-  const receipt = await transact({ ownerId: wallet.accountId, receiverId: plan.receiverId, actions: plan.actions,
+  const receipt = await transact({ ownerId: wallet.accountId, agentId, executionAccountId, receiverId: plan.receiverId, actions: plan.actions,
     label: `${activity} on NEAR testnet · ${method}`, rpcUrl: wallet.rpcUrl, context: { kind: 'activity', activity, action, operationId } }, {
     beforeSubmit: async () => {
       if (activity === 'limit-orders') {
@@ -314,6 +315,6 @@ export async function runWalletStrategy(activity, action, policy, {
     throw new Error(`STRATEGY_OUTCOME_UNCONFIRMED: inspect ${receipt.explorerUrl} before another execution.${reference}`);
   }
   return { status: 'wallet-confirmed', mode: 'wallet', activity, action, network: 'testnet',
-    ownerId: wallet.accountId, inputs: plan.inputs, receipt, evidence: plan.evidence, signedTransactions: 1,
+    ownerId: wallet.accountId, executionAccountId: accountId, inputs: plan.inputs, receipt, evidence: plan.evidence, signedTransactions: 1,
     ...(activity === 'limit-orders' ? { order: confirmation } : {}) };
 }

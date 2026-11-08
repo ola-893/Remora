@@ -7,14 +7,32 @@ export function validateInferenceKey(key) {
   return key;
 }
 
+export async function assertInferenceModel(config, fetchImpl = fetch) {
+  if (/^(MODEL_ID|YOUR_MODEL)$/.test(config.model)) throw new Error('UNKNOWN_INFERENCE_MODEL: choose a model id from the provider catalog. Run agentstreams inference models for near-ai.');
+  if (config.provider !== 'near-ai') return config;
+  const catalog = await listInferenceModels({ provider: 'near-ai', fetchImpl });
+  const found = catalog.models.find(model => model.id === config.model);
+  if (!found) throw new Error(`UNKNOWN_INFERENCE_MODEL: ${config.model} is not in the NEAR AI catalog.`);
+  if (!found.agentCompatible) throw new Error(`INFERENCE_MODEL_TOOLS_REQUIRED: ${config.model} does not advertise tool calls.`);
+  if (!found.confidentialEligible) throw new Error(`INFERENCE_MODEL_ATTESTATION_REQUIRED: choose a verifiable model from inference models.`);
+  return config;
+}
+
 export function inferenceConfig(input) {
   if (!input || typeof input.model !== 'string' || !input.model.trim() || input.model.length > 256) throw new Error('Provide --model.');
-  const provider = input.provider ?? 'openai-compatible';
-  if (!['openai-compatible', 'near-ai'].includes(provider)) throw new Error('Choose --provider near-ai or openai-compatible.');
-  const url = new URL(input.baseUrl ?? (provider === 'near-ai' ? NEAR_AI_BASE_URL : undefined));
-  if (url.username || url.password || url.search || url.hash || !(url.protocol === 'https:' || (url.protocol === 'http:' && ['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname)))) throw new Error('Inference URL must use HTTPS or loopback without embedded credentials.');
+  // Older loopback profiles used the wire protocol as their provider name.
+  const provider = input.provider === 'openai-compatible' ? 'local' : input.provider ?? 'local';
+  if (!['local', 'near-ai'].includes(provider)) throw new Error('INFERENCE_PROVIDER_UNSUPPORTED: choose --provider local or near-ai.');
+  let url;
+  try { url = new URL(input.baseUrl ?? (provider === 'near-ai' ? NEAR_AI_BASE_URL : 'http://127.0.0.1:11434/v1')); }
+  catch { throw new Error('INFERENCE_ENDPOINT_UNSUPPORTED: provide an absolute inference URL.'); }
+  if (url.username || url.password || url.search || url.hash) throw new Error('INFERENCE_ENDPOINT_UNSUPPORTED: inference URLs cannot contain credentials, queries or fragments.');
   const baseUrl = url.href.replace(/\/$/, '');
-  if (provider === 'near-ai' && baseUrl !== NEAR_AI_BASE_URL) throw new Error('The near-ai provider uses https://cloud-api.near.ai/v1. Use openai-compatible for a custom endpoint.');
+  if (provider === 'near-ai' && baseUrl !== NEAR_AI_BASE_URL) throw new Error('INFERENCE_ENDPOINT_UNSUPPORTED: the near-ai provider uses https://cloud-api.near.ai/v1.');
+  if (provider === 'local' && (!['http:', 'https:'].includes(url.protocol) ||
+      !['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname))) {
+    throw new Error('INFERENCE_ENDPOINT_UNSUPPORTED: local inference requires a loopback URL. Run inference set --provider local or near-ai.');
+  }
   if (input.apiKeyEnv !== undefined) throw new Error(INFERENCE_KEY_SETUP);
   const apiKeyStored = input.apiKeyStored === true;
   const maxSteps = input.maxSteps ?? 12;
@@ -61,8 +79,10 @@ export async function listInferenceModels({ provider = 'near-ai', fetchImpl = fe
       const m = entry.metadata ?? {};
       const features = Array.isArray(m.supportedFeatures) ? m.supportedFeatures.filter(s => typeof s === 'string') : [];
       const textOutput = m.architecture?.outputModalities?.includes('text') === true;
+      const agentCompatible = features.includes('tools') && textOutput;
       models.push({ id: entry.modelId, name: m.modelDisplayName ?? entry.modelId,
-        agentCompatible: features.includes('tools') && textOutput, supportedFeatures: features,
+        agentCompatible, supportedFeatures: features,
+        confidentialEligible: agentCompatible && m.verifiable === true && m.attestationSupported === true && m.providerType !== 'external',
         providerReportedVerifiable: m.verifiable === true, attestationSupported: m.attestationSupported === true,
         providerType: typeof m.providerType === 'string' ? m.providerType : null,
         maxOutputTokens: Number.isSafeInteger(m.maxOutputLength) ? m.maxOutputLength : null });

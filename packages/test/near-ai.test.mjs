@@ -8,7 +8,7 @@ import { mkdtemp, mkdir, writeFile, readFile, realpath, readdir, rm, stat } from
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { KeyPair } from 'near-api-js';
-import { inferenceConfig, completionBody, listInferenceModels, NEAR_AI_BASE_URL } from '../cli/src/inference.mjs';
+import { assertInferenceModel, inferenceConfig, completionBody, listInferenceModels, NEAR_AI_BASE_URL } from '../cli/src/inference.mjs';
 import { runAgent } from '../cli/src/agent.mjs';
 import { OfflineGateway } from '../core/src/offline.mjs';
 import { initProject } from '../cli/src/config.mjs';
@@ -28,7 +28,11 @@ test('NEAR AI preset pins its endpoint and rejects environment key references', 
   for (const baseUrl of ['https://attacker.invalid/v1', 'http://cloud-api.near.ai/v1', 'https://cloud-api.near.ai/v1?key=secret', 'https://user:password@cloud-api.near.ai/v1']) assert.throws(() => inferenceConfig({ provider: 'near-ai', model, baseUrl }));
   assert.throws(() => inferenceConfig({ provider: 'near-ai', model, apiKeyEnv: 'MY_NEAR_KEY' }), /inference set with --api-key/);
   assert.throws(() => inferenceConfig({ provider: 'unknown', model, baseUrl: 'https://service.invalid/v1' }));
-  assert.equal(inferenceConfig({ baseUrl: 'http://localhost:11434/v1', model: 'local' }).provider, 'openai-compatible');
+  assert.equal(inferenceConfig({ baseUrl: 'http://localhost:11434/v1', model: 'local' }).provider, 'local');
+  assert.equal(inferenceConfig({ provider: 'openai-compatible', baseUrl: 'http://localhost:11434/v1', model: 'legacy' }).provider, 'local');
+  for (const provider of ['local', 'openai-compatible', 'codex']) {
+    assert.throws(() => inferenceConfig({ provider, baseUrl: 'https://service.invalid/v1', model: 'remote' }), /INFERENCE_(ENDPOINT|PROVIDER)_UNSUPPORTED/);
+  }
 });
 
 test('provider request options handle NEAR reasoning controls without changing generic providers', () => {
@@ -61,6 +65,11 @@ test('public catalog pagination reports capabilities without treating provider m
   assert.equal(result.models[0].agentCompatible, true);
   assert.equal(result.models[1].agentCompatible, false);
   assert.equal(result.models[2].providerReportedVerifiable, false);
+  assert.deepEqual(result.models.map(item => item.confidentialEligible), [true, false, false]);
+  await assert.rejects(assertInferenceModel(inferenceConfig({ provider: 'near-ai', model: 'external/model' }),
+    async () => Response.json({ offset: 0, total: 1, models: [{ modelId: 'external/model', metadata: {
+      providerType: 'external', verifiable: true, attestationSupported: true, supportedFeatures: ['tools'], architecture: { outputModalities: ['text'] },
+    } }] })), /INFERENCE_MODEL_ATTESTATION_REQUIRED/);
   assert.equal(result.attestationVerified, false);
   assert.equal(result.policySignerLocation, 'local host');
   await assert.rejects(listInferenceModels({ fetchImpl: async () => Response.json({ offset: 0, total: 1, models: [] }) }), /INVALID_NEAR_AI_CATALOG/);
@@ -119,8 +128,15 @@ test('CLI prompts for a NEAR AI key and ignores an existing environment key', as
   const deployment = join(directory, 'deployment.json');
   await writeFile(deployment, JSON.stringify({ network: 'testnet', rpcUrl: 'https://rpc.invalid', serviceUrl: 'http://127.0.0.1:5321', vaultId: 'vault.testnet', agentId: 'agent.testnet', ownerId: 'owner.testnet', recipientId: 'provider.testnet', tokenId: '3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af', agentKeyFile: keys.agent, policyKeyFile: keys.policy }));
   const env = { ...process.env, AGENTSTREAMS_HOME: home, NEAR_AI_API_KEY: 'fixture-value-must-never-be-saved' };
+  const catalogFixture = join(directory, 'catalog.mjs');
+  await writeFile(catalogFixture, `globalThis.fetch = async url => {
+    if (url !== '${NEAR_AI_BASE_URL}/model/list') throw new Error('Unexpected request');
+    return Response.json({ offset: 0, total: 1, models: [{ modelId: '${model}', metadata: {
+      providerType: 'vllm', verifiable: true, attestationSupported: true, supportedFeatures: ['tools'], architecture: { outputModalities: ['text'] },
+    } }] });
+  };`);
   const run = async (args, input) => {
-    const call = exec(process.execPath, [resolve('packages/cli/bin/agentstreams.mjs'), ...args], { cwd: project, env });
+    const call = exec(process.execPath, ['--import', catalogFixture, resolve('packages/cli/bin/agentstreams.mjs'), ...args], { cwd: project, env });
     call.child.stdin.end(input);
     return JSON.parse((await call).stdout);
   };

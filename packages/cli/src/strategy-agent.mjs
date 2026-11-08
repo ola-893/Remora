@@ -12,48 +12,50 @@ const shape = {
 };
 const actionTool = description => ({ description, properties: { action: { type: 'string', description: 'JSON action using the schema in the system instructions.' } }, required: ['action'] });
 
-export async function runStrategyAgent(agent, activity, inference, options) {
-  const state = await readAgentState(agent);
+export async function runStrategyAgent(agent, activity, inference, options = {}) {
+  const loadState = options.loadState ?? readAgentState;
+  const runTask = options.runTask ?? runStrategyTask;
+  const state = await loadState(agent);
   if (!nativeWalletActivities.has(activity)) throw new Error(activityBlocker);
   if (state.tasks[activity]?.mode !== 'wallet') throw new Error('Enable the NEAR testnet activity first.');
-  let preview, result, approvalRequested = false;
+  let preview, result;
+  const results = [];
   const parse = args => {
     if (Object.keys(args ?? {}).length !== 1 || typeof args.action !== 'string' || args.action.length > 8192) throw new Error('INVALID_ACTIVITY_ACTION');
     return strategyAction(activity, JSON.parse(args.action));
   };
   const summary = fill => ({ status: fill.status, action: fill.action, actionId: fill.actionId ?? null,
     inputs: fill.inputs, evidence: fill.evidence, explorerUrl: fill.receipt?.explorerUrl ?? null,
-    transactionHash: fill.receipt?.hash ?? null, signing: fill.receipt?.signing ?? null });
+    transactionHash: fill.receipt?.hash ?? null, signing: fill.receipt?.signing ?? null, sweep: fill.receipt?.sweep ?? null });
   const outcome = await runModelAgent(inference, {
     ...options,
-    instructions: `Use the configured ${activity} on NEAR testnet. Action shape: ${shape[activity]}. Use atomic integer strings and basis points. Read the guard, preview, and apply the exact same action only if asked. A grant signs granted methods without a browser prompt and reports signing "grant". Say a wallet approval is required only when signing is "browser-wallet". Limits cannot be changed through tools. Never invent a fill, reward, hash or transaction.`,
+    instructions: `Use the configured ${activity} on NEAR testnet. Action shape: ${shape[activity]}. Use atomic integer strings and basis points. Read the guard, then preview and apply once for every action the user requested. Preview again before every apply. A grant signs granted methods without a browser prompt and reports signing "grant". Say a wallet approval is required only when signing is "browser-wallet". Do not stop after the first confirmation. Limits cannot be changed through tools. Never invent a fill, reward, hash or transaction.`,
     definitions: {
       strategy_guard: { description: 'Read the testnet execution guard.', properties: {}, required: [] },
       strategy_preview: actionTool('Preview a guarded action using current venue data.'),
-      strategy_apply: actionTool('Submit the same previewed action. A grant signs it; otherwise the owner approves it in the browser.'),
+      strategy_apply: actionTool('Submit one previewed action. Preview again before submitting another. A grant signs it; otherwise the owner approves that action in the browser.'),
     },
     handlers: {
       async strategy_guard(args) {
         if (!args || Object.keys(args).length) throw new Error('INVALID_GUARD_QUERY');
-        const current = await readAgentState(agent);
+        const current = await loadState(agent);
         return { policy: current.strategyPolicies?.[activity] };
       },
       async strategy_preview(args) {
         const action = parse(args);
-        const checked = await runStrategyTask(agent, activity, action, { signal: options.signal });
-        preview = { action: JSON.stringify(action), at: Date.now() };
+        const checked = await runTask(agent, activity, action, { signal: options.signal });
+        preview = { action: JSON.stringify(action), executionAccountId: checked.executionAccountId, at: Date.now() };
         return summary(checked);
       },
       async strategy_apply(args) {
         const action = parse(args);
-        if (approvalRequested) throw new Error('STRATEGY_APPROVAL_ALREADY_REQUESTED');
-        if (!preview || preview.action !== JSON.stringify(action) || Date.now() - preview.at > 30000) throw new Error('MATCHING_STRATEGY_PREVIEW_REQUIRED');
-        approvalRequested = true;
-        result = await runStrategyTask(agent, activity, action, { execute: true, signal: options.signal });
+        if (!preview || preview.action !== JSON.stringify(action) || preview.applied || Date.now() - preview.at > 30000) throw new Error('MATCHING_STRATEGY_PREVIEW_REQUIRED');
+        preview.applied = true;
+        result = await runTask(agent, activity, action, { execute: true, expectedExecutionAccountId: preview.executionAccountId, signal: options.signal });
+        results.push(result);
         return summary(result);
       },
     },
-    finishOnTool: item => item.status === 'wallet-confirmed' ? `NEAR testnet ${activity} confirmed. ${item.explorerUrl}` : undefined,
   });
-  return { ...outcome, activity, mode: 'wallet', result: result ?? null };
+  return { ...outcome, activity, mode: 'wallet', result: result ?? null, results };
 }

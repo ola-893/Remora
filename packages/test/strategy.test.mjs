@@ -23,8 +23,10 @@ test('Rhea Lending supply is signed for the NEP-141 token and withdrawals use le
   })[method];
   const supply = await plan('yield-reallocation', { token, operation: 'supply', amount: '1000000' }, guards, view);
   assert.equal(supply.receiverId, token);
+  assert.equal(supply.actions[0].params.deposit, '1');
   assert.deepEqual(supply.actions[0].params.args, { receiver_id: LENDING, amount: '1000000', msg: '' });
   const withdraw = await plan('yield-reallocation', { token, operation: 'withdraw', amount: '250000' }, guards, view);
+  assert.equal(withdraw.actions[0].params.deposit, '1');
   assert.equal(withdraw.receiverId, LENDING);
   assert.deepEqual(withdraw.actions[0].params.args.actions, [{ Withdraw: { token_id: token, max_amount: '250000000000000000' } }]);
 });
@@ -111,6 +113,7 @@ test('a range entry confirms the receipt position and rejects an unrelated range
     execute: true,
     transact: async (tx, { beforeSubmit }) => {
       assert.equal(tx.actions[0].params.methodName, 'add_liquidity');
+      assert.equal(tx.actions[0].params.deposit, '0');
       await beforeSubmit();
       positions = [{ lpt_id, pool_id: pool, left_point: 40, right_point }];
       return { value: lpt_id, explorerUrl: 'https://testnet.nearblocks.io/txns/test-receipt' };
@@ -132,6 +135,7 @@ test('rebalance uses deposited balances, pool reserves, and a fresh Rhea minimum
   const guard = { targets: '0', assets: [wrap, rft].map(ftAsset).join(','), 'max-inputs': caps([ftAsset(wrap), 475]) };
   const checked = await plan('portfolio-rebalance', input, guard, view);
   assert.equal(checked.receiverId, EXCHANGE);
+  assert.equal(checked.actions[0].params.deposit, '1');
   assert.equal(checked.actions[0].params.args.actions[0].min_amount_out, '938');
   await assert.rejects(plan('portfolio-rebalance', input, { ...guard, 'max-inputs': caps([ftAsset(wrap), 474]) }, view), /STRATEGY_INPUT_LIMIT/);
 });
@@ -196,6 +200,7 @@ test('limit-order cancellation and claim are tied to the wallet and copy placeme
   await assert.rejects(plan('limit-orders', claim, guards, view, { orderClientId }), /DCL_NO_ORDER_PROCEEDS/);
   await assert.rejects(plan('limit-orders', cancel, guards, view, { orderClientId: 'd'.repeat(32) }), /DCL_LOCAL_ORDER_NOT_FOUND/);
   const result = await plan('limit-orders', cancel, guards, view, { orderClientId, execute: true, transact: async (tx, { beforeSubmit }) => {
+    assert.equal(tx.actions[0].params.deposit, '0');
     assert.deepEqual(tx.actions[0].params.args, { order_id: follower.order_id, amount: '70' });
     await beforeSubmit();
     open = [leader, otherWallet];
@@ -212,6 +217,9 @@ test('wallet submission checks authority again and an expired authorization prev
     : { staked_balance: '100', unstaked_balance: '0' };
   const guard = { targets: RNEAR, 'max-inputs': caps([NEAR_ASSET, 100]) };
   let broadcast = false;
+  const unstake = await plan('staking-moves', { pool: RNEAR, operation: 'unstake', amount: '50' }, guard, view);
+  assert.equal(unstake.actions.at(-1).params.methodName, 'unstake');
+  assert.equal(unstake.actions.at(-1).params.deposit, '0');
   await assert.rejects(plan('staking-moves', { pool: RNEAR, operation: 'unstake', amount: '50' }, guard, view, {
     execute: true,
     authorize: async inputs => { assert.deepEqual(inputs, { [NEAR_ASSET]: '50' }); throw new Error('COPY_AUTHORITY_EXPIRED'); },
