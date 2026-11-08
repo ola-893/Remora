@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdir, mkdtemp, readFile } from 'node:fs/promises';
-import { KeyPair, PublicKey, actions } from 'near-api-js';
+import { Account, KeyPair, KeyPairSigner, PublicKey, actions, keyToImplicitAddress } from 'near-api-js';
 import { createSandbox, wasmPath } from '../scripts/sandbox.mjs';
 import { NearAgentStreamsClient } from '../sdk/index.mjs';
 import { signPermit } from '../lib/permit.mjs';
-import { browserDeploymentSteps } from '../../packages/cli/src/browser-setup.mjs';
+import { bootstrapActions, browserDeploymentSteps } from '../../packages/cli/src/browser-setup.mjs';
 import { verifyOwnerTransaction } from '../../packages/cli/src/owner-wallet.mjs';
 
 function nativeAction(a) {
@@ -24,6 +24,21 @@ test('browser-owner deployment transaction plans and owner withdrawals execute o
   t.after(async () => { const stop = setTimeout(() => env.sandbox.childProcess?.kill('SIGKILL'), 5000); stop.unref(); try { await env.sandbox.tearDown(); } finally { clearTimeout(stop); } });
   const ownerId = env.config.ownerId, vaultId = 'browser-vault.' + ownerId, agentId = 'browser-agent.' + ownerId;
   const agentKey = KeyPair.fromRandom('ed25519'), policyKey = KeyPair.fromRandom('ed25519');
+  const wasm = await readFile(wasmPath('agentpay_vault'));
+  const vaultBootstrap = KeyPair.fromRandom('ed25519'), agentBootstrap = KeyPair.fromRandom('ed25519');
+  const implicitVault = keyToImplicitAddress(vaultBootstrap.getPublicKey()), implicitAgent = keyToImplicitAddress(agentBootstrap.getPublicKey());
+  const implicit = { plan: { ownerId, vaultId: implicitVault, agentId: implicitAgent, recipientId: ownerId, tokenId: env.config.tokenId }, ownerPublicKey: env.keys.owner.getPublicKey().toString(), agentPublicKey: agentKey.getPublicKey().toString(), policyPublicKey: policyKey.getPublicKey().toString() };
+  for (const [role, accountId, key, amount] of [['vault', implicitVault, vaultBootstrap, 5000000000000000000000000n], ['agent', implicitAgent, agentBootstrap, 500000000000000000000000n]]) {
+    await env.accounts.outsider.signAndSendTransaction({ receiverId: accountId, actions: [actions.transfer(amount)], waitUntil: 'FINAL' });
+    const account = new Account(accountId, env.provider, KeyPairSigner.fromSecretKey(key.toString()));
+    const result = await account.signAndSendTransaction({ receiverId: accountId, actions: bootstrapActions(role, implicit, wasm, key.getPublicKey()), waitUntil: 'FINAL' });
+    assert.ok('SuccessValue' in result.status);
+    const { keys } = await env.provider.viewAccessKeyList({ accountId, blockQuery: { finality: 'final' } });
+    assert.deepEqual(keys.filter(k => k.access_key.permission === 'FullAccess').map(k => k.public_key), [implicit.ownerPublicKey]);
+    assert.ok(!keys.some(k => k.public_key === key.getPublicKey().toString()));
+  }
+  const implicitClient = new NearAgentStreamsClient({ vaultId: implicitVault, provider: env.provider, accountId: implicitAgent, privateKey: agentKey.toString() });
+  assert.equal((await implicitClient.assertRestrictedAgent()).owner_id, ownerId);
   const steps = browserDeploymentSteps({ plan: { ownerId, vaultId, agentId, recipientId: ownerId }, ownerPublicKey: env.keys.owner.getPublicKey().toString(), agentPublicKey: agentKey.getPublicKey().toString(), policyPublicKey: policyKey.getPublicKey().toString(), wasm: await readFile(wasmPath('agentpay_vault')) });
   // The sandbox uses its local test token; production plans pin Circle testnet USDC.
   steps[0].actions.at(-1).params.args.token_id = env.config.tokenId;
