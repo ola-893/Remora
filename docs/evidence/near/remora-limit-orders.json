@@ -1,0 +1,58 @@
+{
+  "date": "2026-11-08",
+  "network": "testnet",
+  "activity": "limit-orders",
+  "venue": "dclv2.ref-dev.testnet",
+  "pool": "usdc.fakes.testnet|wrap.testnet|2000",
+  "point": 288800,
+  "build": "Locally packed npm CLI, installed into a clean prefix",
+  "signer": "Meteor browser wallet",
+  "leaderAndFollower": "Separate CLI profiles connected to the same testnet owner wallet",
+  "placements": [
+    {
+      "order": "418",
+      "placeHash": "8znBpDf5PC7bFk8rcczcWza8q2FpVhBA9WW8BgHimctw",
+      "cancelHash": "CmComj9i4S64htYpWECkXYvkKTQKnfGmZ8GXpzbq4t1X",
+      "cancelVerification": "NEAR final receipt and history confirmed the native NEAR refund; the initial CLI expected a wNEAR balance increase"
+    },
+    {
+      "order": "419",
+      "placeHash": "XHgxDM6N2SwxwGxRUUVyszTPr9Lwionu4k6iPCbFiXC",
+      "cancelHash": "A47BFWSep2nw8Rz37AMMe1cZZAwT7iTdP2JpPaQTetEq",
+      "cancelVerification": "wallet-confirmed"
+    },
+    {
+      "order": "420",
+      "placeHash": "8Yhqan68s1uL4ux5cR4wTvYRDbUZwoP1kSmwaVWwjZFk",
+      "cancelHash": "5mLPwktJLA7uxdAEw2QM4dMYzq7Wcwi1MScjSvG5NiU8",
+      "cancelVerification": "wallet-confirmed"
+    }
+  ],
+  "eachOrderLockedRawWnear": "2000000000000000000000",
+  "eachOrderRefundedYoctoNear": "2000000000000000000000",
+  "activeOrdersAfterCleanup": [],
+  "failedPlacement": {
+    "hash": "GFAQ5PdXC1fYjc5CB8uZudmuyRSznQ7FzyRhahPHizix",
+    "reason": "The venue rejected an empty optional referral account ID",
+    "refundedRawWnear": "2000000000000000000000",
+    "reconciled": true
+  },
+  "paidCopy": {
+    "unpaidFeedHttpStatus": 402,
+    "fundHash": "BxmxkTz2tQwLPJFK4j42dhuztArJgMWV9vH7A72ewr9R",
+    "openHash": "XAdKHGx9jy1mbtT3d7kf6T8MMx64GGqs5AxzPiyvrAy",
+    "closeHash": "FQLautvUCqGpoY2p6F5bfAJz1KFLeSYb63MzThWdayCV",
+    "escrowRawUsdc": "900",
+    "spentRawUsdc": "399",
+    "availableAfterCloseRawUsdc": "601",
+    "reservedAfterCloseRawUsdc": "0",
+    "activeSessionAfterClose": null,
+    "queuedPlacements": 2,
+    "copyBps": 5000,
+    "followerInputRawWnear": "1000000000000000000000",
+    "followerSettlement": "BLOCKED: both browser approvals expired before signing",
+    "cancelWithoutFollowerPlacement": "DCL_LOCAL_ORDER_NOT_FOUND"
+  },
+  "claimVerification": "Fixture exercise of the proceeds transfer and unchanged resting order size",
+  "exploreVerification": "The frontend verifier accepted the signed running offer and built a limit-orders copy command"
+}

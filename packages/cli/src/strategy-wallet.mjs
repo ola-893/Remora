@@ -172,6 +172,7 @@ async function limitOrderPlan(action, account_id, rpc, _policy, clientId) {
         market.whitelist !== null || !Number.isInteger(market.point_delta) || market.point_delta <= 0 ||
         !Number.isInteger(market.current_point)) throw new Error('DCL_POOL_NOT_AVAILABLE');
     if (point % market.point_delta) throw new Error('DCL_ORDER_POINT_NOT_ALIGNED');
+    // DCL points express the price of X in Y.
     if (sellToken === x ? point <= market.current_point : point >= market.current_point) throw new Error('DCL_ORDER_WOULD_CROSS_MARKET');
     if (!storage || storage.cur_order_slots + storage.cur_liquidity_slots >= storage.max_slots) throw new Error('DCL_STORAGE_REQUIRED');
     if (!registered) throw new Error('DCL_ORDER_BUY_TOKEN_STORAGE_REQUIRED: register the receiving wallet on ' + buyToken);
@@ -302,7 +303,10 @@ export async function runWalletStrategy(activity, action, policy, {
   });
   const updated = await views(wallet.rpcUrl);
   const confirmation = await confirms(receipt, updated.view);
-  if (!confirmation) throw new Error(`STRATEGY_OUTCOME_UNCONFIRMED: inspect ${receipt.explorerUrl} before another execution. Action ID ${operationId}.`);
+  if (!confirmation) {
+    const reference = operationId ? ` Action ID ${operationId}.` : '';
+    throw new Error(`STRATEGY_OUTCOME_UNCONFIRMED: inspect ${receipt.explorerUrl} before another execution.${reference}`);
+  }
   return { status: 'wallet-confirmed', mode: 'wallet', activity, action, network: 'testnet',
     ownerId: wallet.accountId, inputs: plan.inputs, receipt, evidence: plan.evidence, signedTransactions: 1,
     ...(activity === 'limit-orders' ? { order: confirmation } : {}) };

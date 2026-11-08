@@ -69,7 +69,9 @@ async function bootstrap(role, record, wasm, provider, save) {
       try {
         outcome = await provider.sendTransactionUntil(signed, 'FINAL');
       } catch (error) {
-        if (error.name === 'TransactionExpiredError') {
+        // An RPC retry may encounter the removed bootstrap key after the first submission landed.
+        outcome = await provider.viewTransactionStatus({ txHash: pending.hash, accountId, waitUntil: 'FINAL' }).catch(() => null);
+        if (!outcome && error.name === 'TransactionExpiredError') {
           const key = await provider.viewAccessKey({ accountId, publicKey, blockQuery: { finality: 'final' } });
           if (BigInt(key.nonce) < signed.transaction.nonce) {
             // The expired transaction cannot land, and its nonce was never consumed.
@@ -78,7 +80,7 @@ async function bootstrap(role, record, wasm, provider, save) {
             throw new Error('BOOTSTRAP_TRANSACTION_EXPIRED: repeat agent setup --resume --deploy.');
           }
         }
-        throw error;
+        if (!outcome) throw error;
       }
     }
     if (outcome.final_execution_status !== 'FINAL' || outcome.transaction?.hash !== pending.hash) throw new Error(`BOOTSTRAP_OUTCOME_UNCONFIRMED: ${pending.hash}`);
