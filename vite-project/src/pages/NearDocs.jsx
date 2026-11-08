@@ -48,8 +48,8 @@ export default function NearDocs() {
       </ol>
       <h2>Configure and run an agent</h2>
       <p>Build the CLI from the source checkout with npm run pack:distribution. The package README lists the tarballs to install.</p>
-      <pre><code>{"agentstreams config limits --budget 0.10 --max-stream 0.01 --max-rate 0.0001 --max-duration 1000\nagentstreams config set --max-5xx 3 --idle-timeout 60 --max-requests 100 --reuse true\nagentstreams service set --url https://YOUR-API.example --request-path /research\nagentstreams inference set --base-url http://localhost:11434/v1 --model YOUR_MODEL\nagentstreams payments --enable\nagentstreams agent run --prompt \"Use the configured paid API to research payment streams.\""}</code></pre>
-      <p>Use an OpenAI-compatible local or cloud inference endpoint, or install the MCP tools into Cursor, Codex or another MCP harness. Service rules include separate consecutive 5xx, transport and health failure thresholds. The paid API must implement agentStreams’s NEAR quote, health, payment challenge and session protocol; other protocols need adapters.</p>
+      <pre><code>{"agentstreams config limits --budget 0.10 --max-stream 0.01 --max-rate 0.0001 --max-duration 1000\nagentstreams config set --max-5xx 3 --idle-timeout 60 --max-requests 100 --reuse true\nagentstreams service set --url https://YOUR-API.example --request-path /research\nagentstreams inference set --provider local --base-url http://localhost:11434/v1 --model YOUR_MODEL\nagentstreams payments --enable\nagentstreams agent run --prompt \"Use the configured paid API to research payment streams.\""}</code></pre>
+      <p>Configure a tool-capable local model or NEAR AI in the CLI. Use <code>agentstreams inference models --provider near-ai</code> to find an eligible model, then run <code>agentstreams inference set --provider near-ai --model MODEL --api-key</code> and enter the key at the hidden prompt. The paid API must implement the agentStreams NEAR quote, health, payment challenge and session protocol.</p>
       <h2>Verify the public NEAR testnet run</h2>
       <pre><code>{"agentstreams verify\nagentstreams ui"}</code></pre>
       <p>

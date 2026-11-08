@@ -25,7 +25,7 @@ Staking shows pool actions such as stake, unstake and withdraw through receipt d
 Liquidity ranges show pool actions and receipt details. Time in range, fees and impermanent loss need position snapshots.
 Portfolio rebalance shows rebalance activity and receipt details. Weight drift and returns need portfolio snapshots.
 Yield reallocation shows lending actions and receipts. Net yield needs balances and valuation.
-Reward reinvestment shows compounding actions and receipts. Net reward needs balance changes and costs.
+Limit orders show placement, cancellation and claim receipts. Fill rates and returns require order-level data.
 Prediction markets are outside the approved directory because the CLI does not have a supported testnet venue.
 
 Run and register publishers

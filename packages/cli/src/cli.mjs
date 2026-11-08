@@ -84,7 +84,6 @@ Connect inference, then run an agent:
   agentstreams inference set --provider local --model MODEL [--base-url LOOPBACK_URL]
   agentstreams inference set --provider near-ai --model MODEL --api-key
                                                 Enter your API key at a hidden prompt to save it locally
-  agentstreams inference set --base-url https://api.openai.com/v1 --model YOUR_MODEL --api-key
   agentstreams agent run --prompt "What you want the enabled activity to do."
                                                 Uses the one enabled activity. Pass --activity when several are enabled.
   agentstreams install mcp                       Print stdio config for other MCP clients
@@ -105,9 +104,9 @@ Operate the same streams directly:
 
 Common: --project PATH, --agent NAME, --json, --help, --version
 Financial flags and positional fund/withdraw use decimal USDC. Legacy fund --amount uses raw units.
-Only agentStreams-compatible paid APIs are supported. Inference must support OpenAI-compatible chat tool calls, or run through an MCP harness.
+Paid APIs must implement the agentStreams protocol. CLI inference uses a local tool-capable endpoint or NEAR AI. MCP clients connect to the tool server separately.
 One service and one active stream per profile. Streams have no time limit by default; access ends on closure or prepaid funds running out. Run the agent/MCP/monitor for automatic health and idle closure.
-Local signing trusts the host. No TEE, gas sponsor or production security guarantee.
+Signing depends on the security of the local host. NEAR AI response attestation can be verified separately.
 `;
 const integer = value => { if (!/^[0-9]+$/.test(value || '')) throw new Error('Expected a positive integer.'); return Number(value); };
 const boolean = value => { if (!['true', 'false'].includes(value)) throw new Error('Use true or false.'); return value === 'true'; };
