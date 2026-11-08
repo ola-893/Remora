@@ -1,0 +1,268 @@
+TAP version 13
+# Subtest: CLI exposes operational controls and rejects removed scripted commands
+ok 1 - CLI exposes operational controls and rejects removed scripted commands
+  ---
+  duration_ms: 1302.890458
+  type: 'test'
+  ...
+# Subtest: cold testnet init gives funding/setup steps without generating keys or pretending to deploy
+ok 2 - cold testnet init gives funding/setup steps without generating keys or pretending to deploy
+  ---
+  duration_ms: 260.175125
+  type: 'test'
+  ...
+# Subtest: Cursor installation preserves other servers, supports dry-run/idempotence and refuses conflicts
+ok 3 - Cursor installation preserves other servers, supports dry-run/idempotence and refuses conflicts
+  ---
+  duration_ms: 4.618375
+  type: 'test'
+  ...
+# Subtest: Codex installation preserves root settings, table scope, comments and existing AGENTS guidance
+ok 4 - Codex installation preserves root settings, table scope, comments and existing AGENTS guidance
+  ---
+  duration_ms: 4.10525
+  type: 'test'
+  ...
+# Subtest: installers migrate managed AgentPay configuration and keep unrelated entries
+ok 5 - installers migrate managed AgentPay configuration and keep unrelated entries
+  ---
+  duration_ms: 6.299916
+  type: 'test'
+  ...
+# Subtest: installers reject malformed configuration and symlink escapes without changing other files
+ok 6 - installers reject malformed configuration and symlink escapes without changing other files
+  ---
+  duration_ms: 1.559083
+  type: 'test'
+  ...
+# Subtest: harness installers preserve an explicit private profile home without copying model secrets
+ok 7 - harness installers preserve an explicit private profile home without copying model secrets
+  ---
+  duration_ms: 2.53425
+  type: 'test'
+  ...
+# Subtest: real stdio MCP client lists strict tools and completes an offline session and denied payment
+ok 8 - real stdio MCP client lists strict tools and completes an offline session and denied payment
+  ---
+  duration_ms: 137.234584
+  type: 'test'
+  ...
+# Subtest: paper trade confirmation uses quoted token units and needs no model summary
+ok 9 - paper trade confirmation uses quoted token units and needs no model summary
+  ---
+  duration_ms: 1.617375
+  type: 'test'
+  ...
+# Subtest: named CLI agents isolate task, publication, inference setup and guard settings
+ok 10 - named CLI agents isolate task, publication, inference setup and guard settings
+  ---
+  duration_ms: 5490.427667
+  type: 'test'
+  ...
+# Subtest: spot quote and settlement are bound to size, price and agent identity
+ok 11 - spot quote and settlement are bound to size, price and agent identity
+  ---
+  duration_ms: 0.916667
+  type: 'test'
+  ...
+# Subtest: testing gateway approvals are single use
+ok 12 - testing gateway approvals are single use
+  ---
+  duration_ms: 2.134625
+  type: 'test'
+  ...
+# Subtest: guarded fetch serializes concurrent admission, reuses a session and denies a different tier
+ok 13 - guarded fetch serializes concurrent admission, reuses a session and denies a different tier
+  ---
+  duration_ms: 29.625334
+  type: 'test'
+  ...
+# Subtest: guarded fetch refuses credential forwarding, unsafe retries, foreign origins and unsupported challenges
+ok 14 - guarded fetch refuses credential forwarding, unsafe retries, foreign origins and unsupported challenges
+  ---
+  duration_ms: 0.445666
+  type: 'test'
+  ...
+# Subtest: a repeated supported challenge retries once without a second payment; redirects are forbidden
+ok 15 - a repeated supported challenge retries once without a second payment; redirects are forbidden
+  ---
+  duration_ms: 0.265042
+  type: 'test'
+  ...
+# Subtest: Vercel tools use real AI SDK schemas; direct execute also rejects extra payment parameters
+ok 16 - Vercel tools use real AI SDK schemas; direct execute also rejects extra payment parameters
+  ---
+  duration_ms: 0.692292
+  type: 'test'
+  ...
+# Subtest: an aborted request never opens a payment
+ok 17 - an aborted request never opens a payment
+  ---
+  duration_ms: 0.313417
+  type: 'test'
+  ...
+# Subtest: public replay verification checks final receipts, deployed code and settled stream via read-only methods
+ok 18 - public replay verification checks final receipts, deployed code and settled stream via read-only methods
+  ---
+  duration_ms: 12.778292
+  type: 'test'
+  ...
+# Subtest: replay verification rejects wrong chain, replaced code, altered receipt and unfinished execution
+ok 19 - replay verification rejects wrong chain, replaced code, altered receipt and unfinished execution
+  ---
+  duration_ms: 31.536042
+  type: 'test'
+  ...
+# Subtest: opaque approvals are single-use; duplicate submission and readonly profiles cannot pay
+ok 20 - opaque approvals are single-use; duplicate submission and readonly profiles cannot pay
+  ---
+  duration_ms: 45.30075
+  type: 'test'
+  ...
+# Subtest: changed intent and a fresh policy denial never submit a transaction
+ok 21 - changed intent and a fresh policy denial never submit a transaction
+  ---
+  duration_ms: 2.824458
+  type: 'test'
+  ...
+# Subtest: uncertain outcomes persist across instances; reconciliation confirms state without resubmitting
+ok 22 - uncertain outcomes persist across instances; reconciliation confirms state without resubmitting
+  ---
+  duration_ms: 31.201792
+  type: 'test'
+  ...
+# Subtest: unconfirmed or mismatched reconciliation remains blocked
+ok 23 - unconfirmed or mismatched reconciliation remains blocked
+  ---
+  duration_ms: 16.929917
+  type: 'test'
+  ...
+# Subtest: a different process executor cannot double-open the same vault state
+ok 24 - a different process executor cannot double-open the same vault state
+  ---
+  duration_ms: 17.171958
+  type: 'test'
+  ...
+# Subtest: approvals expire and are scoped to the creating executor
+ok 25 - approvals expire and are scoped to the creating executor
+  ---
+  duration_ms: 9.53675
+  type: 'test'
+  ...
+# Subtest: a long-running executor rereads operator payment enablement before submission
+ok 26 - a long-running executor rereads operator payment enablement before submission
+  ---
+  duration_ms: 2.492208
+  type: 'test'
+  ...
+# Subtest: a disabled payment profile can still close an existing active stream
+ok 27 - a disabled payment profile can still close an existing active stream
+  ---
+  duration_ms: 20.283709
+  type: 'test'
+  ...
+# Subtest: NEAR AI preset pins its endpoint and stores only a provider-specific key reference
+ok 28 - NEAR AI preset pins its endpoint and stores only a provider-specific key reference
+  ---
+  duration_ms: 0.762125
+  type: 'test'
+  ...
+# Subtest: provider request options handle NEAR reasoning controls without changing generic providers
+ok 29 - provider request options handle NEAR reasoning controls without changing generic providers
+  ---
+  duration_ms: 0.865625
+  type: 'test'
+  ...
+# Subtest: public catalog pagination reports capabilities without treating provider metadata as verified attestation
+ok 30 - public catalog pagination reports capabilities without treating provider metadata as verified attestation
+  ---
+  duration_ms: 56.315334
+  type: 'test'
+  ...
+# Subtest: named NEAR transport drives the shared tool loop, keeps the key off tools, and closes on error
+ok 31 - named NEAR transport drives the shared tool loop, keeps the key off tools, and closes on error
+  ---
+  duration_ms: 3.862416
+  type: 'test'
+  ...
+# Subtest: CLI saves the NEAR preset without RPC or reading a key value into configuration
+ok 32 - CLI saves the NEAR preset without RPC or reading a key value into configuration
+  ---
+  duration_ms: 742.500458
+  type: 'test'
+  ...
+# Subtest: live profile imports only separate runtime credentials, defaults readonly and binds to its project
+ok 33 - live profile imports only separate runtime credentials, defaults readonly and binds to its project
+  ---
+  duration_ms: 95.397375
+  type: 'test'
+  ...
+# Subtest: repository analysis returns real locations, never source or secret dependency URLs, and fingerprints edits
+ok 34 - repository analysis returns real locations, never source or secret dependency URLs, and fingerprints edits
+  ---
+  duration_ms: 19.214542
+  type: 'test'
+  ...
+# Subtest: syntax analysis ignores examples in strings and resolves shell imports rather than safe execFile wrappers
+ok 35 - syntax analysis ignores examples in strings and resolves shell imports rather than safe execFile wrappers
+  ---
+  duration_ms: 3.946584
+  type: 'test'
+  ...
+# Subtest: repository analysis bounds input, filters findings and refuses path traversal or unrecognized query parameters
+ok 36 - repository analysis bounds input, filters findings and refuses path traversal or unrecognized query parameters
+  ---
+  duration_ms: 3.489958
+  type: 'test'
+  ...
+# Subtest: 5xx thresholds persist independently of healthy probes; successes reset consecutive errors
+ok 37 - 5xx thresholds persist independently of healthy probes; successes reset consecutive errors
+  ---
+  duration_ms: 0.730708
+  type: 'test'
+  ...
+# Subtest: configuration rejects bypasses and decimal money is exact
+ok 38 - configuration rejects bypasses and decimal money is exact
+  ---
+  duration_ms: 0.465417
+  type: 'test'
+  ...
+# Subtest: host HTTP observations trigger automatic closure at configured limit without reopening
+ok 39 - host HTTP observations trigger automatic closure at configured limit without reopening
+  ---
+  duration_ms: 4.63275
+  type: 'test'
+  ...
+# Subtest: real chat HTTP tool loop forwards model-selected query and closes on exit without credential leakage
+ok 40 - real chat HTTP tool loop forwards model-selected query and closes on exit without credential leakage
+  ---
+  duration_ms: 27.396625
+  type: 'test'
+  ...
+# Subtest: open-ended stream checks have no clock expiry but reject exhaustion and explicit closure
+ok 41 - open-ended stream checks have no clock expiry but reject exhaustion and explicit closure
+  ---
+  duration_ms: 0.303333
+  type: 'test'
+  ...
+# Subtest: bundled viewer serves recorded assets, disables live mode and refuses signing/file access
+ok 42 - bundled viewer serves recorded assets, disables live mode and refuses signing/file access
+  ---
+  duration_ms: 70.441833
+  type: 'test'
+  ...
+# Subtest: an unavailable worker rejects current and subsequent requests without exposing raw errors
+ok 43 - an unavailable worker rejects current and subsequent requests without exposing raw errors
+  ---
+  duration_ms: 107.202667
+  type: 'test'
+  ...
+1..43
+# tests 43
+# suites 0
+# pass 43
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5741.684458

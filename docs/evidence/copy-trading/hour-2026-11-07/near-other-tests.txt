@@ -1,0 +1,82 @@
+TAP version 13
+# Subtest: admission fails closed for unhealthy, stale, redirected, malformed or oversized quotes
+ok 1 - admission fails closed for unhealthy, stale, redirected, malformed or oversized quotes
+  ---
+  duration_ms: 0.646208
+  type: 'test'
+  ...
+# Subtest: open-ended admission reserves the owner-selected deposit without a time ceiling
+ok 2 - open-ended admission reserves the owner-selected deposit without a time ceiling
+  ---
+  duration_ms: 0.638417
+  type: 'test'
+  ...
+# Subtest: price checks reject depeg even when sources agree, stale data and disagreement
+ok 3 - price checks reject depeg even when sources agree, stale data and disagreement
+  ---
+  duration_ms: 0.09675
+  type: 'test'
+  ...
+# Subtest: six-decimal units preserve precision and unfinished transactions cannot be called receipts
+ok 4 - six-decimal units preserve precision and unfinished transactions cannot be called receipts
+  ---
+  duration_ms: 0.197291
+  type: 'test'
+  ...
+# Subtest: audit chain detects altered decisions and reordered events
+ok 5 - audit chain detects altered decisions and reordered events
+  ---
+  duration_ms: 0.462417
+  type: 'test'
+  ...
+# Subtest: deployment plan rejects mainnet, credentials in URLs and invalid account labels
+ok 6 - deployment plan rejects mainnet, credentials in URLs and invalid account labels
+  ---
+  duration_ms: 0.670416
+  type: 'test'
+  ...
+# Subtest: missing accounts or owner credential cannot be called ready
+ok 7 - missing accounts or owner credential cannot be called ready
+  ---
+  duration_ms: 1.09825
+  type: 'test'
+  ...
+# Subtest: wrong network stops all account and token RPC calls
+ok 8 - wrong network stops all account and token RPC calls
+  ---
+  duration_ms: 0.14175
+  type: 'test'
+  ...
+# Subtest: existing subaccount and ambiguous RPC failure both prevent deployment readiness
+ok 9 - existing subaccount and ambiguous RPC failure both prevent deployment readiness
+  ---
+  duration_ms: 0.352208
+  type: 'test'
+  ...
+# Subtest: restricted owner key, insufficient funds, token mismatch and invalid WASM fail closed
+ok 10 - restricted owner key, insufficient funds, token mismatch and invalid WASM fail closed
+  ---
+  duration_ms: 0.612417
+  type: 'test'
+  ...
+# Subtest: preflight uses the installed SDK against a real RPC transport and never sends mutations
+ok 11 - preflight uses the installed SDK against a real RPC transport and never sends mutations
+  ---
+  duration_ms: 29.781084
+  type: 'test'
+  ...
+# Subtest: actual repository analysis requires NEAR payment, reuses one stream and closes after three paid 503s
+ok 12 - actual repository analysis requires NEAR payment, reuses one stream and closes after three paid 503s
+  ---
+  duration_ms: 12214.055583
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12499.91825

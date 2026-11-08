@@ -1,0 +1,107 @@
+TAP version 13
+# Subtest: native NEAR vault: authority, policy, real API reuse, settlement and payout recovery
+    # Subtest: restricted key is verified and cannot transfer funds or alter policy
+    ok 1 - restricted key is verified and cannot transfer funds or alter policy
+      ---
+      duration_ms: 18.564167
+      type: 'test'
+      ...
+    # Subtest: full-access agent key cannot impersonate the restricted agent authority
+    ok 2 - full-access agent key cannot impersonate the restricted agent authority
+      ---
+      duration_ms: 706.237208
+      type: 'test'
+      ...
+    # Subtest: forged, altered, expired and cross-vault approvals fail onchain
+    ok 3 - forged, altered, expired and cross-vault approvals fail onchain
+      ---
+      duration_ms: 2985.855917
+      type: 'test'
+      ...
+    # Subtest: hard limits reject even correctly signed disallowed requests
+    ok 4 - hard limits reject even correctly signed disallowed requests
+      ---
+      duration_ms: 3772.643334
+      type: 'test'
+      ...
+    # Subtest: worker denies expensive tier and approves a real funded session
+    ok 5 - worker denies expensive tier and approves a real funded session
+      ---
+      duration_ms: 2461.937542
+      type: 'test'
+      ...
+    # Subtest: ten authenticated HTTP requests reuse one stream with no further agent transaction
+    ok 6 - ten authenticated HTTP requests reuse one stream with no further agent transaction
+      ---
+      duration_ms: 61.5815
+      type: 'test'
+      ...
+    # Subtest: observed outage closes onchain and conserves earned plus refunded funds
+    ok 7 - observed outage closes onchain and conserves earned plus refunded funds
+      ---
+      duration_ms: 2213.956833
+      type: 'test'
+      ...
+    # Subtest: provider claim and owner refund reach actual token balances
+    ok 8 - provider claim and owner refund reach actual token balances
+      ---
+      duration_ms: 2734.624708
+      type: 'test'
+      ...
+    # Subtest: owner recovery works while paused without the policy worker
+    ok 9 - owner recovery works while paused without the policy worker
+      ---
+      duration_ms: 3691.715
+      type: 'test'
+      ...
+    # Subtest: provider can withdraw accrued earnings before closure without double credit
+    ok 10 - provider can withdraw accrued earnings before closure without double credit
+      ---
+      duration_ms: 3888.919833
+      type: 'test'
+      ...
+    # Subtest: failed asynchronous token payout restores the claim and a retry succeeds
+    ok 11 - failed asynchronous token payout restores the claim and a retry succeeds
+      ---
+      duration_ms: 5449.695375
+      type: 'test'
+      ...
+    # Subtest: cumulative budget is enforced across sessions and policy updates invalidate old permits
+    ok 12 - cumulative budget is enforced across sessions and policy updates invalidate old permits
+      ---
+      duration_ms: 21184.005125
+      type: 'test'
+      ...
+    # Subtest: open-ended subscriptions survive an hour, top up without reconnecting, and revoke on exhaustion or closure
+    ok 13 - open-ended subscriptions survive an hour, top up without reconnecting, and revoke on exhaustion or closure
+      ---
+      duration_ms: 198494.612
+      type: 'test'
+      ...
+    # Subtest: native audit root is owner-only, unique, and cannot authorize a payment
+    ok 14 - native audit root is owner-only, unique, and cannot authorize a payment
+      ---
+      duration_ms: 2207.937292
+      type: 'test'
+      ...
+    # Subtest: vault token balance equals every outstanding liability
+    ok 15 - vault token balance equals every outstanding liability
+      ---
+      duration_ms: 7.432583
+      type: 'test'
+      ...
+    1..15
+ok 1 - native NEAR vault: authority, policy, real API reuse, settlement and payout recovery
+  ---
+  duration_ms: 332107.41375
+  type: 'test'
+  ...
+1..1
+# tests 16
+# suites 0
+# pass 16
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 332232.970625

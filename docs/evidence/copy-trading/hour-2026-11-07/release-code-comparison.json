@@ -1,0 +1,12 @@
+{
+  "version": "0.6.0",
+  "differencesFromHourTestedInstall": [
+    "README.md",
+    "src/cli.mjs",
+    "src/vault-money.mjs"
+  ],
+  "onlyReadmeHelpAndRecoveryErrorTextChanged": true,
+  "contractAndTradingRuntimeIdentical": true,
+  "publishedCoreIntegrity": "sha512-e8oIiGTySClTUjPhufc9r04VWbJMRsSsrFQmYjH7ZJZj9cNU/zud5k6v1WP/j5VgzrC7HMW6kAcVOE3vHcygRw==",
+  "cliReleaseIntegrity": "sha512-ia7u7Te8bmCus+oifU1wp4nG9fixNNPBBFO7bneShTXTsXuFTd3J7ULhfIQ3IsR7EJIPHSE9DIYtl3svtfGyqg=="
+}

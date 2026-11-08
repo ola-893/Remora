@@ -1,0 +1,163 @@
+{
+  "status": "passed",
+  "installedFrom": "npm registry",
+  "cliVersion": "0.6.0",
+  "commands": [
+    [
+      "agent",
+      "create",
+      "npm-release-check"
+    ],
+    [
+      "agent",
+      "use",
+      "npm-release-check"
+    ],
+    [
+      "task",
+      "list"
+    ],
+    [
+      "task",
+      "enable",
+      "spot-trading",
+      "--paper-balances",
+      "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1=10000000"
+    ],
+    [
+      "inference",
+      "set",
+      "--base-url",
+      "http://127.0.0.1:11434/v1",
+      "--model",
+      "hf.co/unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_M",
+      "--max-output-tokens",
+      "2048",
+      "--timeout-seconds",
+      "120"
+    ],
+    [
+      "guard",
+      "set",
+      "execution",
+      "--activity",
+      "spot-trading",
+      "--assets",
+      "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1,nep141:wrap.near",
+      "--input-asset",
+      "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+      "--max-input-raw",
+      "1000000",
+      "--copy-input-raw",
+      "1000000",
+      "--max-notional",
+      "2",
+      "--max-age",
+      "120",
+      "--max-slippage-bps",
+      "100"
+    ],
+    [
+      "agent",
+      "run",
+      "--prompt",
+      "Buy wNEAR with exactly 1 USDC from my paper portfolio. Read my portfolio, get a signed live quote, and immediately execute exactly that order if the execution guard allows it.",
+      "--json"
+    ],
+    [
+      "task",
+      "portfolio"
+    ],
+    [
+      "status"
+    ]
+  ],
+  "fill": {
+    "id": "f271fa74bc565dd150631f061f26c5e9696f74fd595128f261345533d06f5459",
+    "at": 1794085382253,
+    "expiresAt": 1794085502253,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "274112835377949656121044",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.274112835377949656121044",
+    "execution": "paper",
+    "settlementRef": "1click-dry:1ac97c6e23503215c75b54733ceb323cde8405990030fb9805f874148530078e",
+    "quoteObservedAt": "2026-11-07T21:03:01.430Z"
+  },
+  "attempts": [
+    {
+      "completed": true,
+      "fillId": "f271fa74bc565dd150631f061f26c5e9696f74fd595128f261345533d06f5459",
+      "lastDenial": null
+    }
+  ],
+  "portfolio": {
+    "initial": {
+      "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "10000000"
+    },
+    "balances": {
+      "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "9000000",
+      "nep141:wrap.near": "274112835377949656121044"
+    },
+    "fills": [
+      {
+        "id": "f271fa74bc565dd150631f061f26c5e9696f74fd595128f261345533d06f5459",
+        "at": 1794085382253,
+        "expiresAt": 1794085502253,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "274112835377949656121044",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.274112835377949656121044",
+        "execution": "paper",
+        "settlementRef": "1click-dry:1ac97c6e23503215c75b54733ceb323cde8405990030fb9805f874148530078e",
+        "quoteObservedAt": "2026-11-07T21:03:01.430Z",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999708000000",
+            "minAmountIn": "1000000",
+            "amountOut": "274112835377949656121044",
+            "amountOutFormatted": "0.274112835377949656121044",
+            "amountOutUsd": "0.999708000000",
+            "minAmountOut": "271371707024170159559833",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T21:13:01.279Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:35MNGt8Vcxx9CyVupbB1Ue2aWqaCFQQ8Bdm9RjKFRgjnrprfw8QL47HaKm72rY7TQDGqpDYRjhbW1EQz8XtJENhK",
+          "timestamp": "2026-11-07T21:03:01.430Z",
+          "correlationId": "2a5c38bd-019e-4f40-a503-28d5ad6b93ae"
+        }
+      }
+    ]
+  }
+}

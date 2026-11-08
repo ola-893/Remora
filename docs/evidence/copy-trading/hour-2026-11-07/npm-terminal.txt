@@ -1,0 +1,320 @@
+
+% agentstream "agent" "create" "npm-release-check"
+{
+  "version": 1,
+  "name": "npm-release-check",
+  "id": "ap_704631e5ad68cccaf06cb48c49e114f2db267e8511b39c882a175f138a0ad2b1",
+  "publicKey": "ed25519:GPzgLFtaMZzLGczofCYLMJaD2ogsf9Fy4BMLxpYMpLKw",
+  "createdAt": "2026-11-07T21:02:14.625Z",
+  "next": "agentstreams task list",
+  "paymentSetup": "agentstreams agent setup --network testnet"
+}
+
+% agentstream "agent" "use" "npm-release-check"
+{
+  "selected": "npm-release-check",
+  "id": "ap_704631e5ad68cccaf06cb48c49e114f2db267e8511b39c882a175f138a0ad2b1"
+}
+
+% agentstream "task" "list"
+{
+  "activities": [
+    {
+      "id": "spot-trading",
+      "description": "Mirror an eligible spot swap.",
+      "status": "available",
+      "live": false,
+      "execution": null
+    },
+    {
+      "id": "staking-moves",
+      "description": "Follow validator or staking pool allocations.",
+      "status": "planned",
+      "live": false,
+      "execution": null
+    },
+    {
+      "id": "liquidity-ranges",
+      "description": "Mirror concentrated-liquidity ranges.",
+      "status": "planned",
+      "live": false,
+      "execution": null
+    },
+    {
+      "id": "prediction-markets",
+      "description": "Mirror outcome positions.",
+      "status": "planned",
+      "live": false,
+      "execution": null
+    },
+    {
+      "id": "portfolio-rebalance",
+      "description": "Follow portfolio target weights.",
+      "status": "planned",
+      "live": false,
+      "execution": null
+    },
+    {
+      "id": "yield-reallocation",
+      "description": "Follow lending or yield-vault allocations.",
+      "status": "planned",
+      "live": false,
+      "execution": null
+    },
+    {
+      "id": "reward-reinvestment",
+      "description": "Compound rewards following a published strategy.",
+      "status": "planned",
+      "live": false,
+      "execution": null
+    }
+  ]
+}
+
+% agentstream "task" "enable" "spot-trading" "--paper-balances" "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1=10000000"
+{
+  "activity": "spot-trading",
+  "enabled": true,
+  "config": {
+    "mode": "paper"
+  }
+}
+
+% agentstream "inference" "set" "--base-url" "http://127.0.0.1:11434/v1" "--model" "hf.co/unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_M" "--max-output-tokens" "2048" "--timeout-seconds" "120"
+{
+  "inference": {
+    "provider": "openai-compatible",
+    "protocol": "openai-chat",
+    "baseUrl": "http://127.0.0.1:11434/v1",
+    "model": "hf.co/unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_M",
+    "maxOutputTokens": 2048,
+    "timeoutSeconds": 120,
+    "maxSteps": 12
+  },
+  "credentialsStored": false,
+  "next": "agentstreams agent run --prompt \"Describe the task you want the agent to perform.\""
+}
+
+% agentstream "guard" "set" "execution" "--activity" "spot-trading" "--assets" "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1,nep141:wrap.near" "--input-asset" "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1" "--max-input-raw" "1000000" "--copy-input-raw" "1000000" "--max-notional" "2" "--max-age" "120" "--max-slippage-bps" "100"
+{
+  "activity": "spot-trading",
+  "execution": {
+    "assets": [
+      "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+      "nep141:wrap.near"
+    ],
+    "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "maxInput": "1000000",
+    "fixedInput": "1000000",
+    "maxAge": 120,
+    "slippageBps": 100,
+    "maxNotionalRawUSDC": "2000000"
+  }
+}
+
+% agentstream "agent" "run" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Read my portfolio, get a signed live quote, and immediately execute exactly that order if the execution guard allows it." "--json"
+{
+  "completed": true,
+  "steps": 3,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": {
+    "id": "f271fa74bc565dd150631f061f26c5e9696f74fd595128f261345533d06f5459",
+    "at": 1794085382253,
+    "expiresAt": 1794085502253,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "274112835377949656121044",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.274112835377949656121044",
+    "execution": "paper",
+    "settlementRef": "1click-dry:1ac97c6e23503215c75b54733ceb323cde8405990030fb9805f874148530078e",
+    "quoteObservedAt": "2026-11-07T21:03:01.430Z"
+  },
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "10000000"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T21:02:56.395Z",
+        "amountIn": "1000000",
+        "amountOut": "274037446809363861386138",
+        "minAmountOut": "271297072341270222772276",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.274037446809363861386138",
+        "amountInUsd": "0.999708000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "status": "paper-filled",
+        "mode": "paper",
+        "fill": {
+          "id": "f271fa74bc565dd150631f061f26c5e9696f74fd595128f261345533d06f5459",
+          "at": 1794085382253,
+          "expiresAt": 1794085502253,
+          "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "to": "nep141:wrap.near",
+          "amountIn": "1000000",
+          "amountOut": "274112835377949656121044",
+          "amountInFormatted": "1.0",
+          "amountOutFormatted": "0.274112835377949656121044",
+          "execution": "paper",
+          "settlementRef": "1click-dry:1ac97c6e23503215c75b54733ceb323cde8405990030fb9805f874148530078e",
+          "quoteObservedAt": "2026-11-07T21:03:01.430Z"
+        },
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "9000000",
+          "nep141:wrap.near": "274112835377949656121044"
+        },
+        "publication": null,
+        "signedTransactions": 0
+      }
+    },
+    {
+      "type": "answer",
+      "text": "Paper trade filled. Spent 1.0 USDC and received 0.274112835377949656121044 wNEAR.",
+      "source": "tool-result",
+      "steps": 3
+    }
+  ]
+}
+
+% agentstream "task" "portfolio"
+{
+  "mode": "paper",
+  "portfolio": {
+    "initial": {
+      "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "10000000"
+    },
+    "balances": {
+      "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "9000000",
+      "nep141:wrap.near": "274112835377949656121044"
+    },
+    "fills": [
+      {
+        "id": "f271fa74bc565dd150631f061f26c5e9696f74fd595128f261345533d06f5459",
+        "at": 1794085382253,
+        "expiresAt": 1794085502253,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "274112835377949656121044",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.274112835377949656121044",
+        "execution": "paper",
+        "settlementRef": "1click-dry:1ac97c6e23503215c75b54733ceb323cde8405990030fb9805f874148530078e",
+        "quoteObservedAt": "2026-11-07T21:03:01.430Z",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999708000000",
+            "minAmountIn": "1000000",
+            "amountOut": "274112835377949656121044",
+            "amountOutFormatted": "0.274112835377949656121044",
+            "amountOutUsd": "0.999708000000",
+            "minAmountOut": "271371707024170159559833",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T21:13:01.279Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:35MNGt8Vcxx9CyVupbB1Ue2aWqaCFQQ8Bdm9RjKFRgjnrprfw8QL47HaKm72rY7TQDGqpDYRjhbW1EQz8XtJENhK",
+          "timestamp": "2026-11-07T21:03:01.430Z",
+          "correlationId": "2a5c38bd-019e-4f40-a503-28d5ad6b93ae"
+        }
+      }
+    ]
+  }
+}
+
+% agentstream "status"
+{
+  "name": "npm-release-check",
+  "id": "ap_704631e5ad68cccaf06cb48c49e114f2db267e8511b39c882a175f138a0ad2b1",
+  "setup": {
+    "configured": false,
+    "inference": {
+      "provider": "openai-compatible",
+      "protocol": "openai-chat",
+      "baseUrl": "http://127.0.0.1:11434/v1",
+      "model": "hf.co/unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_M",
+      "maxOutputTokens": 2048,
+      "timeoutSeconds": 120,
+      "maxSteps": 12
+    }
+  },
+  "publicationEnabled": false,
+  "subscription": null,
+  "pendingTrade": false,
+  "lastRun": {
+    "at": "2026-11-07T21:03:02.258Z",
+    "activity": "spot-trading",
+    "mode": "paper",
+    "provider": "openai-compatible",
+    "model": "hf.co/unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_M",
+    "completed": true,
+    "fillId": "f271fa74bc565dd150631f061f26c5e9696f74fd595128f261345533d06f5459"
+  },
+  "paper": {
+    "balances": {
+      "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "9000000",
+      "nep141:wrap.near": "274112835377949656121044"
+    },
+    "recentFills": 1,
+    "lastFill": "f271fa74bc565dd150631f061f26c5e9696f74fd595128f261345533d06f5459"
+  }
+}

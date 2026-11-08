@@ -1,0 +1,3710 @@
+Private filesystem paths abbreviated. Commands and output are otherwise preserved, including the stale-quote denial and payout reconciliation.
+
+[2026-11-07T19:33:11.916Z] Setup % "npm" "install" "-g" "--prefix" "/private/hour-copy-run/install" "--ignore-scripts" "--no-audit" "--no-fund" "/private/distribution/ola-893-agentstreams-core-0.6.0.tgz" "/private/distribution/ola-893-agentstreams-cli-0.6.0.tgz"
+
+added 270 packages in 14s
+
+
+[2026-11-07T19:33:12.909Z] Leader % "agentstream" "agent" "create" "hour-leader"
+{
+  "version": 1,
+  "name": "hour-leader",
+  "id": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+  "publicKey": "ed25519:4RgeAHgToMKtxnHfr6hnRhYTdJB53793SWaQrLUhda2n",
+  "createdAt": "2026-11-07T19:33:12.898Z",
+  "next": "agentstreams task list",
+  "paymentSetup": "agentstreams agent setup --network testnet"
+}
+
+
+[2026-11-07T19:33:13.068Z] hour-leader % "agentstream" "task" "enable" "spot-trading" "--agent" "hour-leader" "--paper-balances" "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1=100000000"
+{
+  "activity": "spot-trading",
+  "enabled": true,
+  "config": {
+    "mode": "paper"
+  }
+}
+
+
+[2026-11-07T19:33:13.226Z] hour-leader % "agentstream" "guard" "set" "execution" "--agent" "hour-leader" "--activity" "spot-trading" "--assets" "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1,nep141:wrap.near" "--input-asset" "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1" "--max-input-raw" "1000000" "--copy-input-raw" "1000000" "--max-notional" "2" "--max-age" "120" "--max-slippage-bps" "100"
+{
+  "activity": "spot-trading",
+  "execution": {
+    "assets": [
+      "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+      "nep141:wrap.near"
+    ],
+    "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "maxInput": "1000000",
+    "fixedInput": "1000000",
+    "maxAge": 120,
+    "slippageBps": 100,
+    "maxNotionalRawUSDC": "2000000"
+  }
+}
+
+
+[2026-11-07T19:33:13.403Z] Copier % "agentstream" "agent" "create" "hour-copier"
+{
+  "version": 1,
+  "name": "hour-copier",
+  "id": "ap_61b68754b4b7122cb0af3214be602302118000ed01fcc4828332a1801cc234be",
+  "publicKey": "ed25519:E8iDDs2iC9Kqiiw35YKWMFMvMuhoaryFsWRb8aPLLcpW",
+  "createdAt": "2026-11-07T19:33:13.396Z",
+  "next": "agentstreams task list",
+  "paymentSetup": "agentstreams agent setup --network testnet"
+}
+
+
+[2026-11-07T19:33:13.551Z] hour-copier % "agentstream" "task" "enable" "spot-trading" "--agent" "hour-copier" "--paper-balances" "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1=100000000"
+{
+  "activity": "spot-trading",
+  "enabled": true,
+  "config": {
+    "mode": "paper"
+  }
+}
+
+
+[2026-11-07T19:33:13.702Z] hour-copier % "agentstream" "guard" "set" "execution" "--agent" "hour-copier" "--activity" "spot-trading" "--assets" "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1,nep141:wrap.near" "--input-asset" "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1" "--max-input-raw" "1000000" "--copy-input-raw" "1000000" "--max-notional" "2" "--max-age" "120" "--max-slippage-bps" "100"
+{
+  "activity": "spot-trading",
+  "execution": {
+    "assets": [
+      "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+      "nep141:wrap.near"
+    ],
+    "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "maxInput": "1000000",
+    "fixedInput": "1000000",
+    "maxAge": 120,
+    "slippageBps": 100,
+    "maxNotionalRawUSDC": "2000000"
+  }
+}
+
+
+[2026-11-07T19:33:13.863Z] Leader % "agentstream" "inference" "set" "--agent" "hour-leader" "--base-url" "http://127.0.0.1:11434/v1" "--model" "hf.co/unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_M" "--max-output-tokens" "2048" "--timeout-seconds" "120"
+{
+  "inference": {
+    "provider": "openai-compatible",
+    "protocol": "openai-chat",
+    "baseUrl": "http://127.0.0.1:11434/v1",
+    "model": "hf.co/unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_M",
+    "maxOutputTokens": 2048,
+    "timeoutSeconds": 120,
+    "maxSteps": 12
+  },
+  "credentialsStored": false,
+  "next": "agentstreams agent run --prompt \"Describe the task you want the agent to perform.\""
+}
+
+
+[2026-11-07T19:33:14.017Z] Leader % "agentstream" "publish" "set" "--agent" "hour-leader" "--url" "http://127.0.0.1:57812" "--duration" "0" "--rate" "0.000001" "--recipient" "agentpay-provider-20261102-b685bb.testnet"
+{
+  "origin": "http://127.0.0.1:57812",
+  "rateRawUSDCPerSecond": "1",
+  "durationSeconds": 0,
+  "recipient": "agentpay-provider-20261102-b685bb.testnet",
+  "journal": "local-encrypted",
+  "enabled": false
+}
+
+
+[2026-11-07T19:33:14.173Z] Leader % "agentstream" "publish" "start" "--agent" "hour-leader"
+{
+  "enabled": true,
+  "id": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+  "origin": "http://127.0.0.1:57812",
+  "next": "Run agentstreams agent run to serve the listing and gated journal."
+}
+
+
+[2026-11-07T19:33:14.173Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--rpc" "https://near-testnet.drpc.org"
+[foreground runner continues in its terminal; output saved in leader-server.log]
+
+[2026-11-07T19:33:15.410Z] Copier % "agentstream" "agent" "setup" "--agent" "hour-copier" "--network" "testnet" "--deployment" "/private/deployment.json"
+{
+  "mode": "testnet",
+  "paymentsEnabled": false,
+  "vaultId": "va1ac2e2d.agentpay-owner-20261102-52b1bd.testnet",
+  "agentId": "aa1ac2e2d.agentpay-owner-20261102-52b1bd.testnet",
+  "importedAuthorities": [
+    "agent",
+    "policy"
+  ],
+  "next": "agentstreams doctor"
+}
+
+
+[2026-11-07T19:33:23.050Z] Copier % "agentstream" "guard" "set" "payment" "--agent" "hour-copier" "--budget" "0.02" "--max-stream" "0.006" "--max-rate" "0.000005" "--max-duration" "0" "--recipient" "agentpay-provider-20261102-b685bb.testnet" "--owner-key" "/private/owner.json"
+{
+  "financialPolicy": {
+    "budget": "20000",
+    "max_deposit": "6000",
+    "max_rate": "5",
+    "max_duration_seconds": 0,
+    "recipients": [
+      "agentpay-provider-20261102-b685bb.testnet"
+    ]
+  },
+  "units": "raw USDC",
+  "transactionHash": "B5UzyTVyDpwrraZ71rJHXp2A42JiU4ErdRxRzyFcC4SZ",
+  "explorerUrl": "https://testnet.nearblocks.io/txns/B5UzyTVyDpwrraZ71rJHXp2A42JiU4ErdRxRzyFcC4SZ"
+}
+
+
+[2026-11-07T19:33:23.222Z] Copier % "agentstream" "guard" "set" "payment" "--agent" "hour-copier" "--poll-seconds" "20" "--idle-timeout" "300" "--max-requests" "10000" "--reuse" "true" "--max-health-failures" "3"
+{
+  "runtimePolicy": {
+    "maxConsecutive5xx": 3,
+    "maxConsecutiveTransportErrors": 2,
+    "maxConsecutiveHealthFailures": 3,
+    "idleTimeoutSeconds": 300,
+    "maxRequestsPerStream": 10000,
+    "healthPollSeconds": 20,
+    "failureCooldownSeconds": 30,
+    "reuseStream": true,
+    "closeOnExit": true
+  },
+  "enforcement": "local payment worker; thresholds reload on the next checkpoint",
+  "restartRequired": "Restart running agents/MCP servers after changing reuse, polling or exit behavior."
+}
+
+
+[2026-11-07T19:33:23.369Z] Copier % "agentstream" "guard" "set" "feed" "--agent" "hour-copier" "--stale-seconds" "120" "--feed-failures" "5"
+{
+  "feed": {
+    "staleSeconds": 120,
+    "failures": 5
+  }
+}
+
+
+[2026-11-07T19:33:23.550Z] Copier % "agentstream" "discover" "--agent" "hour-copier" "--id" "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f" "--url" "http://127.0.0.1:57812"
+{
+  "listings": [
+    {
+      "version": 1,
+      "id": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+      "name": "hour-leader",
+      "publicKey": "ed25519:4RgeAHgToMKtxnHfr6hnRhYTdJB53793SWaQrLUhda2n",
+      "origin": "http://127.0.0.1:57812",
+      "network": "testnet",
+      "activity": "spot-trading",
+      "recipient": "agentpay-provider-20261102-b685bb.testnet",
+      "rate": "1",
+      "duration": 0,
+      "journal": "local-encrypted",
+      "execution": "paper"
+    }
+  ]
+}
+
+
+[2026-11-07T19:33:26.215Z] Copier % "agentstream" "copy" "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f" "--agent" "hour-copier"
+{
+  "listing": {
+    "version": 1,
+    "id": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+    "name": "hour-leader",
+    "publicKey": "ed25519:4RgeAHgToMKtxnHfr6hnRhYTdJB53793SWaQrLUhda2n",
+    "origin": "http://127.0.0.1:57812",
+    "network": "testnet",
+    "activity": "spot-trading",
+    "recipient": "agentpay-provider-20261102-b685bb.testnet",
+    "rate": "1",
+    "duration": 0,
+    "journal": "local-encrypted",
+    "execution": "paper"
+  },
+  "maxEscrowRawUSDC": "6000",
+  "admission": {
+    "decision": "OPEN",
+    "reason": "WITHIN_POLICY",
+    "deposit": "6000"
+  },
+  "signedTransactions": 0,
+  "next": "agentstreams copy start ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f --url http://127.0.0.1:57812"
+}
+
+
+[2026-11-07T19:33:26.380Z] Copier % "agentstream" "payments" "--enable" "--agent" "hour-copier"
+{
+  "mode": "testnet",
+  "paymentsEnabled": true
+}
+
+
+[2026-11-07T19:33:26.380Z] Terminal 1 % "agentstream" "agent" "run" "--agent" "hour-copier"
+[foreground runner continues in its terminal; output saved in copier-runner.log]
+
+[2026-11-07T19:33:40.020Z] Terminal 2 % "agentstream" "copy" "start" "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f" "--activity" "spot-trading" "--agent" "hour-copier"
+{
+  "listing": {
+    "version": 1,
+    "id": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+    "name": "hour-leader",
+    "publicKey": "ed25519:4RgeAHgToMKtxnHfr6hnRhYTdJB53793SWaQrLUhda2n",
+    "origin": "http://127.0.0.1:57812",
+    "network": "testnet",
+    "activity": "spot-trading",
+    "recipient": "agentpay-provider-20261102-b685bb.testnet",
+    "rate": "1",
+    "duration": 0,
+    "journal": "local-encrypted",
+    "execution": "paper"
+  },
+  "status": "active",
+  "mode": "observe",
+  "cursor": 0,
+  "failures": 0,
+  "startedAt": 1794080012970,
+  "sessionId": "f65d0aa8-4f5b-473f-a46a-9012250844fb",
+  "openHash": "4JbmkPBeG8kJJNAZrPU5jyfPH9aocjXct2Qpg8KufaYw",
+  "payment": {
+    "hash": "4JbmkPBeG8kJJNAZrPU5jyfPH9aocjXct2Qpg8KufaYw",
+    "signerId": "aa1ac2e2d.agentpay-owner-20261102-52b1bd.testnet",
+    "receiverId": "va1ac2e2d.agentpay-owner-20261102-52b1bd.testnet",
+    "value": {
+      "session_id": "f65d0aa8-4f5b-473f-a46a-9012250844fb",
+      "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+      "quote_hash": "c96698f50d78f7308d8bcdfc84009bab43abc8b6a8f9f2c2aa9e42120a7ce54b",
+      "deposit": "6000",
+      "rate": "1",
+      "duration_seconds": 0,
+      "started_at": "1794080017",
+      "closed_at": null,
+      "earned": "0",
+      "refunded": "0"
+    },
+    "receiptFailures": [],
+    "receiptIds": [
+      "2wbCAZMNzi5SRjEK8F3gg1ZDtXXXRcJRq46b5hQYpCwY",
+      "ScPi2SB8w13DXexUTVe3fG1dnNGE7wDTMJxRdgwKjXt"
+    ],
+    "logs": [
+      "EVENT_JSON:{\"data\":[{\"closed_at\":null,\"deposit\":\"6000\",\"duration_seconds\":0,\"earned\":\"0\",\"quote_hash\":\"c96698f50d78f7308d8bcdfc84009bab43abc8b6a8f9f2c2aa9e42120a7ce54b\",\"rate\":\"1\",\"recipient_id\":\"agentpay-provider-20261102-b685bb.testnet\",\"refunded\":\"0\",\"session_id\":\"f65d0aa8-4f5b-473f-a46a-9012250844fb\",\"started_at\":\"1794080017\"}],\"event\":\"opened\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+    ]
+  },
+  "explorerUrl": "https://testnet.nearblocks.io/txns/4JbmkPBeG8kJJNAZrPU5jyfPH9aocjXct2Qpg8KufaYw"
+}
+
+
+[2026-11-07T19:33:40.213Z] Terminal 2 % "agentstream" "copy" "mode" "auto" "--agent" "hour-copier"
+{
+  "mode": "auto",
+  "sessionId": "f65d0aa8-4f5b-473f-a46a-9012250844fb"
+}
+
+
+[2026-11-07T19:34:13.285Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Get a signed live quote, place exactly one paper trade if the execution guard allows it, and report the result." "--json"
+{
+  "completed": true,
+  "steps": 3,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": {
+    "id": "50d4454e9edd8d532cd4230f7b3fb94b90a2fa29540e8f0efd0929c5741d176c",
+    "at": 1794080053224,
+    "expiresAt": 1794080173224,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "272504018206091803278688",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.272504018206091803278688",
+    "execution": "paper",
+    "settlementRef": "1click-dry:77f47cfcccbf2de6b34fede6f48d602e3d4bee22a6489cd0ac9c9cb749a07705",
+    "quoteObservedAt": "2026-11-07T19:34:12.632Z"
+  },
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "100000000"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T19:34:08.165Z",
+        "amountIn": "1000000",
+        "amountOut": "272429583893552581261949",
+        "minAmountOut": "269705288054617055449329",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.272429583893552581261949",
+        "amountInUsd": "0.999714000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "status": "paper-filled",
+        "mode": "paper",
+        "fill": {
+          "id": "50d4454e9edd8d532cd4230f7b3fb94b90a2fa29540e8f0efd0929c5741d176c",
+          "at": 1794080053224,
+          "expiresAt": 1794080173224,
+          "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "to": "nep141:wrap.near",
+          "amountIn": "1000000",
+          "amountOut": "272504018206091803278688",
+          "amountInFormatted": "1.0",
+          "amountOutFormatted": "0.272504018206091803278688",
+          "execution": "paper",
+          "settlementRef": "1click-dry:77f47cfcccbf2de6b34fede6f48d602e3d4bee22a6489cd0ac9c9cb749a07705",
+          "quoteObservedAt": "2026-11-07T19:34:12.632Z"
+        },
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "99000000",
+          "nep141:wrap.near": "272504018206091803278688"
+        },
+        "publication": {
+          "id": "50d4454e9edd8d532cd4230f7b3fb94b90a2fa29540e8f0efd0929c5741d176c",
+          "sequence": 1,
+          "journalHash": "8cf88a3144c7256125a99ef33fe56b57851526ce8ca13d2f926ff0a97030e513"
+        },
+        "signedTransactions": 0
+      }
+    },
+    {
+      "type": "answer",
+      "text": "Paper trade filled. Spent 1.0 USDC and received 0.272504018206091803278688 wNEAR.",
+      "source": "tool-result",
+      "steps": 3
+    }
+  ]
+}
+
+
+[2026-11-07T19:38:21.821Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Get a signed live quote, place exactly one paper trade if the execution guard allows it, and report the result." "--json"
+{
+  "completed": true,
+  "steps": 3,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": {
+    "id": "a3c866a8510940a78bab0fcf72077162d72b0b7fdc0da310ab4c6a41f107fecc",
+    "at": 1794080301747,
+    "expiresAt": 1794080421747,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "272352463583910704533041",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.272352463583910704533041",
+    "execution": "paper",
+    "settlementRef": "1click-dry:5f576347b71407e8022d4610f47eca84f2863cc4c4addfbaa2a7fb94e6183c9b",
+    "quoteObservedAt": "2026-11-07T19:38:21.316Z"
+  },
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "99000000",
+          "nep141:wrap.near": "272504018206091803278688"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T19:38:16.020Z",
+        "amountIn": "1000000",
+        "amountOut": "272352463583910704533041",
+        "minAmountOut": "269628938948071597487710",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.272352463583910704533041",
+        "amountInUsd": "0.999711000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "status": "paper-filled",
+        "mode": "paper",
+        "fill": {
+          "id": "a3c866a8510940a78bab0fcf72077162d72b0b7fdc0da310ab4c6a41f107fecc",
+          "at": 1794080301747,
+          "expiresAt": 1794080421747,
+          "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "to": "nep141:wrap.near",
+          "amountIn": "1000000",
+          "amountOut": "272352463583910704533041",
+          "amountInFormatted": "1.0",
+          "amountOutFormatted": "0.272352463583910704533041",
+          "execution": "paper",
+          "settlementRef": "1click-dry:5f576347b71407e8022d4610f47eca84f2863cc4c4addfbaa2a7fb94e6183c9b",
+          "quoteObservedAt": "2026-11-07T19:38:21.316Z"
+        },
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "98000000",
+          "nep141:wrap.near": "544856481790002507811729"
+        },
+        "publication": {
+          "id": "a3c866a8510940a78bab0fcf72077162d72b0b7fdc0da310ab4c6a41f107fecc",
+          "sequence": 2,
+          "journalHash": "4aea34958f9d5c1b8362ddb68abd92b8853fd1d1eff4ee3bdae5d67a45276903"
+        },
+        "signedTransactions": 0
+      }
+    },
+    {
+      "type": "answer",
+      "text": "Paper trade filled. Spent 1.0 USDC and received 0.272352463583910704533041 wNEAR.",
+      "source": "tool-result",
+      "steps": 3
+    }
+  ]
+}
+
+
+[2026-11-07T19:42:19.889Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Get a signed live quote, place exactly one paper trade if the execution guard allows it, and report the result." "--json"
+{
+  "completed": true,
+  "steps": 3,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": {
+    "id": "d25e7384d06e8222c74663402dfbbeab9fde1a999ee199517f6695bfc7ff78b1",
+    "at": 1794080539825,
+    "expiresAt": 1794080659825,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "273320015525970402850095",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.273320015525970402850095",
+    "execution": "paper",
+    "settlementRef": "1click-dry:0cfc6b99ece129c3d861c639c1f18f4bf684633b8515df04aa062113c531be91",
+    "quoteObservedAt": "2026-11-07T19:42:19.228Z"
+  },
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "98000000",
+          "nep141:wrap.near": "544856481790002507811729"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T19:42:14.008Z",
+        "amountIn": "1000000",
+        "amountOut": "273320015525970402850095",
+        "minAmountOut": "270586815370710698821594",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273320015525970402850095",
+        "amountInUsd": "0.999692000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "status": "paper-filled",
+        "mode": "paper",
+        "fill": {
+          "id": "d25e7384d06e8222c74663402dfbbeab9fde1a999ee199517f6695bfc7ff78b1",
+          "at": 1794080539825,
+          "expiresAt": 1794080659825,
+          "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "to": "nep141:wrap.near",
+          "amountIn": "1000000",
+          "amountOut": "273320015525970402850095",
+          "amountInFormatted": "1.0",
+          "amountOutFormatted": "0.273320015525970402850095",
+          "execution": "paper",
+          "settlementRef": "1click-dry:0cfc6b99ece129c3d861c639c1f18f4bf684633b8515df04aa062113c531be91",
+          "quoteObservedAt": "2026-11-07T19:42:19.228Z"
+        },
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "97000000",
+          "nep141:wrap.near": "818176497315972910661824"
+        },
+        "publication": {
+          "id": "d25e7384d06e8222c74663402dfbbeab9fde1a999ee199517f6695bfc7ff78b1",
+          "sequence": 3,
+          "journalHash": "1c8e84be61af462262271c0abd6c1e2e9314c1826113bcdb36a3efcd7df09e0c"
+        },
+        "signedTransactions": 0
+      }
+    },
+    {
+      "type": "answer",
+      "text": "Paper trade filled. Spent 1.0 USDC and received 0.273320015525970402850095 wNEAR.",
+      "source": "tool-result",
+      "steps": 3
+    }
+  ]
+}
+
+
+[2026-11-07T19:44:06.832Z] Terminal 2 % "agentstream" "stream" "top-up" "0.000100" "--agent" "hour-copier" "--owner-key" "/private/owner.json"
+{
+  "amountRawUSDC": "100",
+  "resolved": true,
+  "paid": true,
+  "method": "top_up_stream",
+  "transactionHash": "D46VnB1j6ZFG5VpdDF1jmn1kXpX3xkoKQvdxY3TPuHTz",
+  "explorerUrl": "https://testnet.nearblocks.io/txns/D46VnB1j6ZFG5VpdDF1jmn1kXpX3xkoKQvdxY3TPuHTz"
+}
+
+
+[2026-11-07T19:46:39.169Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Get a signed live quote, place exactly one paper trade if the execution guard allows it, and report the result." "--json"
+{
+  "completed": true,
+  "steps": 3,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": {
+    "id": "0a9fbe827350af7cc12be00f3c577e9e2e2a99e18974d7f1b4b468ec8207b809",
+    "at": 1794080799104,
+    "expiresAt": 1794080919104,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "272871336977911354309165",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.272871336977911354309165",
+    "execution": "paper",
+    "settlementRef": "1click-dry:ae08e0dfbee9f36aebad77f9f2ad514fb1525379a82dadc21886cdb89a7e40a1",
+    "quoteObservedAt": "2026-11-07T19:46:38.487Z"
+  },
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "97000000",
+          "nep141:wrap.near": "818176497315972910661824"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T19:46:30.058Z",
+        "amountIn": "1000000",
+        "amountOut": "272871336977911354309165",
+        "minAmountOut": "270142623608132240766073",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.272871336977911354309165",
+        "amountInUsd": "0.999743000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "status": "paper-filled",
+        "mode": "paper",
+        "fill": {
+          "id": "0a9fbe827350af7cc12be00f3c577e9e2e2a99e18974d7f1b4b468ec8207b809",
+          "at": 1794080799104,
+          "expiresAt": 1794080919104,
+          "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "to": "nep141:wrap.near",
+          "amountIn": "1000000",
+          "amountOut": "272871336977911354309165",
+          "amountInFormatted": "1.0",
+          "amountOutFormatted": "0.272871336977911354309165",
+          "execution": "paper",
+          "settlementRef": "1click-dry:ae08e0dfbee9f36aebad77f9f2ad514fb1525379a82dadc21886cdb89a7e40a1",
+          "quoteObservedAt": "2026-11-07T19:46:38.487Z"
+        },
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "96000000",
+          "nep141:wrap.near": "1091047834293884264970989"
+        },
+        "publication": {
+          "id": "0a9fbe827350af7cc12be00f3c577e9e2e2a99e18974d7f1b4b468ec8207b809",
+          "sequence": 4,
+          "journalHash": "37caf636b301cec985f92ffb3c0ad9a3c6f1f0bc93af0603aaa0df74e1fb9c5a"
+        },
+        "signedTransactions": 0
+      }
+    },
+    {
+      "type": "answer",
+      "text": "Paper trade filled. Spent 1.0 USDC and received 0.272871336977911354309165 wNEAR.",
+      "source": "tool-result",
+      "steps": 3
+    }
+  ]
+}
+
+
+[2026-11-07T19:50:56.940Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Get a signed live quote, place exactly one paper trade if the execution guard allows it, and report the result." "--json"
+{
+  "completed": true,
+  "steps": 3,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": {
+    "id": "1c0be5b5000a87e0b664f8d7f5d124d904c1e354e8c341272b5ab1407e08bb00",
+    "at": 1794081056876,
+    "expiresAt": 1794081176876,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "273767431145827889102387",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.273767431145827889102387",
+    "execution": "paper",
+    "settlementRef": "1click-dry:e7607439d7661746c4d611c0dc69e77cc13c321303f2488dc7f65a539bccf67d",
+    "quoteObservedAt": "2026-11-07T19:50:56.443Z"
+  },
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "96000000",
+          "nep141:wrap.near": "1091047834293884264970989"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T19:50:46.217Z",
+        "amountIn": "1000000",
+        "amountOut": "273692302871638583973654",
+        "minAmountOut": "270955379842922198133917",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273692302871638583973654",
+        "amountInUsd": "0.999746000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "status": "paper-filled",
+        "mode": "paper",
+        "fill": {
+          "id": "1c0be5b5000a87e0b664f8d7f5d124d904c1e354e8c341272b5ab1407e08bb00",
+          "at": 1794081056876,
+          "expiresAt": 1794081176876,
+          "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "to": "nep141:wrap.near",
+          "amountIn": "1000000",
+          "amountOut": "273767431145827889102387",
+          "amountInFormatted": "1.0",
+          "amountOutFormatted": "0.273767431145827889102387",
+          "execution": "paper",
+          "settlementRef": "1click-dry:e7607439d7661746c4d611c0dc69e77cc13c321303f2488dc7f65a539bccf67d",
+          "quoteObservedAt": "2026-11-07T19:50:56.443Z"
+        },
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "95000000",
+          "nep141:wrap.near": "1364815265439712154073376"
+        },
+        "publication": {
+          "id": "1c0be5b5000a87e0b664f8d7f5d124d904c1e354e8c341272b5ab1407e08bb00",
+          "sequence": 5,
+          "journalHash": "cfa4865856595ec707fc0ed93491acedaafe1277e476925a955695638f8cf02f"
+        },
+        "signedTransactions": 0
+      }
+    },
+    {
+      "type": "answer",
+      "text": "Paper trade filled. Spent 1.0 USDC and received 0.273767431145827889102387 wNEAR.",
+      "source": "tool-result",
+      "steps": 3
+    }
+  ]
+}
+
+
+[2026-11-07T19:54:39.145Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Get a signed live quote, place exactly one paper trade if the execution guard allows it, and report the result." "--json"
+{
+  "completed": true,
+  "steps": 3,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": {
+    "id": "769b01966440d4113d4e5b0feb02348aba6554c8d2664becc18b61bcb11daee3",
+    "at": 1794081279034,
+    "expiresAt": 1794081399034,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "273585984788261120263591",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.273585984788261120263591",
+    "execution": "paper",
+    "settlementRef": "1click-dry:0ac52088c20c4470400d4fdaeac10321bd3367e2fc94277edf557e4d098b6c55",
+    "quoteObservedAt": "2026-11-07T19:54:38.589Z"
+  },
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "95000000",
+          "nep141:wrap.near": "1364815265439712154073376"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T19:54:33.247Z",
+        "amountIn": "1000000",
+        "amountOut": "273585984788261120263591",
+        "minAmountOut": "270850124940378509060955",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273585984788261120263591",
+        "amountInUsd": "0.999753000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "status": "paper-filled",
+        "mode": "paper",
+        "fill": {
+          "id": "769b01966440d4113d4e5b0feb02348aba6554c8d2664becc18b61bcb11daee3",
+          "at": 1794081279034,
+          "expiresAt": 1794081399034,
+          "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "to": "nep141:wrap.near",
+          "amountIn": "1000000",
+          "amountOut": "273585984788261120263591",
+          "amountInFormatted": "1.0",
+          "amountOutFormatted": "0.273585984788261120263591",
+          "execution": "paper",
+          "settlementRef": "1click-dry:0ac52088c20c4470400d4fdaeac10321bd3367e2fc94277edf557e4d098b6c55",
+          "quoteObservedAt": "2026-11-07T19:54:38.589Z"
+        },
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "94000000",
+          "nep141:wrap.near": "1638401250227973274336967"
+        },
+        "publication": {
+          "id": "769b01966440d4113d4e5b0feb02348aba6554c8d2664becc18b61bcb11daee3",
+          "sequence": 6,
+          "journalHash": "be232ba12baae31341e718f0e1d3b054aaac70be1ea3bde6cf0b84953f497bfb"
+        },
+        "signedTransactions": 0
+      }
+    },
+    {
+      "type": "answer",
+      "text": "Paper trade filled. Spent 1.0 USDC and received 0.273585984788261120263591 wNEAR.",
+      "source": "tool-result",
+      "steps": 3
+    }
+  ]
+}
+
+
+[2026-11-07T19:58:40.815Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Get a signed live quote, place exactly one paper trade if the execution guard allows it, and report the result." "--json"
+{
+  "completed": true,
+  "steps": 3,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": {
+    "id": "68215f11e9e06d047305812fff9263416de834c12ccf329718159571d2f87365",
+    "at": 1794081520747,
+    "expiresAt": 1794081640747,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "273210901178735124760076",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.273210901178735124760076",
+    "execution": "paper",
+    "settlementRef": "1click-dry:baf64aad044972b7a9fbc224c93922e9eaab01ab814ba8043c4ab7ba52b025fa",
+    "quoteObservedAt": "2026-11-07T19:58:40.320Z"
+  },
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "94000000",
+          "nep141:wrap.near": "1638401250227973274336967"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T19:58:35.717Z",
+        "amountIn": "1000000",
+        "amountOut": "273210901178735124760076",
+        "minAmountOut": "270478792166947773512475",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273210901178735124760076",
+        "amountInUsd": "0.999712000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "status": "paper-filled",
+        "mode": "paper",
+        "fill": {
+          "id": "68215f11e9e06d047305812fff9263416de834c12ccf329718159571d2f87365",
+          "at": 1794081520747,
+          "expiresAt": 1794081640747,
+          "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "to": "nep141:wrap.near",
+          "amountIn": "1000000",
+          "amountOut": "273210901178735124760076",
+          "amountInFormatted": "1.0",
+          "amountOutFormatted": "0.273210901178735124760076",
+          "execution": "paper",
+          "settlementRef": "1click-dry:baf64aad044972b7a9fbc224c93922e9eaab01ab814ba8043c4ab7ba52b025fa",
+          "quoteObservedAt": "2026-11-07T19:58:40.320Z"
+        },
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "93000000",
+          "nep141:wrap.near": "1911612151406708399097043"
+        },
+        "publication": {
+          "id": "68215f11e9e06d047305812fff9263416de834c12ccf329718159571d2f87365",
+          "sequence": 7,
+          "journalHash": "93144243b5fe8e561aaa188f4ad025aaa294cbe2f7ab1f5baef36a53554aeb24"
+        },
+        "signedTransactions": 0
+      }
+    },
+    {
+      "type": "answer",
+      "text": "Paper trade filled. Spent 1.0 USDC and received 0.273210901178735124760076 wNEAR.",
+      "source": "tool-result",
+      "steps": 3
+    }
+  ]
+}
+
+
+[2026-11-07T20:02:28.737Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Get a signed live quote, place exactly one paper trade if the execution guard allows it, and report the result." "--json"
+{
+  "completed": true,
+  "steps": 3,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": {
+    "id": "31ea0e5e53f51c200c6d51fc1072f101d3cc78666419763db526f1e69bf6c47a",
+    "at": 1794081748662,
+    "expiresAt": 1794081868662,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "273886794007379604178119",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.273886794007379604178119",
+    "execution": "paper",
+    "settlementRef": "1click-dry:fda76b932b06194f22bbcc6001b0e1aa153f921f5dd878f256cf24ef3961dbc8",
+    "quoteObservedAt": "2026-11-07T20:02:27.961Z"
+  },
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "93000000",
+          "nep141:wrap.near": "1911612151406708399097043"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T20:02:19.342Z",
+        "amountIn": "1000000",
+        "amountOut": "273839859053881383855024",
+        "minAmountOut": "271101460463342570016473",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273839859053881383855024",
+        "amountInUsd": "0.999703000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "status": "paper-filled",
+        "mode": "paper",
+        "fill": {
+          "id": "31ea0e5e53f51c200c6d51fc1072f101d3cc78666419763db526f1e69bf6c47a",
+          "at": 1794081748662,
+          "expiresAt": 1794081868662,
+          "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "to": "nep141:wrap.near",
+          "amountIn": "1000000",
+          "amountOut": "273886794007379604178119",
+          "amountInFormatted": "1.0",
+          "amountOutFormatted": "0.273886794007379604178119",
+          "execution": "paper",
+          "settlementRef": "1click-dry:fda76b932b06194f22bbcc6001b0e1aa153f921f5dd878f256cf24ef3961dbc8",
+          "quoteObservedAt": "2026-11-07T20:02:27.961Z"
+        },
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "92000000",
+          "nep141:wrap.near": "2185498945414088003275162"
+        },
+        "publication": {
+          "id": "31ea0e5e53f51c200c6d51fc1072f101d3cc78666419763db526f1e69bf6c47a",
+          "sequence": 8,
+          "journalHash": "c831886080f3b4bfdf9d768d87fa491f9deed240f78cbd8c2dc7e8c057426829"
+        },
+        "signedTransactions": 0
+      }
+    },
+    {
+      "type": "answer",
+      "text": "Paper trade filled. Spent 1.0 USDC and received 0.273886794007379604178119 wNEAR.",
+      "source": "tool-result",
+      "steps": 3
+    }
+  ]
+}
+
+
+[2026-11-07T20:06:51.169Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Get a signed live quote, place exactly one paper trade if the execution guard allows it, and report the result." "--json"
+{
+  "completed": true,
+  "steps": 3,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": {
+    "id": "c704da8752465a86d69e4ffe08e76ca4c163b9c1458da15f71de836165e47ddb",
+    "at": 1794082011022,
+    "expiresAt": 1794082131022,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "273917811498009063444108",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.273917811498009063444108",
+    "execution": "paper",
+    "settlementRef": "1click-dry:19b6350e6afb912f8e2a5b6dd2a69ae7092dbad9fa1e07356be3fdf120fc6405",
+    "quoteObservedAt": "2026-11-07T20:06:50.546Z"
+  },
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "92000000",
+          "nep141:wrap.near": "2185498945414088003275162"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T20:06:33.405Z",
+        "amountIn": "1000000",
+        "amountOut": "273767431145827889102387",
+        "minAmountOut": "271029756834369610211363",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273767431145827889102387",
+        "amountInUsd": "0.999756000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "status": "paper-filled",
+        "mode": "paper",
+        "fill": {
+          "id": "c704da8752465a86d69e4ffe08e76ca4c163b9c1458da15f71de836165e47ddb",
+          "at": 1794082011022,
+          "expiresAt": 1794082131022,
+          "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "to": "nep141:wrap.near",
+          "amountIn": "1000000",
+          "amountOut": "273917811498009063444108",
+          "amountInFormatted": "1.0",
+          "amountOutFormatted": "0.273917811498009063444108",
+          "execution": "paper",
+          "settlementRef": "1click-dry:19b6350e6afb912f8e2a5b6dd2a69ae7092dbad9fa1e07356be3fdf120fc6405",
+          "quoteObservedAt": "2026-11-07T20:06:50.546Z"
+        },
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "91000000",
+          "nep141:wrap.near": "2459416756912097066719270"
+        },
+        "publication": {
+          "id": "c704da8752465a86d69e4ffe08e76ca4c163b9c1458da15f71de836165e47ddb",
+          "sequence": 9,
+          "journalHash": "d7ff99890b3e31de71366c03b314f85562e120af98f930c301b1b79a36d670e8"
+        },
+        "signedTransactions": 0
+      }
+    },
+    {
+      "type": "answer",
+      "text": "Paper trade filled. Spent 1.0 USDC and received 0.273917811498009063444108 wNEAR.",
+      "source": "tool-result",
+      "steps": 3
+    }
+  ]
+}
+
+
+[2026-11-07T20:10:51.721Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Get a signed live quote, place exactly one paper trade if the execution guard allows it, and report the result." "--json"
+{
+  "completed": true,
+  "steps": 3,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": {
+    "id": "1ed3d43956f7d208d8851a5b2626dcb0c947b28e56393bc17745340458b2c8a8",
+    "at": 1794082251561,
+    "expiresAt": 1794082371561,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "272868605106498221614227",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.272868605106498221614227",
+    "execution": "paper",
+    "settlementRef": "1click-dry:5aa3642846be2b2889a652b9d10df2457269bfb3f89724e447d353c2d9aee49d",
+    "quoteObservedAt": "2026-11-07T20:10:50.732Z"
+  },
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "91000000",
+          "nep141:wrap.near": "2459416756912097066719270"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T20:10:41.803Z",
+        "amountIn": "1000000",
+        "amountOut": "273020732727693950177935",
+        "minAmountOut": "270290525400417010676155",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273020732727693950177935",
+        "amountInUsd": "0.999769000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "status": "paper-filled",
+        "mode": "paper",
+        "fill": {
+          "id": "1ed3d43956f7d208d8851a5b2626dcb0c947b28e56393bc17745340458b2c8a8",
+          "at": 1794082251561,
+          "expiresAt": 1794082371561,
+          "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "to": "nep141:wrap.near",
+          "amountIn": "1000000",
+          "amountOut": "272868605106498221614227",
+          "amountInFormatted": "1.0",
+          "amountOutFormatted": "0.272868605106498221614227",
+          "execution": "paper",
+          "settlementRef": "1click-dry:5aa3642846be2b2889a652b9d10df2457269bfb3f89724e447d353c2d9aee49d",
+          "quoteObservedAt": "2026-11-07T20:10:50.732Z"
+        },
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "90000000",
+          "nep141:wrap.near": "2732285362018595288333497"
+        },
+        "publication": {
+          "id": "1ed3d43956f7d208d8851a5b2626dcb0c947b28e56393bc17745340458b2c8a8",
+          "sequence": 10,
+          "journalHash": "f0574f2215662db691b3df1a0ec94cdfcb34dd694d94e9b72690415867b5de4f"
+        },
+        "signedTransactions": 0
+      }
+    },
+    {
+      "type": "answer",
+      "text": "Paper trade filled. Spent 1.0 USDC and received 0.272868605106498221614227 wNEAR.",
+      "source": "tool-result",
+      "steps": 3
+    }
+  ]
+}
+
+
+[2026-11-07T20:14:28.622Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Get a signed live quote, place exactly one paper trade if the execution guard allows it, and report the result." "--json"
+{
+  "completed": true,
+  "steps": 3,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": {
+    "id": "7647e6449ee9afa5f102993a421c4d6608fb8da8c2adb7c4b6cadde29b697165",
+    "at": 1794082468552,
+    "expiresAt": 1794082588552,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "272868605106498221614227",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.272868605106498221614227",
+    "execution": "paper",
+    "settlementRef": "1click-dry:ac7ef17d4a11c8df817ea653af684e612656ba97dbf8782023829eba09c27259",
+    "quoteObservedAt": "2026-11-07T20:14:28.100Z"
+  },
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "90000000",
+          "nep141:wrap.near": "2732285362018595288333497"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T20:14:22.079Z",
+        "amountIn": "1000000",
+        "amountOut": "272868605106498221614227",
+        "minAmountOut": "270139919055433239398084",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.272868605106498221614227",
+        "amountInUsd": "0.999721000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "status": "paper-filled",
+        "mode": "paper",
+        "fill": {
+          "id": "7647e6449ee9afa5f102993a421c4d6608fb8da8c2adb7c4b6cadde29b697165",
+          "at": 1794082468552,
+          "expiresAt": 1794082588552,
+          "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "to": "nep141:wrap.near",
+          "amountIn": "1000000",
+          "amountOut": "272868605106498221614227",
+          "amountInFormatted": "1.0",
+          "amountOutFormatted": "0.272868605106498221614227",
+          "execution": "paper",
+          "settlementRef": "1click-dry:ac7ef17d4a11c8df817ea653af684e612656ba97dbf8782023829eba09c27259",
+          "quoteObservedAt": "2026-11-07T20:14:28.100Z"
+        },
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "89000000",
+          "nep141:wrap.near": "3005153967125093509947724"
+        },
+        "publication": {
+          "id": "7647e6449ee9afa5f102993a421c4d6608fb8da8c2adb7c4b6cadde29b697165",
+          "sequence": 11,
+          "journalHash": "a8e48814dcbf71f0508f4bd0306d03425b27efeda4438a7b39468b6037f0c1a6"
+        },
+        "signedTransactions": 0
+      }
+    },
+    {
+      "type": "answer",
+      "text": "Paper trade filled. Spent 1.0 USDC and received 0.272868605106498221614227 wNEAR.",
+      "source": "tool-result",
+      "steps": 3
+    }
+  ]
+}
+
+
+[2026-11-07T20:19:01.686Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Get a signed live quote, place exactly one paper trade if the execution guard allows it, and report the result." "--json"
+{
+  "completed": true,
+  "steps": 3,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": {
+    "id": "9673251c923044c5a81d44cb7272384a541c218dbcbda68e7080ff0b83bc6ce9",
+    "at": 1794082741610,
+    "expiresAt": 1794082861610,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "273360811138229629629629",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.273360811138229629629629",
+    "execution": "paper",
+    "settlementRef": "1click-dry:6121865863380aac3c3e2c83de5115ec14f49b503a11294dac30c990e8a7d332",
+    "quoteObservedAt": "2026-11-07T20:19:01.150Z"
+  },
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "89000000",
+          "nep141:wrap.near": "3005153967125093509947724"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T20:18:49.546Z",
+        "amountIn": "1000000",
+        "amountOut": "273360811138229629629629",
+        "minAmountOut": "270627203026847333333332",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273360811138229629629629",
+        "amountInUsd": "0.999725000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "status": "paper-filled",
+        "mode": "paper",
+        "fill": {
+          "id": "9673251c923044c5a81d44cb7272384a541c218dbcbda68e7080ff0b83bc6ce9",
+          "at": 1794082741610,
+          "expiresAt": 1794082861610,
+          "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "to": "nep141:wrap.near",
+          "amountIn": "1000000",
+          "amountOut": "273360811138229629629629",
+          "amountInFormatted": "1.0",
+          "amountOutFormatted": "0.273360811138229629629629",
+          "execution": "paper",
+          "settlementRef": "1click-dry:6121865863380aac3c3e2c83de5115ec14f49b503a11294dac30c990e8a7d332",
+          "quoteObservedAt": "2026-11-07T20:19:01.150Z"
+        },
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "88000000",
+          "nep141:wrap.near": "3278514778263323139577353"
+        },
+        "publication": {
+          "id": "9673251c923044c5a81d44cb7272384a541c218dbcbda68e7080ff0b83bc6ce9",
+          "sequence": 12,
+          "journalHash": "5865ccf312db957d2930f48cee623dfa052570a20f4c0e3d90175c78241f93c7"
+        },
+        "signedTransactions": 0
+      }
+    },
+    {
+      "type": "answer",
+      "text": "Paper trade filled. Spent 1.0 USDC and received 0.273360811138229629629629 wNEAR.",
+      "source": "tool-result",
+      "steps": 3
+    }
+  ]
+}
+
+
+[2026-11-07T20:23:24.398Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Get a signed live quote, place exactly one paper trade if the execution guard allows it, and report the result." "--json"
+{
+  "completed": true,
+  "steps": 4,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": null,
+  "lastDenial": "TRADE_PREVIEW_STALE",
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "88000000",
+          "nep141:wrap.near": "3278514778263323139577353"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T20:22:42.214Z",
+        "amountIn": "1000000",
+        "amountOut": "273736306757924999999999",
+        "minAmountOut": "270998943690345749999999",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273736306757924999999999",
+        "amountInUsd": "0.999767000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "decision": "DENY",
+        "reason": "TRADE_PREVIEW_STALE"
+      }
+    },
+    {
+      "type": "answer",
+      "text": "The attempt to buy wNEAR with 1 USDC failed because the quote became stale before the trade could be executed (error: `TRADE_PREVIEW_STALE`). No trade was placed.",
+      "steps": 4
+    }
+  ]
+}
+
+
+[2026-11-07T20:26:31.697Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Get a signed live quote, place exactly one paper trade if the execution guard allows it, and report the result." "--json"
+{
+  "completed": true,
+  "steps": 3,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": {
+    "id": "967decf589dc07d5ab9a6616740e872400006eaa5ce87f48dc83aca8f290c8ab",
+    "at": 1794083191587,
+    "expiresAt": 1794083311587,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "273435827826247804610318",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.273435827826247804610318",
+    "execution": "paper",
+    "settlementRef": "1click-dry:8ed69c9bb75fc7ebda4ed133f8961e70eec5d0ec216949f44f59dd190ffed1a6",
+    "quoteObservedAt": "2026-11-07T20:26:30.973Z"
+  },
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "88000000",
+          "nep141:wrap.near": "3278514778263323139577353"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T20:26:21.755Z",
+        "amountIn": "1000000",
+        "amountOut": "273435827826247804610318",
+        "minAmountOut": "270701469547985326564214",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273435827826247804610318",
+        "amountInUsd": "0.999717000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "status": "paper-filled",
+        "mode": "paper",
+        "fill": {
+          "id": "967decf589dc07d5ab9a6616740e872400006eaa5ce87f48dc83aca8f290c8ab",
+          "at": 1794083191587,
+          "expiresAt": 1794083311587,
+          "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "to": "nep141:wrap.near",
+          "amountIn": "1000000",
+          "amountOut": "273435827826247804610318",
+          "amountInFormatted": "1.0",
+          "amountOutFormatted": "0.273435827826247804610318",
+          "execution": "paper",
+          "settlementRef": "1click-dry:8ed69c9bb75fc7ebda4ed133f8961e70eec5d0ec216949f44f59dd190ffed1a6",
+          "quoteObservedAt": "2026-11-07T20:26:30.973Z"
+        },
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "87000000",
+          "nep141:wrap.near": "3551950606089570944187671"
+        },
+        "publication": {
+          "id": "967decf589dc07d5ab9a6616740e872400006eaa5ce87f48dc83aca8f290c8ab",
+          "sequence": 13,
+          "journalHash": "7523e8a22000150b73409df21f5cf7840e371046b06c9c13db27486da40eb102"
+        },
+        "signedTransactions": 0
+      }
+    },
+    {
+      "type": "answer",
+      "text": "Paper trade filled. Spent 1.0 USDC and received 0.273435827826247804610318 wNEAR.",
+      "source": "tool-result",
+      "steps": 3
+    }
+  ]
+}
+
+
+[2026-11-07T20:31:09.383Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Get a signed live quote, place exactly one paper trade if the execution guard allows it, and report the result." "--json"
+{
+  "completed": true,
+  "steps": 3,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": {
+    "id": "f5b3e747d5a306b963016d37f0f26bf178b043c4292bef738d6212e7f2845219",
+    "at": 1794083469299,
+    "expiresAt": 1794083589299,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "273061155549149630035625",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.273061155549149630035625",
+    "execution": "paper",
+    "settlementRef": "1click-dry:f94b1b87dbaf76daed05aa06fc84f50ba43636077e11eb4ad6a57f92a877b0ea",
+    "quoteObservedAt": "2026-11-07T20:31:08.694Z"
+  },
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "87000000",
+          "nep141:wrap.near": "3551950606089570944187671"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T20:30:59.009Z",
+        "amountIn": "1000000",
+        "amountOut": "272986344273656712328766",
+        "minAmountOut": "270256480830920145205478",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.272986344273656712328766",
+        "amountInUsd": "0.999767000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "status": "paper-filled",
+        "mode": "paper",
+        "fill": {
+          "id": "f5b3e747d5a306b963016d37f0f26bf178b043c4292bef738d6212e7f2845219",
+          "at": 1794083469299,
+          "expiresAt": 1794083589299,
+          "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "to": "nep141:wrap.near",
+          "amountIn": "1000000",
+          "amountOut": "273061155549149630035625",
+          "amountInFormatted": "1.0",
+          "amountOutFormatted": "0.273061155549149630035625",
+          "execution": "paper",
+          "settlementRef": "1click-dry:f94b1b87dbaf76daed05aa06fc84f50ba43636077e11eb4ad6a57f92a877b0ea",
+          "quoteObservedAt": "2026-11-07T20:31:08.694Z"
+        },
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "86000000",
+          "nep141:wrap.near": "3825011761638720574223296"
+        },
+        "publication": {
+          "id": "f5b3e747d5a306b963016d37f0f26bf178b043c4292bef738d6212e7f2845219",
+          "sequence": 14,
+          "journalHash": "ca5b6dabd818b8de2a55dd710ecd56032e5f6861acb2cdcf736a6544178a9880"
+        },
+        "signedTransactions": 0
+      }
+    },
+    {
+      "type": "answer",
+      "text": "Paper trade filled. Spent 1.0 USDC and received 0.273061155549149630035625 wNEAR.",
+      "source": "tool-result",
+      "steps": 3
+    }
+  ]
+}
+
+
+[2026-11-07T20:33:40.534Z] Terminal 2 % "agentstream" "task" "portfolio" "--agent" "hour-copier"
+{
+  "mode": "paper",
+  "portfolio": {
+    "initial": {
+      "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "100000000"
+    },
+    "balances": {
+      "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "86000000",
+      "nep141:wrap.near": "3824184594059874484949387"
+    },
+    "fills": [
+      {
+        "id": "50d4454e9edd8d532cd4230f7b3fb94b90a2fa29540e8f0efd0929c5741d176c",
+        "at": 1794080061276,
+        "expiresAt": 1794080181276,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "272429583893552581261949",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.272429583893552581261949",
+        "execution": "paper",
+        "settlementRef": "1click-dry:d52dd5c8f761f7902d0d06224cf344974364a3aa653dfaedd536c83c3c4aaf84",
+        "quoteObservedAt": "2026-11-07T19:34:18.602Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999714000000",
+            "minAmountIn": "1000000",
+            "amountOut": "272429583893552581261949",
+            "amountOutFormatted": "0.272429583893552581261949",
+            "amountOutUsd": "0.997092277050",
+            "minAmountOut": "269705288054617055449329",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T19:44:17.984Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:5z1DyFX68H8D4PF9Yb86rLsvcaLJfAGL15JQVuCNiABY9zzEd6xznNsC71vJnk4ZM5qS3gD23as2Txqh69vmQPqR",
+          "timestamp": "2026-11-07T19:34:18.602Z",
+          "correlationId": "c24f4841-91d8-4f7b-a8f3-fbb5e863f1e9"
+        }
+      },
+      {
+        "id": "a3c866a8510940a78bab0fcf72077162d72b0b7fdc0da310ab4c6a41f107fecc",
+        "at": 1794080316023,
+        "expiresAt": 1794080436023,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "272314882918515168078709",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.272314882918515168078709",
+        "execution": "paper",
+        "settlementRef": "1click-dry:1fbf64c7dd5f2b18145bff8ff8a09c7a5ffd092487d70d5952c071d5fe2d767c",
+        "quoteObservedAt": "2026-11-07T19:38:34.288Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999711000000",
+            "minAmountIn": "1000000",
+            "amountOut": "272314882918515168078709",
+            "amountOutFormatted": "0.272314882918515168078709",
+            "amountOutUsd": "0.996672471482",
+            "minAmountOut": "269591734089330016397921",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T19:48:33.865Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:q7nw1qVc9a3dwAhfnAWbxM92mrc7dSnke8YvaoP2cx5Zk9VXmWPm4ZY2pssYqtQ1hnq55vgifU14Uw9EPNoaQtM",
+          "timestamp": "2026-11-07T19:38:34.288Z",
+          "correlationId": "97a9b5dd-b9c8-487b-9eac-41b03e7e1dda"
+        }
+      },
+      {
+        "id": "d25e7384d06e8222c74663402dfbbeab9fde1a999ee199517f6695bfc7ff78b1",
+        "at": 1794080565490,
+        "expiresAt": 1794080685490,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "273285835600342018650575",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273285835600342018650575",
+        "execution": "paper",
+        "settlementRef": "1click-dry:ab837452711603e15d1508df65a500e571302bab14e2de698aa4a55f9fde71e8",
+        "quoteObservedAt": "2026-11-07T19:42:43.799Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999736000000",
+            "minAmountIn": "1000000",
+            "amountOut": "273285835600342018650575",
+            "amountOutFormatted": "0.273285835600342018650575",
+            "amountOutUsd": "0.997493299941",
+            "minAmountOut": "270552977244338598464069",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T19:52:43.348Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:5DKTMvKHg2NAJpNxvYxKgjrt3UbHkZ3xWGT7hUh1YAEoupLhoJ9KoUU8KnT6Jkctt3qf2b2rBaAf4uBY4YdpsiyK",
+          "timestamp": "2026-11-07T19:42:43.799Z",
+          "correlationId": "32b8ad36-f597-47cc-a421-934881aad263"
+        }
+      },
+      {
+        "id": "0a9fbe827350af7cc12be00f3c577e9e2e2a99e18974d7f1b4b468ec8207b809",
+        "at": 1794080817332,
+        "expiresAt": 1794080937332,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "272796700397775164113785",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.272796700397775164113785",
+        "execution": "paper",
+        "settlementRef": "1click-dry:61c960d410151f290f5070011463d40ed2ca08c7f1d15025a147195472df1b17",
+        "quoteObservedAt": "2026-11-07T19:46:55.102Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999743000000",
+            "minAmountIn": "1000000",
+            "amountOut": "272796700397775164113785",
+            "amountOutFormatted": "0.272796700397775164113785",
+            "amountOutUsd": "0.995707956452",
+            "minAmountOut": "270068733393797412472647",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T19:56:54.160Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:48VowMbbDmMD86ph9R3uJ1eMyWd2vdzAmoq1ajyGEv3X9T894V82BDYKpnq6DhtVFR5skAkxinqQY8fuL5adgQL5",
+          "timestamp": "2026-11-07T19:46:55.102Z",
+          "correlationId": "3ed3cac9-f71b-41e1-97d2-5c901b84b6b1"
+        }
+      },
+      {
+        "id": "1c0be5b5000a87e0b664f8d7f5d124d904c1e354e8c341272b5ab1407e08bb00",
+        "at": 1794081077851,
+        "expiresAt": 1794081197851,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "273767431145827889102387",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273767431145827889102387",
+        "execution": "paper",
+        "settlementRef": "1click-dry:5b5fa1dea702370370ef014e05a050b7ab84aab50ef4bee93a471db8547483fc",
+        "quoteObservedAt": "2026-11-07T19:51:15.964Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999746000000",
+            "minAmountIn": "1000000",
+            "amountOut": "273767431145827889102387",
+            "amountOutFormatted": "0.273767431145827889102387",
+            "amountOutUsd": "0.999251123682",
+            "minAmountOut": "271029756834369610211363",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:01:15.196Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:2HhmmT9JcY5meptujMBK3u9SmYF69C7CxDozEzX32YQ2399rnof6KzUNdF3sAxKhvA4dRymMqxYr3QchTr3c4ivY",
+          "timestamp": "2026-11-07T19:51:15.964Z",
+          "correlationId": "d73254af-ff12-479d-aecd-0eabb2e68167"
+        }
+      },
+      {
+        "id": "769b01966440d4113d4e5b0feb02348aba6554c8d2664becc18b61bcb11daee3",
+        "at": 1794081309911,
+        "expiresAt": 1794081429911,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "273510885698283557507548",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273510885698283557507548",
+        "execution": "paper",
+        "settlementRef": "1click-dry:4768a222e3e19e058302eecedac111aeca53d796c54ec62a36cbd7a12baee2b9",
+        "quoteObservedAt": "2026-11-07T19:55:07.628Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999753000000",
+            "minAmountIn": "1000000",
+            "amountOut": "273510885698283557507548",
+            "amountOutFormatted": "0.273510885698283557507548",
+            "amountOutUsd": "0.995579623942",
+            "minAmountOut": "270775776841300721932472",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:05:07.034Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:MMHLo6oQvK6oyspPbYv7EAKpMu6iANVvgkPvLYcokPLdkLSW4vKzDhneGc6CpyaX1pvTZdpQCTwBbA4WZHvDJTJ",
+          "timestamp": "2026-11-07T19:55:07.628Z",
+          "correlationId": "97c35972-b1d4-43ae-bc14-298103c875a7"
+        }
+      },
+      {
+        "id": "68215f11e9e06d047305812fff9263416de834c12ccf329718159571d2f87365",
+        "at": 1794081541904,
+        "expiresAt": 1794081661904,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "273164822425153656532456",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273164822425153656532456",
+        "execution": "paper",
+        "settlementRef": "1click-dry:6800dc21cca7c59737676dd1a7d03f69804188b05ac7050794b5f1ac8655183b",
+        "quoteObservedAt": "2026-11-07T19:58:59.294Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999712000000",
+            "minAmountIn": "1000000",
+            "amountOut": "273164822425153656532456",
+            "amountOutFormatted": "0.273164822425153656532456",
+            "amountOutUsd": "0.994319953628",
+            "minAmountOut": "270433174200902119967131",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:08:58.538Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:afduYiC3yxAE8NU7arV2qbXkh9ecrdLWpDm11w81M9cQXHJSKrTYn4hfbmgR2Tib8GQVQ9RCjVzvVprVbm2Wv9r",
+          "timestamp": "2026-11-07T19:58:59.294Z",
+          "correlationId": "f92efbc0-3c9c-4a3e-9ea3-059b82406a6f"
+        }
+      },
+      {
+        "id": "31ea0e5e53f51c200c6d51fc1072f101d3cc78666419763db526f1e69bf6c47a",
+        "at": 1794081765898,
+        "expiresAt": 1794081885898,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "273839859053881383855024",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273839859053881383855024",
+        "execution": "paper",
+        "settlementRef": "1click-dry:13865a148c6d6211553383e5c8b0347e3680df8dd9ad292e4f04fbc7a4e4ebfc",
+        "quoteObservedAt": "2026-11-07T20:02:43.686Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999703000000",
+            "minAmountIn": "1000000",
+            "amountOut": "273839859053881383855024",
+            "amountOutFormatted": "0.273839859053881383855024",
+            "amountOutUsd": "0.996777086956",
+            "minAmountOut": "271101460463342570016473",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:12:43.108Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:3etuPMrQzCSb2G98Y2AJCdpzAwg7ere3mQzGLmKXzG2sANPgqZFjfiLe7rHnwxAozf2UFDXt6RM5TqRR4xUqrFhy",
+          "timestamp": "2026-11-07T20:02:43.686Z",
+          "correlationId": "087842cf-fa90-4573-a009-114432ea1766"
+        }
+      },
+      {
+        "id": "c704da8752465a86d69e4ffe08e76ca4c163b9c1458da15f71de836165e47ddb",
+        "at": 1794082020764,
+        "expiresAt": 1794082140764,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "273842600676620263591432",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273842600676620263591432",
+        "execution": "paper",
+        "settlementRef": "1click-dry:7cf55ebe889ddde8c0174f21bd60385714a584298301068c5305470cb8a651e0",
+        "quoteObservedAt": "2026-11-07T20:06:58.569Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999756000000",
+            "minAmountIn": "1000000",
+            "amountOut": "273842600676620263591432",
+            "amountOutFormatted": "0.273842600676620263591432",
+            "amountOutUsd": "0.996787066463",
+            "minAmountOut": "271104174669854060955517",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:16:58.084Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:3gxeqXaDwzWrRavfUQ7KMDZJSRNvoxevhQ87SNBFqTaRrksJQTmaT7VvvBye8948Fzbn1RSt3Cj5r7vkrZsReRCi",
+          "timestamp": "2026-11-07T20:06:58.569Z",
+          "correlationId": "32f7b59b-f2e2-48a3-b712-fb67bfbaa0fe"
+        }
+      },
+      {
+        "id": "1ed3d43956f7d208d8851a5b2626dcb0c947b28e56393bc17745340458b2c8a8",
+        "at": 1794082276480,
+        "expiresAt": 1794082396480,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "272836844632762048192770",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.27283684463276204819277",
+        "execution": "paper",
+        "settlementRef": "1click-dry:d1dc3daccbc2924b9feca2b560f97091172555fe08d80072ae318f2b930b69d6",
+        "quoteObservedAt": "2026-11-07T20:11:14.472Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999725000000",
+            "minAmountIn": "1000000",
+            "amountOut": "272836844632762048192770",
+            "amountOutFormatted": "0.27283684463276204819277",
+            "amountOutUsd": "0.993126114463",
+            "minAmountOut": "270108476186434427710842",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:21:13.993Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:3LyZoz2kdpDa73vpKif3jpmm54cGpoAsiT2eX2iAxvMhq1WY1NcbcYYhe7ViW48Rc3y14JgZHYEPJ9rZxA5WoG3y",
+          "timestamp": "2026-11-07T20:11:14.472Z",
+          "correlationId": "aa82eb73-4ac8-4ec5-a338-799ddcc9c023"
+        }
+      },
+      {
+        "id": "7647e6449ee9afa5f102993a421c4d6608fb8da8c2adb7c4b6cadde29b697165",
+        "at": 1794082499849,
+        "expiresAt": 1794082619849,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "272911573979415776499588",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.272911573979415776499588",
+        "execution": "paper",
+        "settlementRef": "1click-dry:f0f30adf44cefd6022fa0fbdc5c77623b22acff54faefc1cc613e5578565642b",
+        "quoteObservedAt": "2026-11-07T20:14:58.026Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999721000000",
+            "minAmountIn": "1000000",
+            "amountOut": "272911573979415776499588",
+            "amountOutFormatted": "0.272911573979415776499588",
+            "amountOutUsd": "0.996127245025",
+            "minAmountOut": "270182458239621618734592",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:24:57.338Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:4LaL16YU2DBuXhQ1KAMh8GsiuxhWUDogmUBLKyZrKu4JTo1qcELzjGPPYp5Sh3wFWpxRmJ5o8Jj4ukzRJCKDSVXe",
+          "timestamp": "2026-11-07T20:14:58.026Z",
+          "correlationId": "01e7dbc6-de36-4c53-bf5e-9512a197621e"
+        }
+      },
+      {
+        "id": "9673251c923044c5a81d44cb7272384a541c218dbcbda68e7080ff0b83bc6ce9",
+        "at": 1794082755592,
+        "expiresAt": 1794082875592,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "273210901178735124760076",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273210901178735124760076",
+        "execution": "paper",
+        "settlementRef": "1click-dry:fc636d8e31353e1fffd8a09005d04d387d42327b545f54a26fabfc49e91b7b40",
+        "quoteObservedAt": "2026-11-07T20:19:13.161Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999725000000",
+            "minAmountIn": "1000000",
+            "amountOut": "273210901178735124760076",
+            "amountOutFormatted": "0.273210901178735124760076",
+            "amountOutUsd": "0.997219789302",
+            "minAmountOut": "270478792166947773512475",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:29:12.515Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:3o9snbnQ6cX3joUXAAUmeDznP1o5rpjTeS4vdhRrQCwtX5tip1gxjssF6HzsJ4WYwGD7fPiyTBBgDJYDbaiznPx2",
+          "timestamp": "2026-11-07T20:19:13.161Z",
+          "correlationId": "c6454a1f-fa9c-4d9e-a173-6fe4801e2050"
+        }
+      },
+      {
+        "id": "967decf589dc07d5ab9a6616740e872400006eaa5ce87f48dc83aca8f290c8ab",
+        "at": 1794083207589,
+        "expiresAt": 1794083327589,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "273435827826247804610318",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273435827826247804610318",
+        "execution": "paper",
+        "settlementRef": "1click-dry:54cbd62ef594501fd2ed75f6bb67c20f403e1664305419d5aa7891939d882ff1",
+        "quoteObservedAt": "2026-11-07T20:26:45.874Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999717000000",
+            "minAmountIn": "1000000",
+            "amountOut": "273435827826247804610318",
+            "amountOutFormatted": "0.273435827826247804610318",
+            "amountOutUsd": "0.998040771566",
+            "minAmountOut": "270701469547985326564214",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:36:45.361Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:4UUW5m2v1f4Pprpg9Mbmn9EaRqSn2iot53Mo6nD2qHACpomMCUMjf7ZhDVvZoXSS7qKY1iA97edMU36NjM7Xg9hU",
+          "timestamp": "2026-11-07T20:26:45.874Z",
+          "correlationId": "0e1e7203-13a4-4580-9826-5521fa71857b"
+        }
+      },
+      {
+        "id": "f5b3e747d5a306b963016d37f0f26bf178b043c4292bef738d6212e7f2845219",
+        "at": 1794083486287,
+        "expiresAt": 1794083606287,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "272836844632762048192770",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.27283684463276204819277",
+        "execution": "paper",
+        "settlementRef": "1click-dry:b982adea59e91dcc5471c3378b715c3e3fe9390180f186e21f72621d18c244dd",
+        "quoteObservedAt": "2026-11-07T20:31:24.367Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999767000000",
+            "minAmountIn": "1000000",
+            "amountOut": "272836844632762048192770",
+            "amountOutFormatted": "0.27283684463276204819277",
+            "amountOutUsd": "0.995854482910",
+            "minAmountOut": "270108476186434427710842",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:41:23.727Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:4YM8CximuJgasYXDH9eUL2f8ZENcq3WudjpwWSpgaa4DkWPEz9tJhPL4jo6FcZXd19jyYELrNXMgQCkGbfhgk49V",
+          "timestamp": "2026-11-07T20:31:24.367Z",
+          "correlationId": "8533f567-c387-41be-af3f-9562cc9386fa"
+        }
+      }
+    ]
+  }
+}
+
+
+[2026-11-07T20:33:48.613Z] Verifier % "GET" "http://127.0.0.1:57812/copy/actions" "[signed session header omitted]"
+HTTP 200
+
+[2026-11-07T20:33:48.835Z] Terminal 2 % "agentstream" "copy" "stop" "--agent" "hour-copier"
+agentStreams: AGENT_BUSY: another command is updating this agent. If it crashed, reconcile before removing its lock.
+
+[exit 1]
+
+[2026-11-07T20:33:59.730Z] Terminal 2 % "agentstream" "copy" "stop" "--agent" "hour-copier"
+{
+  "listing": {
+    "version": 1,
+    "id": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+    "name": "hour-leader",
+    "publicKey": "ed25519:4RgeAHgToMKtxnHfr6hnRhYTdJB53793SWaQrLUhda2n",
+    "origin": "http://127.0.0.1:57812",
+    "network": "testnet",
+    "activity": "spot-trading",
+    "recipient": "agentpay-provider-20261102-b685bb.testnet",
+    "rate": "1",
+    "duration": 0,
+    "journal": "local-encrypted",
+    "execution": "paper"
+  },
+  "status": "stopped",
+  "mode": "auto",
+  "cursor": 14,
+  "failures": 0,
+  "startedAt": 1794080012970,
+  "sessionId": "f65d0aa8-4f5b-473f-a46a-9012250844fb",
+  "openHash": "4JbmkPBeG8kJJNAZrPU5jyfPH9aocjXct2Qpg8KufaYw",
+  "lastFeedAt": 1794083629199,
+  "closeTarget": "stopped",
+  "reason": "OPERATOR_REQUEST",
+  "closeHash": "D6Du8Loc9UgjsWJy9nuyKNLNKa46gEfqp1wz57cVZAMf",
+  "receipt": {
+    "hash": "D6Du8Loc9UgjsWJy9nuyKNLNKa46gEfqp1wz57cVZAMf",
+    "signerId": "aa1ac2e2d.agentpay-owner-20261102-52b1bd.testnet",
+    "receiverId": "va1ac2e2d.agentpay-owner-20261102-52b1bd.testnet",
+    "value": {
+      "session_id": "f65d0aa8-4f5b-473f-a46a-9012250844fb",
+      "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+      "quote_hash": "c96698f50d78f7308d8bcdfc84009bab43abc8b6a8f9f2c2aa9e42120a7ce54b",
+      "deposit": "6100",
+      "rate": "1",
+      "duration_seconds": 0,
+      "started_at": "1794080017",
+      "closed_at": "1794083636",
+      "earned": "3619",
+      "refunded": "2481"
+    },
+    "receiptFailures": [],
+    "receiptIds": [
+      "4m7eaLLG99nhDPYLP25BiKCiGvtkoTbg3M3LnnidXzWR",
+      "Cug6QsQ7cL9mqwvFjSgjTrqrUCsb5jvnESvaafLVtDS4"
+    ],
+    "logs": [
+      "EVENT_JSON:{\"data\":[{\"closed_at\":\"1794083636\",\"deposit\":\"6100\",\"duration_seconds\":0,\"earned\":\"3619\",\"quote_hash\":\"c96698f50d78f7308d8bcdfc84009bab43abc8b6a8f9f2c2aa9e42120a7ce54b\",\"rate\":\"1\",\"recipient_id\":\"agentpay-provider-20261102-b685bb.testnet\",\"refunded\":\"2481\",\"session_id\":\"f65d0aa8-4f5b-473f-a46a-9012250844fb\",\"started_at\":\"1794080017\"}],\"event\":\"closed\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+    ]
+  },
+  "explorerUrl": "https://testnet.nearblocks.io/txns/D6Du8Loc9UgjsWJy9nuyKNLNKa46gEfqp1wz57cVZAMf"
+}
+
+
+[2026-11-07T20:34:00.328Z] Verifier % "GET" "http://127.0.0.1:57812/copy/actions" "[same signed session header omitted]"
+HTTP 403
+
+[2026-11-07T20:35:47.890Z] Leader % "agentstream" "agent" "run" "--agent" "hour-leader" "--prompt" "Buy wNEAR with exactly 1 USDC from my paper portfolio. Get a signed live quote, place exactly one paper trade if the execution guard allows it, and report the result." "--json"
+{
+  "completed": true,
+  "steps": 3,
+  "activity": "spot-trading",
+  "mode": "paper",
+  "fill": {
+    "id": "679981601fe26325435123b7a517df72eedcf17c0b5ad55f37094e1221613447",
+    "at": 1794083747684,
+    "expiresAt": 1794083867684,
+    "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+    "to": "nep141:wrap.near",
+    "amountIn": "1000000",
+    "amountOut": "272836844632762048192770",
+    "amountInFormatted": "1.0",
+    "amountOutFormatted": "0.27283684463276204819277",
+    "execution": "paper",
+    "settlementRef": "1click-dry:7d311697a858aadab7a8819bbd3fd13a37b9f8ab37b773d28e72a22e8c30eba6",
+    "quoteObservedAt": "2026-11-07T20:35:47.040Z"
+  },
+  "events": [
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_portfolio",
+      "result": {
+        "mode": "paper",
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "86000000",
+          "nep141:wrap.near": "3825011761638720574223296"
+        },
+        "policy": {
+          "assets": [
+            "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "nep141:wrap.near"
+          ],
+          "inputAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "maxInput": "1000000",
+          "fixedInput": "1000000",
+          "maxAge": 120,
+          "slippageBps": 100,
+          "maxNotionalRawUSDC": "2000000"
+        }
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_quote",
+      "result": {
+        "source": "near-intents-1click",
+        "dry": true,
+        "signatureVerified": true,
+        "observedAt": "2026-11-07T20:35:21.476Z",
+        "amountIn": "1000000",
+        "amountOut": "272986344273656712328766",
+        "minAmountOut": "270256480830920145205478",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.272986344273656712328766",
+        "amountInUsd": "0.999771000000",
+        "warnings": []
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentstreams_trade_execute",
+      "result": {
+        "status": "paper-filled",
+        "mode": "paper",
+        "fill": {
+          "id": "679981601fe26325435123b7a517df72eedcf17c0b5ad55f37094e1221613447",
+          "at": 1794083747684,
+          "expiresAt": 1794083867684,
+          "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+          "to": "nep141:wrap.near",
+          "amountIn": "1000000",
+          "amountOut": "272836844632762048192770",
+          "amountInFormatted": "1.0",
+          "amountOutFormatted": "0.27283684463276204819277",
+          "execution": "paper",
+          "settlementRef": "1click-dry:7d311697a858aadab7a8819bbd3fd13a37b9f8ab37b773d28e72a22e8c30eba6",
+          "quoteObservedAt": "2026-11-07T20:35:47.040Z"
+        },
+        "balances": {
+          "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "85000000",
+          "nep141:wrap.near": "4097848606271482622416066"
+        },
+        "publication": {
+          "id": "679981601fe26325435123b7a517df72eedcf17c0b5ad55f37094e1221613447",
+          "sequence": 15,
+          "journalHash": "c8a1e4b7e7558c570ef9fc0a197f198c9596555c993844c772a14b616405d45c"
+        },
+        "signedTransactions": 0
+      }
+    },
+    {
+      "type": "answer",
+      "text": "Paper trade filled. Spent 1.0 USDC and received 0.27283684463276204819277 wNEAR.",
+      "source": "tool-result",
+      "steps": 3
+    }
+  ]
+}
+
+
+[2026-11-07T20:36:18.371Z] Terminal 2 % "agentstream" "task" "portfolio" "--agent" "hour-copier"
+{
+  "mode": "paper",
+  "portfolio": {
+    "initial": {
+      "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "100000000"
+    },
+    "balances": {
+      "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "86000000",
+      "nep141:wrap.near": "3824184594059874484949387"
+    },
+    "fills": [
+      {
+        "id": "50d4454e9edd8d532cd4230f7b3fb94b90a2fa29540e8f0efd0929c5741d176c",
+        "at": 1794080061276,
+        "expiresAt": 1794080181276,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "272429583893552581261949",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.272429583893552581261949",
+        "execution": "paper",
+        "settlementRef": "1click-dry:d52dd5c8f761f7902d0d06224cf344974364a3aa653dfaedd536c83c3c4aaf84",
+        "quoteObservedAt": "2026-11-07T19:34:18.602Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999714000000",
+            "minAmountIn": "1000000",
+            "amountOut": "272429583893552581261949",
+            "amountOutFormatted": "0.272429583893552581261949",
+            "amountOutUsd": "0.997092277050",
+            "minAmountOut": "269705288054617055449329",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T19:44:17.984Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:5z1DyFX68H8D4PF9Yb86rLsvcaLJfAGL15JQVuCNiABY9zzEd6xznNsC71vJnk4ZM5qS3gD23as2Txqh69vmQPqR",
+          "timestamp": "2026-11-07T19:34:18.602Z",
+          "correlationId": "c24f4841-91d8-4f7b-a8f3-fbb5e863f1e9"
+        }
+      },
+      {
+        "id": "a3c866a8510940a78bab0fcf72077162d72b0b7fdc0da310ab4c6a41f107fecc",
+        "at": 1794080316023,
+        "expiresAt": 1794080436023,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "272314882918515168078709",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.272314882918515168078709",
+        "execution": "paper",
+        "settlementRef": "1click-dry:1fbf64c7dd5f2b18145bff8ff8a09c7a5ffd092487d70d5952c071d5fe2d767c",
+        "quoteObservedAt": "2026-11-07T19:38:34.288Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999711000000",
+            "minAmountIn": "1000000",
+            "amountOut": "272314882918515168078709",
+            "amountOutFormatted": "0.272314882918515168078709",
+            "amountOutUsd": "0.996672471482",
+            "minAmountOut": "269591734089330016397921",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T19:48:33.865Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:q7nw1qVc9a3dwAhfnAWbxM92mrc7dSnke8YvaoP2cx5Zk9VXmWPm4ZY2pssYqtQ1hnq55vgifU14Uw9EPNoaQtM",
+          "timestamp": "2026-11-07T19:38:34.288Z",
+          "correlationId": "97a9b5dd-b9c8-487b-9eac-41b03e7e1dda"
+        }
+      },
+      {
+        "id": "d25e7384d06e8222c74663402dfbbeab9fde1a999ee199517f6695bfc7ff78b1",
+        "at": 1794080565490,
+        "expiresAt": 1794080685490,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "273285835600342018650575",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273285835600342018650575",
+        "execution": "paper",
+        "settlementRef": "1click-dry:ab837452711603e15d1508df65a500e571302bab14e2de698aa4a55f9fde71e8",
+        "quoteObservedAt": "2026-11-07T19:42:43.799Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999736000000",
+            "minAmountIn": "1000000",
+            "amountOut": "273285835600342018650575",
+            "amountOutFormatted": "0.273285835600342018650575",
+            "amountOutUsd": "0.997493299941",
+            "minAmountOut": "270552977244338598464069",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T19:52:43.348Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:5DKTMvKHg2NAJpNxvYxKgjrt3UbHkZ3xWGT7hUh1YAEoupLhoJ9KoUU8KnT6Jkctt3qf2b2rBaAf4uBY4YdpsiyK",
+          "timestamp": "2026-11-07T19:42:43.799Z",
+          "correlationId": "32b8ad36-f597-47cc-a421-934881aad263"
+        }
+      },
+      {
+        "id": "0a9fbe827350af7cc12be00f3c577e9e2e2a99e18974d7f1b4b468ec8207b809",
+        "at": 1794080817332,
+        "expiresAt": 1794080937332,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "272796700397775164113785",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.272796700397775164113785",
+        "execution": "paper",
+        "settlementRef": "1click-dry:61c960d410151f290f5070011463d40ed2ca08c7f1d15025a147195472df1b17",
+        "quoteObservedAt": "2026-11-07T19:46:55.102Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999743000000",
+            "minAmountIn": "1000000",
+            "amountOut": "272796700397775164113785",
+            "amountOutFormatted": "0.272796700397775164113785",
+            "amountOutUsd": "0.995707956452",
+            "minAmountOut": "270068733393797412472647",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T19:56:54.160Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:48VowMbbDmMD86ph9R3uJ1eMyWd2vdzAmoq1ajyGEv3X9T894V82BDYKpnq6DhtVFR5skAkxinqQY8fuL5adgQL5",
+          "timestamp": "2026-11-07T19:46:55.102Z",
+          "correlationId": "3ed3cac9-f71b-41e1-97d2-5c901b84b6b1"
+        }
+      },
+      {
+        "id": "1c0be5b5000a87e0b664f8d7f5d124d904c1e354e8c341272b5ab1407e08bb00",
+        "at": 1794081077851,
+        "expiresAt": 1794081197851,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "273767431145827889102387",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273767431145827889102387",
+        "execution": "paper",
+        "settlementRef": "1click-dry:5b5fa1dea702370370ef014e05a050b7ab84aab50ef4bee93a471db8547483fc",
+        "quoteObservedAt": "2026-11-07T19:51:15.964Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999746000000",
+            "minAmountIn": "1000000",
+            "amountOut": "273767431145827889102387",
+            "amountOutFormatted": "0.273767431145827889102387",
+            "amountOutUsd": "0.999251123682",
+            "minAmountOut": "271029756834369610211363",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:01:15.196Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:2HhmmT9JcY5meptujMBK3u9SmYF69C7CxDozEzX32YQ2399rnof6KzUNdF3sAxKhvA4dRymMqxYr3QchTr3c4ivY",
+          "timestamp": "2026-11-07T19:51:15.964Z",
+          "correlationId": "d73254af-ff12-479d-aecd-0eabb2e68167"
+        }
+      },
+      {
+        "id": "769b01966440d4113d4e5b0feb02348aba6554c8d2664becc18b61bcb11daee3",
+        "at": 1794081309911,
+        "expiresAt": 1794081429911,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "273510885698283557507548",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273510885698283557507548",
+        "execution": "paper",
+        "settlementRef": "1click-dry:4768a222e3e19e058302eecedac111aeca53d796c54ec62a36cbd7a12baee2b9",
+        "quoteObservedAt": "2026-11-07T19:55:07.628Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999753000000",
+            "minAmountIn": "1000000",
+            "amountOut": "273510885698283557507548",
+            "amountOutFormatted": "0.273510885698283557507548",
+            "amountOutUsd": "0.995579623942",
+            "minAmountOut": "270775776841300721932472",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:05:07.034Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:MMHLo6oQvK6oyspPbYv7EAKpMu6iANVvgkPvLYcokPLdkLSW4vKzDhneGc6CpyaX1pvTZdpQCTwBbA4WZHvDJTJ",
+          "timestamp": "2026-11-07T19:55:07.628Z",
+          "correlationId": "97c35972-b1d4-43ae-bc14-298103c875a7"
+        }
+      },
+      {
+        "id": "68215f11e9e06d047305812fff9263416de834c12ccf329718159571d2f87365",
+        "at": 1794081541904,
+        "expiresAt": 1794081661904,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "273164822425153656532456",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273164822425153656532456",
+        "execution": "paper",
+        "settlementRef": "1click-dry:6800dc21cca7c59737676dd1a7d03f69804188b05ac7050794b5f1ac8655183b",
+        "quoteObservedAt": "2026-11-07T19:58:59.294Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999712000000",
+            "minAmountIn": "1000000",
+            "amountOut": "273164822425153656532456",
+            "amountOutFormatted": "0.273164822425153656532456",
+            "amountOutUsd": "0.994319953628",
+            "minAmountOut": "270433174200902119967131",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:08:58.538Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:afduYiC3yxAE8NU7arV2qbXkh9ecrdLWpDm11w81M9cQXHJSKrTYn4hfbmgR2Tib8GQVQ9RCjVzvVprVbm2Wv9r",
+          "timestamp": "2026-11-07T19:58:59.294Z",
+          "correlationId": "f92efbc0-3c9c-4a3e-9ea3-059b82406a6f"
+        }
+      },
+      {
+        "id": "31ea0e5e53f51c200c6d51fc1072f101d3cc78666419763db526f1e69bf6c47a",
+        "at": 1794081765898,
+        "expiresAt": 1794081885898,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "273839859053881383855024",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273839859053881383855024",
+        "execution": "paper",
+        "settlementRef": "1click-dry:13865a148c6d6211553383e5c8b0347e3680df8dd9ad292e4f04fbc7a4e4ebfc",
+        "quoteObservedAt": "2026-11-07T20:02:43.686Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999703000000",
+            "minAmountIn": "1000000",
+            "amountOut": "273839859053881383855024",
+            "amountOutFormatted": "0.273839859053881383855024",
+            "amountOutUsd": "0.996777086956",
+            "minAmountOut": "271101460463342570016473",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:12:43.108Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:3etuPMrQzCSb2G98Y2AJCdpzAwg7ere3mQzGLmKXzG2sANPgqZFjfiLe7rHnwxAozf2UFDXt6RM5TqRR4xUqrFhy",
+          "timestamp": "2026-11-07T20:02:43.686Z",
+          "correlationId": "087842cf-fa90-4573-a009-114432ea1766"
+        }
+      },
+      {
+        "id": "c704da8752465a86d69e4ffe08e76ca4c163b9c1458da15f71de836165e47ddb",
+        "at": 1794082020764,
+        "expiresAt": 1794082140764,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "273842600676620263591432",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273842600676620263591432",
+        "execution": "paper",
+        "settlementRef": "1click-dry:7cf55ebe889ddde8c0174f21bd60385714a584298301068c5305470cb8a651e0",
+        "quoteObservedAt": "2026-11-07T20:06:58.569Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999756000000",
+            "minAmountIn": "1000000",
+            "amountOut": "273842600676620263591432",
+            "amountOutFormatted": "0.273842600676620263591432",
+            "amountOutUsd": "0.996787066463",
+            "minAmountOut": "271104174669854060955517",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:16:58.084Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:3gxeqXaDwzWrRavfUQ7KMDZJSRNvoxevhQ87SNBFqTaRrksJQTmaT7VvvBye8948Fzbn1RSt3Cj5r7vkrZsReRCi",
+          "timestamp": "2026-11-07T20:06:58.569Z",
+          "correlationId": "32f7b59b-f2e2-48a3-b712-fb67bfbaa0fe"
+        }
+      },
+      {
+        "id": "1ed3d43956f7d208d8851a5b2626dcb0c947b28e56393bc17745340458b2c8a8",
+        "at": 1794082276480,
+        "expiresAt": 1794082396480,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "272836844632762048192770",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.27283684463276204819277",
+        "execution": "paper",
+        "settlementRef": "1click-dry:d1dc3daccbc2924b9feca2b560f97091172555fe08d80072ae318f2b930b69d6",
+        "quoteObservedAt": "2026-11-07T20:11:14.472Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999725000000",
+            "minAmountIn": "1000000",
+            "amountOut": "272836844632762048192770",
+            "amountOutFormatted": "0.27283684463276204819277",
+            "amountOutUsd": "0.993126114463",
+            "minAmountOut": "270108476186434427710842",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:21:13.993Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:3LyZoz2kdpDa73vpKif3jpmm54cGpoAsiT2eX2iAxvMhq1WY1NcbcYYhe7ViW48Rc3y14JgZHYEPJ9rZxA5WoG3y",
+          "timestamp": "2026-11-07T20:11:14.472Z",
+          "correlationId": "aa82eb73-4ac8-4ec5-a338-799ddcc9c023"
+        }
+      },
+      {
+        "id": "7647e6449ee9afa5f102993a421c4d6608fb8da8c2adb7c4b6cadde29b697165",
+        "at": 1794082499849,
+        "expiresAt": 1794082619849,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "272911573979415776499588",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.272911573979415776499588",
+        "execution": "paper",
+        "settlementRef": "1click-dry:f0f30adf44cefd6022fa0fbdc5c77623b22acff54faefc1cc613e5578565642b",
+        "quoteObservedAt": "2026-11-07T20:14:58.026Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999721000000",
+            "minAmountIn": "1000000",
+            "amountOut": "272911573979415776499588",
+            "amountOutFormatted": "0.272911573979415776499588",
+            "amountOutUsd": "0.996127245025",
+            "minAmountOut": "270182458239621618734592",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:24:57.338Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:4LaL16YU2DBuXhQ1KAMh8GsiuxhWUDogmUBLKyZrKu4JTo1qcELzjGPPYp5Sh3wFWpxRmJ5o8Jj4ukzRJCKDSVXe",
+          "timestamp": "2026-11-07T20:14:58.026Z",
+          "correlationId": "01e7dbc6-de36-4c53-bf5e-9512a197621e"
+        }
+      },
+      {
+        "id": "9673251c923044c5a81d44cb7272384a541c218dbcbda68e7080ff0b83bc6ce9",
+        "at": 1794082755592,
+        "expiresAt": 1794082875592,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "273210901178735124760076",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273210901178735124760076",
+        "execution": "paper",
+        "settlementRef": "1click-dry:fc636d8e31353e1fffd8a09005d04d387d42327b545f54a26fabfc49e91b7b40",
+        "quoteObservedAt": "2026-11-07T20:19:13.161Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999725000000",
+            "minAmountIn": "1000000",
+            "amountOut": "273210901178735124760076",
+            "amountOutFormatted": "0.273210901178735124760076",
+            "amountOutUsd": "0.997219789302",
+            "minAmountOut": "270478792166947773512475",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:29:12.515Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:3o9snbnQ6cX3joUXAAUmeDznP1o5rpjTeS4vdhRrQCwtX5tip1gxjssF6HzsJ4WYwGD7fPiyTBBgDJYDbaiznPx2",
+          "timestamp": "2026-11-07T20:19:13.161Z",
+          "correlationId": "c6454a1f-fa9c-4d9e-a173-6fe4801e2050"
+        }
+      },
+      {
+        "id": "967decf589dc07d5ab9a6616740e872400006eaa5ce87f48dc83aca8f290c8ab",
+        "at": 1794083207589,
+        "expiresAt": 1794083327589,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "273435827826247804610318",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.273435827826247804610318",
+        "execution": "paper",
+        "settlementRef": "1click-dry:54cbd62ef594501fd2ed75f6bb67c20f403e1664305419d5aa7891939d882ff1",
+        "quoteObservedAt": "2026-11-07T20:26:45.874Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999717000000",
+            "minAmountIn": "1000000",
+            "amountOut": "273435827826247804610318",
+            "amountOutFormatted": "0.273435827826247804610318",
+            "amountOutUsd": "0.998040771566",
+            "minAmountOut": "270701469547985326564214",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:36:45.361Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:4UUW5m2v1f4Pprpg9Mbmn9EaRqSn2iot53Mo6nD2qHACpomMCUMjf7ZhDVvZoXSS7qKY1iA97edMU36NjM7Xg9hU",
+          "timestamp": "2026-11-07T20:26:45.874Z",
+          "correlationId": "0e1e7203-13a4-4580-9826-5521fa71857b"
+        }
+      },
+      {
+        "id": "f5b3e747d5a306b963016d37f0f26bf178b043c4292bef738d6212e7f2845219",
+        "at": 1794083486287,
+        "expiresAt": 1794083606287,
+        "from": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "to": "nep141:wrap.near",
+        "amountIn": "1000000",
+        "amountOut": "272836844632762048192770",
+        "amountInFormatted": "1.0",
+        "amountOutFormatted": "0.27283684463276204819277",
+        "execution": "paper",
+        "settlementRef": "1click-dry:b982adea59e91dcc5471c3378b715c3e3fe9390180f186e21f72621d18c244dd",
+        "quoteObservedAt": "2026-11-07T20:31:24.367Z",
+        "copiedFrom": "ap_bc10af59c9d6a70547a4a744f19cc8d2ddc054154b65f1e42903a11f7e61731f",
+        "quote": {
+          "quote": {
+            "amountIn": "1000000",
+            "amountInFormatted": "1.0",
+            "amountInUsd": "0.999767000000",
+            "minAmountIn": "1000000",
+            "amountOut": "272836844632762048192770",
+            "amountOutFormatted": "0.27283684463276204819277",
+            "amountOutUsd": "0.995854482910",
+            "minAmountOut": "270108476186434427710842",
+            "timeEstimate": 12,
+            "refundFee": "0",
+            "withdrawFee": "0"
+          },
+          "quoteRequest": {
+            "dry": true,
+            "depositMode": "SIMPLE",
+            "swapType": "EXACT_INPUT",
+            "slippageTolerance": 100,
+            "originAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+            "depositType": "INTENTS",
+            "destinationAsset": "nep141:wrap.near",
+            "amount": "1000000",
+            "refundTo": "intents.near",
+            "refundType": "INTENTS",
+            "recipient": "intents.near",
+            "recipientType": "INTENTS",
+            "deadline": "2026-11-07T20:41:23.727Z",
+            "confidentiality": "public",
+            "quoteWaitingTimeMs": 0,
+            "insured": false,
+            "appFees": [
+              {
+                "recipient": "5880ad2b362620fadf759cbceb1cd5737ce8c6ed7fb8e9942881e6731f9247dd",
+                "fee": 20
+              }
+            ]
+          },
+          "signature": "ed25519:4YM8CximuJgasYXDH9eUL2f8ZENcq3WudjpwWSpgaa4DkWPEz9tJhPL4jo6FcZXd19jyYELrNXMgQCkGbfhgk49V",
+          "timestamp": "2026-11-07T20:31:24.367Z",
+          "correlationId": "8533f567-c387-41be-af3f-9562cc9386fa"
+        }
+      }
+    ]
+  }
+}
+
+
+[2026-11-07T20:36:21.411Z] Terminal 2 % "agentstream" "stream" "status" "--agent" "hour-copier"
+{
+  "vault": {
+    "version": "2.1.0",
+    "owner_id": "agentpay-owner-20261102-52b1bd.testnet",
+    "token_id": "3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af",
+    "agent_id": "aa1ac2e2d.agentpay-owner-20261102-52b1bd.testnet",
+    "agent_key": "ed25519:5VRtNk1DZrPh9Ea4CSnCWDYdVWKuPdmtHoCDdDDGrCvU",
+    "policy_key": "ed25519:dJJz2vi5oqDRwzR5ErZ3MEB2sPT13JF9LTmEXZUnq7C",
+    "policy": {
+      "budget": "20000",
+      "max_deposit": "6000",
+      "max_rate": "5",
+      "max_duration_seconds": 0,
+      "recipients": [
+        "agentpay-provider-20261102-b685bb.testnet"
+      ]
+    },
+    "available": "5128",
+    "spent": "4872",
+    "reserved": "0",
+    "claimable_total": "4469",
+    "pending_total": "0",
+    "next_nonce": "16",
+    "active_session": null,
+    "paused": false,
+    "now": "1794083778"
+  },
+  "stream": null
+}
+
+
+[2026-11-07T20:36:22.442Z] Leader % "agentstream" "earnings" "show" "--agent" "hour-leader"
+{
+  "network": "testnet",
+  "sessions": [
+    {
+      "vaultId": "va1ac2e2d.agentpay-owner-20261102-52b1bd.testnet",
+      "sessionId": "f65d0aa8-4f5b-473f-a46a-9012250844fb",
+      "recipient": "agentpay-provider-20261102-b685bb.testnet",
+      "stream": {
+        "session_id": "f65d0aa8-4f5b-473f-a46a-9012250844fb",
+        "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+        "quote_hash": "c96698f50d78f7308d8bcdfc84009bab43abc8b6a8f9f2c2aa9e42120a7ce54b",
+        "deposit": "6100",
+        "rate": "1",
+        "duration_seconds": 0,
+        "started_at": "1794080017",
+        "closed_at": "1794083636",
+        "earned": "3619",
+        "refunded": "2481"
+      }
+    }
+  ],
+  "vaults": [
+    {
+      "vaultId": "va1ac2e2d.agentpay-owner-20261102-52b1bd.testnet",
+      "recipient": "agentpay-provider-20261102-b685bb.testnet",
+      "claimableRawUSDC": "4469"
+    }
+  ]
+}
+
+
+[2026-11-07T20:38:02.260Z] Leader % "agentstream" "earnings" "claim" "--agent" "hour-leader" "--from" "va1ac2e2d.agentpay-owner-20261102-52b1bd.testnet" "--recipient-key" "/private/seller.json"
+agentStreams: VAULT_PAYOUT_RECONCILIATION_REQUIRED: https://testnet.nearblocks.io/txns/4voSKkptSLs1BV2qNYWxadsRhkMDBZG6nmDkwST6ebBA
+
+[exit 1]
+
+[2026-11-07T20:39:06.130Z] Recovery % agentstream reconcile --agent hour-leader
+{
+  "resolved": true,
+  "copy": {
+    "resolved": true
+  },
+  "payouts": {
+    "resolved": true,
+    "transactions": [
+      {
+        "resolved": true,
+        "paid": true,
+        "method": "claim",
+        "transactionHash": "4voSKkptSLs1BV2qNYWxadsRhkMDBZG6nmDkwST6ebBA",
+        "explorerUrl": "https://testnet.nearblocks.io/txns/4voSKkptSLs1BV2qNYWxadsRhkMDBZG6nmDkwST6ebBA"
+      }
+    ]
+  }
+}
+
+
+QA PASS after payout reconciliation: original payout hash confirmed; no replacement payout submitted.
