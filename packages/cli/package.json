@@ -1,6 +1,6 @@
 {
   "name": "@ola-893/agentstreams-cli",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "type": "module",
   "description": "Remora CLI for publishing and copying agent decisions with guarded NEAR payment streams",
   "license": "MIT",
