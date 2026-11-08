@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="Remora signal in transit">
+    <defs>
+      <path id="loader-lead" pathLength="100" d="M131 55C100 51 94 81 58 83c-11 1-20-3-29-4"/>
+      <path id="loader-follow" pathLength="100" d="M88 71C80 86 73 105 54 108c-8 1-14 0-21-2"/>
+    </defs>
+    <rect x="1" y="1" width="158" height="158" rx="30" fill="#071D23"/>
+    <rect x="15" y="15" width="130" height="130" rx="19" fill="none" stroke="#36555A"/>
+    <g fill="none" stroke="#63868A" stroke-width="1.2">
+      <use href="#loader-lead"/><use href="#loader-follow"/>
+    </g>
+    <path d="M30 73h-7v12h7m4 15h-7v12h7" fill="none" stroke="#74A7FF" stroke-width="1"/>
+    <path fill="#A9FCE0" d="M76 63c10-14 25-20 50-17-8 4-13 8-18 15-8 10-18 12-32 8l9-3Z"/>
+    <path fill="#74A7FF" d="M86 78c8-2 14-6 20-14-1 7-5 12-11 15-5 2-8 2-13 1Z"/>
+  </svg>

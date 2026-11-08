@@ -1,0 +1,32 @@
+:root {
+  --remora-abyss: #071D23;
+  --remora-depth: #10313A;
+  --remora-foam: #A9FCE0;
+  --remora-signal: #74A7FF;
+  --remora-salt: #F4F9F7;
+  --remora-silt: #AEC6C6;
+  --remora-coral: #FFAC90;
+  --remora-ink: #0B1D23;
+  --remora-display: "Remora Inter", Inter, system-ui, sans-serif;
+  --remora-mono: "Remora Mono", monospace;
+  --remora-loader-period: 2400ms;
+  --remora-arrival-ease: cubic-bezier(.16, 1, .3, 1);
+}
+@font-face {
+  font-family: "Remora Inter";
+  src: url("fonts/Inter-400.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Remora Inter";
+  src: url("fonts/Inter-700.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Remora Mono";
+  src: url("fonts/JetBrainsMono-400.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}

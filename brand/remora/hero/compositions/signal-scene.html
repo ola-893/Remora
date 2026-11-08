@@ -1,0 +1,104 @@
+<template>
+<style>
+  * { box-sizing: border-box; }
+  #root {
+    position: absolute; inset: 0; overflow: hidden;
+    background: radial-gradient(ellipse at 77% 54%, #123C45 0%, #0A272F 33%, #071D23 68%);
+    color: #F4F9F7; font-family: Inter, sans-serif;
+  }
+  .hairline { position: absolute; left: 108px; right: 108px; height: 1px; background: #36555A; }
+  .top { top: 152px; } .bottom { bottom: 130px; }
+  .brand { position: absolute; top: 67px; left: 109px; display: flex; align-items: center; gap: 14px; }
+  .brand img { width: 66px; height: 55px; }
+  .wordmark { font-size: 46px; font-weight: 700; letter-spacing: -.065em; }
+  .mono { font-family: "JetBrains Mono", monospace; font-size: 28px; letter-spacing: .06em; }
+  .edition { position: absolute; top: 86px; right: 109px; color: #AEC6C6; }
+  .intro { position: absolute; left: 108px; top: 294px; width: 765px; }
+  .eyebrow { color: #A9FCE0; margin: 0 0 26px; }
+  h1 { margin: 0; font-size: 127px; line-height: .94; font-weight: 700; letter-spacing: -.081em; }
+  h1 span { color: #A9FCE0; }
+  .deck { margin: 40px 0 0; max-width: 610px; font-size: 37px; line-height: 1.29; letter-spacing: -.028em; color: #AEC6C6; }
+  .chart { position: absolute; left: 840px; top: 180px; width: 990px; height: 710px; }
+  .chart svg { width: 100%; height: 100%; display: block; }
+  .chart-tag { position: absolute; color: #AEC6C6; font-size: 28px; letter-spacing: .055em; }
+  .leader-tag { top: 73px; right: 32px; }
+  .follower-tag { left: 84px; top: 555px; }
+  .route-base { fill: none; stroke: #71979A; stroke-width: 1.3; opacity: .51; }
+  .packet { fill: none; stroke-linecap: round; stroke-width: 6; }
+  .rail { fill: none; stroke: #557C83; stroke-width: 1; }
+  .status { position: absolute; top: 802px; left: 108px; display: flex; gap: 13px; align-items: center; color: #AEC6C6; }
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #A9FCE0; }
+  .status-copy { width: 570px; }
+  .foot { position: absolute; bottom: 62px; display: flex; justify-content: space-between; left: 108px; right: 108px; color: #AEC6C6; }
+  .foot span:first-child { color: #A9FCE0; }
+</style>
+<div id="root" data-composition-id="signal-scene" data-width="1920" data-height="1080">
+    <header class="brand"><img src="assets/remora-mark.svg" alt=""><span class="wordmark">Remora</span></header>
+    <div class="edition mono">01 / SIGNAL SYSTEM</div>
+    <div class="hairline top"></div>
+    <section class="intro">
+      <p class="eyebrow mono">INTELLIGENCE BY THE SECOND</p>
+      <h1>Ride the<br><span>signal.</span></h1>
+      <p class="deck">Ride a smart agent’s decisions by the second, without handing it your wallet.</p>
+    </section>
+    <div class="chart" aria-hidden="true">
+      <svg viewBox="0 0 990 710">
+        <defs>
+          <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.4" fill="#577D84" opacity=".48"/></pattern>
+          <linearGradient id="fin" x1="0" y1="1" x2="1" y2="0" gradientUnits="objectBoundingBox">
+            <stop stop-color="#63B8B4"/><stop offset=".57" stop-color="#A9FCE0"/><stop offset="1" stop-color="#E6FFF3"/>
+          </linearGradient>
+          <linearGradient id="small-fin"><stop stop-color="#548AD4"/><stop offset="1" stop-color="#92C1FF"/></linearGradient>
+          <path id="main-route" pathLength="100" d="M947 234C802 222 697 239 609 311S432 417 333 400C255 387 187 357 82 379"/>
+          <path id="upper-route" pathLength="100" d="M631 293C577 357 528 435 440 462S254 447 95 475"/>
+          <path id="lower-route" pathLength="100" d="M623 301C568 400 527 490 420 525S256 497 110 539"/>
+        </defs>
+        <rect x="45" y="115" width="899" height="505" fill="url(#grid)"/>
+        <path d="M45 139v-24h24m851 0h24v24M45 596v24h24m851 0h24v-24" fill="none" stroke="#63898C" stroke-width="2"/>
+        <path class="rail" d="M97 509C246 477 314 534 418 499S548 403 591 346M106 571C249 528 325 587 434 547S547 446 580 395" stroke-dasharray="3 9"/>
+        <use href="#main-route" class="route-base"/>
+        <use href="#upper-route" class="route-base"/>
+        <use href="#lower-route" class="route-base"/>
+        <g transform="translate(528 191) scale(3.42)">
+          <path fill="url(#fin)" d="M8 51C28 23 60 11 110 17 92 23 81 33 70 47 54 67 35 70 8 62l18-6Z"/>
+          <path d="M28 54C54 36 77 25 100 20" stroke="#F4F9F7" stroke-opacity=".66" stroke-width=".45" fill="none"/>
+          <path fill="url(#small-fin)" d="M30 78c15-3 28-12 41-27-3 13-10 24-23 31-9 5-18 5-28 2Z"/>
+        </g>
+        <path d="M86 456H72v39h14m14 27H86v39h14" fill="none" stroke="#74A7FF" stroke-width="2"/>
+        <circle cx="82" cy="379" r="5" fill="#A9FCE0"/><circle cx="95" cy="475" r="5" fill="#74A7FF"/><circle cx="110" cy="539" r="5" fill="#74A7FF"/>
+        <use href="#main-route" class="packet lead-packet" stroke="#A9FCE0" stroke-dasharray="15 210" stroke-dashoffset="15"/>
+        <use href="#upper-route" class="packet follower-a" stroke="#A9FCE0" stroke-dasharray="13 210" stroke-dashoffset="13"/>
+        <use href="#lower-route" class="packet follower-b" stroke="#74A7FF" stroke-dasharray="13 210" stroke-dashoffset="13"/>
+      </svg>
+      <div class="chart-tag leader-tag mono">LEADER SIGNAL</div>
+      <div class="chart-tag follower-tag mono">FOLLOWER LIMITS</div>
+    </div>
+    <div class="status mono"><span class="status-dot"></span><span id="status-copy" class="status-copy">01 / DECISION PUBLISHED</span></div>
+    <div class="hairline bottom"></div>
+    <footer class="foot mono"><span>NEAR / USDC STREAMS</span><span>ONE LEADER &nbsp; MANY FOLLOWERS</span></footer>
+</div>
+<script>
+  const timeline = gsap.timeline({ paused: true });
+  const packet = (selector, head, time, duration) => timeline.fromTo(selector,
+    { attr: { "stroke-dashoffset": head } },
+    { attr: { "stroke-dashoffset": -101 }, duration, ease: "none", immediateRender: false }, time);
+  function sendSignal(start) {
+    packet(".lead-packet", 15, start, 2.7);
+    packet(".follower-a", 13, start + 1.18, 2.24);
+    packet(".follower-b", 13, start + 1.32, 2.42);
+    timeline.to(".status-dot", { scale: 1.6, duration: .18, ease: "power2.out" }, start + 2.3);
+    timeline.to(".status-dot", { scale: 1, duration: .38, ease: "power2.out" }, start + 2.48);
+  }
+  sendSignal(.2);
+  sendSignal(4.2);
+  sendSignal(8.22);
+  timeline.set("#status-copy", { textContent: "02 / STREAM ACCESS ACTIVE" }, 3.82);
+  timeline.set("#status-copy", { textContent: "03 / FOLLOWER LIMITS APPLIED" }, 7.82);
+  timeline.set("#status-copy", { textContent: "01 / DECISION PUBLISHED" }, 11.72);
+  timeline.to(".status-dot", { backgroundColor: "#74A7FF", duration: .26 }, 7.82);
+  timeline.to(".status-dot", { backgroundColor: "#A9FCE0", duration: .26 }, 11.72);
+  window.__timelines = window.__timelines || {};
+  window.__timelines["signal-scene"] = timeline;
+  timeline.seek(0);
+</script>
+</template>
