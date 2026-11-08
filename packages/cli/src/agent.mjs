@@ -42,7 +42,8 @@ export async function runModelAgent(inference, {
         result = await handlers[call.function.name](JSON.parse(call.function.arguments));
       } catch (error) {
         if (failOnToolError) throw error;
-        result = { decision: 'DENY', reason: error.decision?.reason || (/^[A-Z_]+$/.test(error.message) ? error.message : 'TOOL_OPERATION_FAILED') };
+        const safe = typeof error.message === 'string' && error.message.length <= 400 && !/ed25519:[1-9A-HJ-NP-Za-km-z]{20,}/.test(error.message);
+        result = { decision: 'DENY', reason: error.decision?.reason || (safe ? error.message : 'TOOL_OPERATION_FAILED') };
       }
       emit({ type: 'tool', name: call.function?.name, result });
       const answer = finishOnTool?.(result);

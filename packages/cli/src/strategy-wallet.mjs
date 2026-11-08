@@ -1,4 +1,4 @@
-import { signStrategyTransaction } from './agent-grant.mjs';
+import { readGrant, signStrategyTransaction } from './agent-grant.mjs';
 import { connectedOwner } from './owner-wallet.mjs';
 import { activityBlocker, DCL, EXCHANGE, LENDING, NEAR_ASSET, RNEAR, dclPoolTokens, enforceStrategyPolicy, ftAsset } from './strategy-actions.mjs';
 import { rawAmount } from './copy-activity.mjs';
@@ -285,7 +285,12 @@ export async function runWalletStrategy(activity, action, policy, {
   enforceStrategyPolicy(activity, action, policy, {});
   const wallet = await connect({ required: true, ownerId });
   const rpc = await views(wallet.rpcUrl);
-  let { confirms, ...plan } = await build(action, wallet.accountId, rpc, policy, orderClientId);
+  let accountId = wallet.accountId;
+  try {
+    const grant = await readGrant(wallet.accountId);
+    if (grant?.executionAccountId && grant.remaining > 0 && Date.now() < grant.expiresAt) accountId = grant.executionAccountId;
+  } catch { /* A missing grant store keeps the connected owner as the signer. */ }
+  let { confirms, ...plan } = await build(action, accountId, rpc, policy, orderClientId);
   enforceStrategyPolicy(activity, action, policy, plan.inputs);
   if (!execute) return { status: 'preview', mode: 'wallet', activity, action, network: 'testnet', ownerId: wallet.accountId, ...plan, signedTransactions: 0 };
   const method = plan.actions.at(-1).params.methodName;
@@ -293,7 +298,7 @@ export async function runWalletStrategy(activity, action, policy, {
     label: `${activity} on NEAR testnet · ${method}`, rpcUrl: wallet.rpcUrl, context: { kind: 'activity', activity, action, operationId } }, {
     beforeSubmit: async () => {
       if (activity === 'limit-orders') {
-        const fresh = await build(action, wallet.accountId, await views(wallet.rpcUrl), policy, orderClientId);
+        const fresh = await build(action, accountId, await views(wallet.rpcUrl), policy, orderClientId);
         if (JSON.stringify(fresh.actions) !== JSON.stringify(plan.actions)) throw new Error('DCL_ORDER_CHANGED: start a new wallet approval.');
         confirms = fresh.confirms;
       } else if (Date.now() - Date.parse(plan.evidence.observedAt) > 60000) {

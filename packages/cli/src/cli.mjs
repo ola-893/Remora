@@ -50,8 +50,8 @@ const help = `Named agents and copy trading:
   agentstreams grant create --transactions 10 --hours 6 --activities portfolio-rebalance
   agentstreams grant create --transactions 10 --hours 6 --activities staking-moves,liquidity-ranges,yield-reallocation,limit-orders --staking-pool lst.ref-dev.testnet --tokens wrap.testnet
   agentstreams grant show | revoke
-                                                One owner signature adds restricted function-call keys.
-                                                The agent signs those methods until the count or time runs out.
+                                                One owner signature funds a separate execution account.
+                                                The agent signs the granted methods from that account.
   agentstreams fund USDC                         Owner approves funding in the browser wallet
   agentstreams withdraw USDC|all [--agent NAME]   Return available vault USDC to its owner
   agentstreams agent withdraw USDC|all             Same withdrawal for the selected agent

@@ -22,14 +22,15 @@ export async function runStrategyAgent(agent, activity, inference, options) {
     return strategyAction(activity, JSON.parse(args.action));
   };
   const summary = fill => ({ status: fill.status, action: fill.action, actionId: fill.actionId ?? null,
-    inputs: fill.inputs, evidence: fill.evidence, explorerUrl: fill.receipt?.explorerUrl });
+    inputs: fill.inputs, evidence: fill.evidence, explorerUrl: fill.receipt?.explorerUrl ?? null,
+    transactionHash: fill.receipt?.hash ?? null, signing: fill.receipt?.signing ?? null });
   const outcome = await runModelAgent(inference, {
     ...options,
-    instructions: `Use the configured ${activity} on NEAR testnet. The connected owner must approve each transaction in their browser. Action shape: ${shape[activity]}. Use atomic integer strings and basis points. Read the guard, preview, and apply the exact same action only if asked. Limits cannot be changed through tools. Never invent a fill, reward or transaction.`,
+    instructions: `Use the configured ${activity} on NEAR testnet. Action shape: ${shape[activity]}. Use atomic integer strings and basis points. Read the guard, preview, and apply the exact same action only if asked. A grant signs granted methods without a browser prompt and reports signing "grant". Say a wallet approval is required only when signing is "browser-wallet". Limits cannot be changed through tools. Never invent a fill, reward, hash or transaction.`,
     definitions: {
       strategy_guard: { description: 'Read the testnet execution guard.', properties: {}, required: [] },
       strategy_preview: actionTool('Preview a guarded action using current venue data.'),
-      strategy_apply: actionTool('Request browser wallet approval for the same previewed action after checking fresh testnet data.'),
+      strategy_apply: actionTool('Submit the same previewed action. A grant signs it; otherwise the owner approves it in the browser.'),
     },
     handlers: {
       async strategy_guard(args) {
