@@ -1,0 +1,126 @@
+{
+  "id": "hour-leader-recording",
+  "name": "Hour Leader",
+  "activity": "spot-trading",
+  "execution": "paper",
+  "rate": "1",
+  "duration": 0,
+  "network": "testnet",
+  "startedAt": "2026-11-07T19:33:40.213Z",
+  "closedAt": "2026-11-07T20:33:59.732Z",
+  "source": "https://github.com/ola-893/agentStreams/blob/7c6126493e2c6658043740dd32b32a52d9c31e72/docs/evidence/copy-trading/hour-2026-11-07/evidence.json",
+  "payments": [
+    {
+      "label": "Stream opened",
+      "hash": "4JbmkPBeG8kJJNAZrPU5jyfPH9aocjXct2Qpg8KufaYw"
+    },
+    {
+      "label": "Stream closed",
+      "hash": "D6Du8Loc9UgjsWJy9nuyKNLNKa46gEfqp1wz57cVZAMf"
+    },
+    {
+      "label": "Publisher payout",
+      "hash": "4voSKkptSLs1BV2qNYWxadsRhkMDBZG6nmDkwST6ebBA"
+    }
+  ],
+  "history": [
+    {
+      "at": "2026-11-07T19:34:13.224000Z",
+      "kind": "paper-fill",
+      "label": "1.0 USDC \u2192 0.272504 wNEAR",
+      "value": 0.2725040182060918,
+      "quoteAt": "2026-11-07T19:34:12.632Z"
+    },
+    {
+      "at": "2026-11-07T19:38:21.747000Z",
+      "kind": "paper-fill",
+      "label": "1.0 USDC \u2192 0.272352 wNEAR",
+      "value": 0.2723524635839107,
+      "quoteAt": "2026-11-07T19:38:21.316Z"
+    },
+    {
+      "at": "2026-11-07T19:42:19.825000Z",
+      "kind": "paper-fill",
+      "label": "1.0 USDC \u2192 0.27332 wNEAR",
+      "value": 0.2733200155259704,
+      "quoteAt": "2026-11-07T19:42:19.228Z"
+    },
+    {
+      "at": "2026-11-07T19:46:39.104000Z",
+      "kind": "paper-fill",
+      "label": "1.0 USDC \u2192 0.272871 wNEAR",
+      "value": 0.2728713369779113,
+      "quoteAt": "2026-11-07T19:46:38.487Z"
+    },
+    {
+      "at": "2026-11-07T19:50:56.876000Z",
+      "kind": "paper-fill",
+      "label": "1.0 USDC \u2192 0.273767 wNEAR",
+      "value": 0.2737674311458279,
+      "quoteAt": "2026-11-07T19:50:56.443Z"
+    },
+    {
+      "at": "2026-11-07T19:54:39.034000Z",
+      "kind": "paper-fill",
+      "label": "1.0 USDC \u2192 0.273586 wNEAR",
+      "value": 0.2735859847882611,
+      "quoteAt": "2026-11-07T19:54:38.589Z"
+    },
+    {
+      "at": "2026-11-07T19:58:40.747000Z",
+      "kind": "paper-fill",
+      "label": "1.0 USDC \u2192 0.273211 wNEAR",
+      "value": 0.27321090117873514,
+      "quoteAt": "2026-11-07T19:58:40.320Z"
+    },
+    {
+      "at": "2026-11-07T20:02:28.662000Z",
+      "kind": "paper-fill",
+      "label": "1.0 USDC \u2192 0.273887 wNEAR",
+      "value": 0.2738867940073796,
+      "quoteAt": "2026-11-07T20:02:27.961Z"
+    },
+    {
+      "at": "2026-11-07T20:06:51.022000Z",
+      "kind": "paper-fill",
+      "label": "1.0 USDC \u2192 0.273918 wNEAR",
+      "value": 0.2739178114980091,
+      "quoteAt": "2026-11-07T20:06:50.546Z"
+    },
+    {
+      "at": "2026-11-07T20:10:51.561000Z",
+      "kind": "paper-fill",
+      "label": "1.0 USDC \u2192 0.272869 wNEAR",
+      "value": 0.27286860510649824,
+      "quoteAt": "2026-11-07T20:10:50.732Z"
+    },
+    {
+      "at": "2026-11-07T20:14:28.552000Z",
+      "kind": "paper-fill",
+      "label": "1.0 USDC \u2192 0.272869 wNEAR",
+      "value": 0.27286860510649824,
+      "quoteAt": "2026-11-07T20:14:28.100Z"
+    },
+    {
+      "at": "2026-11-07T20:19:01.610000Z",
+      "kind": "paper-fill",
+      "label": "1.0 USDC \u2192 0.273361 wNEAR",
+      "value": 0.27336081113822963,
+      "quoteAt": "2026-11-07T20:19:01.150Z"
+    },
+    {
+      "at": "2026-11-07T20:26:31.587000Z",
+      "kind": "paper-fill",
+      "label": "1.0 USDC \u2192 0.273436 wNEAR",
+      "value": 0.2734358278262478,
+      "quoteAt": "2026-11-07T20:26:30.973Z"
+    },
+    {
+      "at": "2026-11-07T20:31:09.299000Z",
+      "kind": "paper-fill",
+      "label": "1.0 USDC \u2192 0.273061 wNEAR",
+      "value": 0.2730611555491496,
+      "quoteAt": "2026-11-07T20:31:08.694Z"
+    }
+  ]
+}

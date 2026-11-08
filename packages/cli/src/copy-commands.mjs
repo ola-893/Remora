@@ -18,7 +18,7 @@ export const copyFlags = {
   'agent:setup': 'network owner-id recipient vault-name agent-name rpc service deploy resume',
   'task:list': '', 'task:enable': 'paper-balances intents-agent-id intents-key-env intents-grant-env live confidential', 'task:disable': '', 'task:portfolio': '',
   'task:run': 'from to amount-raw action-json execute',
-  'publish:set': 'activities url port rate duration recipient nova-group nova-account nova-network nova-key-env performance-file',
+  'publish:set': 'activities url port rate duration recipient nova-group nova-account nova-network nova-key-env performance-file public-history',
   'publish:start': '', 'publish:stop': '', 'publish:status': '', 'publish:history': '',
   'earnings:show': '', 'earnings:claim': 'from', discover: 'activity url id',
   'copy:preview': 'url', 'copy:start': 'url activity', 'copy:mode': '', 'copy:pending': '', 'copy:approve': '', 'copy:reject': '',

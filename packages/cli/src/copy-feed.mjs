@@ -70,9 +70,24 @@ export async function configurePublish(agent, flags) {
   if (performance && (!Array.isArray(performance) || performance.length > 90 || !performance.every(p => Object.keys(p).length === 2 && /^\d{4}-\d{2}-\d{2}$/.test(p.date) && Number.isFinite(p.pnl)))) throw new Error('Performance file must contain up to 90 { date, pnl } points.');
   return withAgentState(agent, state => {
     if (state.publish?.enabled) throw new Error('Stop publication before changing the listing.');
-    state.publish = { enabled: false, activity: selected[0], origin, port, duration, rate, recipient: flags.recipient, nova, performance };
-    return { origin, activity: selected[0], rateRawUSDCPerSecond: rate, durationSeconds: duration, recipient: flags.recipient, journal: nova ? 'nova' : 'local-encrypted', enabled: false };
+    const publicHistory = flags['public-history'] === true;
+    state.publish = { enabled: false, activity: selected[0], origin, port, duration, rate, recipient: flags.recipient, nova, performance, publicHistory };
+    return { origin, activity: selected[0], rateRawUSDCPerSecond: rate, durationSeconds: duration, recipient: flags.recipient, journal: nova ? 'nova' : 'local-encrypted', publicHistory, enabled: false };
   });
+}
+
+export function publicListingHistory(state, activity) {
+  return (state.history ?? []).flatMap(event => {
+    if (!event.publication?.journalHash) return [];
+    if (activity === spot && event.type === 'trade' && ['paper-filled', 'SUCCESS'].includes(event.status)) {
+      return [{ at: event.at, kind: event.status === 'paper-filled' ? 'paper-fill' : 'intent-fill' }];
+    }
+    if (event.type === 'strategy' && event.activity === activity && event.status === 'wallet-confirmed' &&
+        /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(event.transactionHash ?? '')) {
+      return [{ at: event.at, kind: 'wallet-action', receipt: event.transactionHash }];
+    }
+    return [];
+  }).slice(-50);
 }
 
 function listing(agent, state) {
@@ -82,6 +97,7 @@ function listing(agent, state) {
     activity: p.activity ?? spot, recipient: p.recipient, rate: p.rate, duration: p.duration,
     journal: p.nova ? 'nova' : 'local-encrypted',
     execution: activityMode(state, p.activity ?? spot) ?? 'unconfigured',
+    ...(p.publicHistory ? { history: publicListingHistory(state, p.activity ?? spot) } : {}),
     ...(p.performance ? { performance: { provenance: 'publisher-reported', points: p.performance, journalHead: state.journal?.at(-1)?.hash ?? null } } : {}),
   };
 }
@@ -223,13 +239,16 @@ export async function serveFeed(agent, { rpcUrl = 'https://test.rpc.fastnear.com
   const rpc = new NearAgentStreamsClient({ rpcUrl });
   if ((await rpc.provider.viewNodeStatus()).chain_id !== network) throw new Error('FEED_RPC_NETWORK_MISMATCH');
   const server = createServer(async (req, res) => {
+    let publicRead = false;
     const send = (status, value) => {
-      res.writeHead(status, { 'content-type': 'application/json', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
+      res.writeHead(status, { 'content-type': 'application/json', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff',
+        ...(publicRead ? { 'access-control-allow-origin': '*' } : {}) });
       res.end(JSON.stringify(value));
     };
     try {
-      if (req.method !== 'GET') return send(405, { error: 'METHOD_NOT_ALLOWED' });
       const path = new URL(req.url, publish.origin);
+      publicRead = [listingPath, legacyListingPath, healthPath].includes(path.pathname);
+      if (req.method !== 'GET') return send(405, { error: 'METHOD_NOT_ALLOWED' });
       const state = await readAgentState(agent);
       if (!state.publish?.enabled || state.publish.origin !== publish.origin || state.publish.port !== publish.port) return send(503, { error: 'PUBLICATION_STOPPED' });
       const b = listing(agent, state);

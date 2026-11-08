@@ -138,7 +138,7 @@ export default function NearDocs() {
         and NEAR work.
       </p>
       <p>
-        <Link to="/">Open the NEAR workflow →</Link>
+        <Link to={window.__AGENTSTREAMS_RECORDED_ONLY__ ? '/' : '/workflow'}>Open the NEAR workflow →</Link>
       </p>
     </article>
   );
