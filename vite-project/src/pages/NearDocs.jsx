@@ -91,8 +91,9 @@ export default function NearDocs() {
         </code>
       </pre>
       <p>
-        The AI option uses your configured Qwen or OpenAI credentials from the
-        ignored environment file. The model only selects a service tier. Quotes,
+        Configure the AI option from the checkout with <code>npm run agentstreams -- agent create demo</code>
+        {" "}and <code>npm run agentstreams -- inference set --provider near-ai --model MODEL_ID</code>.
+        Enter your inference API key at the CLI prompt. The model only selects a service tier. Quotes,
         recipients, amounts and signing stay with the host and policy worker.
       </p>
       <h2>What protects the funds</h2>

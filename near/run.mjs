@@ -220,7 +220,7 @@ export async function runDemo({
         sessionId,
       });
     };
-    if (ai) await runModelAgent(purchase, emit);
+    if (ai) await runModelAgent(purchase, emit, { signal });
     else {
       await purchase("basic");
       await purchase("premium");

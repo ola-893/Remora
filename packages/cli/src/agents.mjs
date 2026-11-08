@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { KeyPair } from 'near-api-js';
 import { configHome, projectConfig, readProject, liveProfile } from './config.mjs';
 import { atomicWrite, readOptional, safeTarget } from './files.mjs';
+import { readInferenceProfile } from './inference-profile.mjs';
 
 export const fingerprint = value => createHash('sha256').update(value).digest('hex');
 const namePattern = /^[a-z][a-z0-9-]{0,30}$/;
@@ -90,7 +91,7 @@ export async function withAgentState(agent, update) {
 }
 
 export async function agentSetupState(agent) {
-  const { inference } = await readAgentState(agent);
+  const inference = (await readInferenceProfile(agent.path))?.inference ?? (await readAgentState(agent)).inference;
   if (await projectConfig(agent.path) === null) return { configured: false, ...(inference ? { inference } : {}) };
   await readProject(agent.path);
   const profile = await liveProfile(agent.path);

@@ -7,6 +7,8 @@ import { fileURLToPath } from 'node:url';
 import { readFile } from 'node:fs/promises';
 import { projectPath, readProject, liveProfile, gatewayFor, setPayments } from './config.mjs';
 import { showSettings, setRuntime, setService, setInference, setLimits, reconcileLimits, usdc, durationSeconds } from './settings.mjs';
+import { readInferenceProfile } from './inference-profile.mjs';
+import { inferenceConfig } from './inference.mjs';
 
 const version = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')).version;
 const help = `agentStreams ${version} — configure and run agents with native NEAR payment streams
@@ -68,8 +70,8 @@ Connect inference, then run an agent:
                                               Optional --max-output-tokens N --timeout-seconds 120 (10-600)
   agentstreams inference models --provider near-ai  List current models and tool/privacy metadata
   agentstreams inference set --provider near-ai --model MODEL_ID
-                                                Uses NEAR_AI_API_KEY; default output cap 2048 tokens
-  agentstreams inference set --base-url https://api.openai.com/v1 --model YOUR_MODEL --api-key-env OPENAI_API_KEY
+                                                Enter your API key at a hidden prompt to save it locally
+  agentstreams inference set --base-url https://api.openai.com/v1 --model YOUR_MODEL --api-key
   agentstreams agent run [--activity spot-trading|paid-api] --prompt "Use the paid API to research my question."
   agentstreams install cursor|codex [--dry-run]   Use that harness's existing inference
   agentstreams install mcp                       Print stdio config for other MCP clients
@@ -98,8 +100,8 @@ const integer = value => { if (!/^[0-9]+$/.test(value || '')) throw new Error('E
 const boolean = value => { if (!['true', 'false'].includes(value)) throw new Error('Use true or false.'); return value === 'true'; };
 
 export async function run(argv) {
-  const strings = ['action-json', 'targets', 'max-inputs', 'copy-bps', 'hash', 'paper-balances', 'agent', 'activity', 'id', 'activities', 'rate', 'intents-agent-id', 'intents-key-env', 'intents-grant-env', 'from', 'to', 'amount-raw', 'nova-group', 'nova-account', 'nova-network', 'nova-key-env', 'performance-file', 'assets', 'input-asset', 'max-input-raw', 'copy-input-raw', 'max-age', 'max-slippage-bps', 'max-notional', 'stale-seconds', 'feed-failures', 'network', 'deployment', 'session', 'owner-id', 'recipient', 'amount', 'budget', 'max-stream', 'max-rate', 'max-duration', 'max-5xx', 'max-transport-errors', 'max-health-failures', 'idle-timeout', 'max-requests', 'reuse', 'poll-seconds', 'close-on-exit', 'url', 'health-path', 'quote-path', 'request-path', 'tiers', 'base-url', 'model', 'api-key-env', 'max-steps', 'prompt', 'tier', 'query', 'thinking', 'failure-cooldown', 'provider', 'reasoning-effort', 'max-output-tokens', 'repository', 'basic-rate', 'premium-rate', 'duration', 'run', 'timeout-seconds'];
-  const booleans = ['cancel', 'resume', 'once', 'live', 'confidential', 'execute', 'json', 'help', 'version', 'enable', 'disable', 'dry-run', 'deploy'];
+  const strings = ['action-json', 'targets', 'max-inputs', 'copy-bps', 'hash', 'paper-balances', 'agent', 'activity', 'id', 'activities', 'rate', 'intents-agent-id', 'intents-key-env', 'intents-grant-env', 'from', 'to', 'amount-raw', 'nova-group', 'nova-account', 'nova-network', 'nova-key-env', 'performance-file', 'assets', 'input-asset', 'max-input-raw', 'copy-input-raw', 'max-age', 'max-slippage-bps', 'max-notional', 'stale-seconds', 'feed-failures', 'network', 'deployment', 'session', 'owner-id', 'recipient', 'amount', 'budget', 'max-stream', 'max-rate', 'max-duration', 'max-5xx', 'max-transport-errors', 'max-health-failures', 'idle-timeout', 'max-requests', 'reuse', 'poll-seconds', 'close-on-exit', 'url', 'health-path', 'quote-path', 'request-path', 'tiers', 'base-url', 'model', 'max-steps', 'prompt', 'tier', 'query', 'thinking', 'failure-cooldown', 'provider', 'reasoning-effort', 'max-output-tokens', 'repository', 'basic-rate', 'premium-rate', 'duration', 'run', 'timeout-seconds'];
+  const booleans = ['api-key', 'cancel', 'resume', 'once', 'live', 'confidential', 'execute', 'json', 'help', 'version', 'enable', 'disable', 'dry-run', 'deploy'];
   const { values: v, positionals: p, tokens } = parseArgs({ args: argv, allowPositionals: true, strict: true, tokens: true, options: {
     ...Object.fromEntries(strings.map(k => [k, { type: 'string' }])), ...Object.fromEntries(booleans.map(k => [k, { type: 'boolean' }])),
     project: { type: 'string', default: '.' }, recording: { type: 'string', default: 'testnet' }, port: { type: 'string', default: '0' },
@@ -116,7 +118,7 @@ export async function run(argv) {
     'config:limits': 'budget max-stream max-rate max-duration recipient', 'config:show': '', 'config:reconcile': '', config: '',
     'service:set': 'url recipient health-path quote-path request-path tiers', 'service:show': '', service: '',
     'service:serve': 'repository port deployment basic-rate premium-rate duration',
-    'inference:set': 'provider base-url model api-key-env max-steps thinking reasoning-effort max-output-tokens timeout-seconds', 'inference:models': 'provider', 'inference:show': '', inference: '', 'agent:run': 'prompt max-steps once rpc activity',
+    'inference:set': 'provider base-url model api-key max-steps thinking reasoning-effort max-output-tokens timeout-seconds', 'inference:models': 'provider', 'inference:show': '', inference: '', 'agent:run': 'prompt max-steps once rpc activity',
     request: 'tier query', 'stream:check': 'tier', 'stream:open': 'tier', 'stream:status': '', 'stream:close': 'session',
     monitor: '', reconcile: '', close: 'session', verify: 'rpc run', fund: 'amount', doctor: '', payments: 'enable disable',
     install: 'dry-run', mcp: '', ui: 'recording port run',
@@ -208,15 +210,15 @@ export async function run(argv) {
     case 'inference': {
       if (p[1] === 'show' || !p[1]) {
         if (agent) return emit((await agentSetupState(agent)).inference || { configured: false });
-        return emit((await liveProfile(project)).inference || { configured: false });
+        return emit((await readInferenceProfile(project))?.inference ?? (await liveProfile(project)).inference ?? { configured: false });
       }
       if (p[1] === 'models') { const { listInferenceModels } = await import('./inference.mjs'); return emit(await listInferenceModels({ provider: v.provider })); }
       if (p[1] !== 'set') throw new Error('Use inference show, set or models.');
-      return emit(await setInference(project, { provider: v.provider, baseUrl: v['base-url'], model: v.model, apiKeyEnv: v['api-key-env'], maxSteps: v['max-steps'] ? integer(v['max-steps']) : undefined,
+      return emit(await setInference(project, { provider: v.provider, baseUrl: v['base-url'], model: v.model, maxSteps: v['max-steps'] ? integer(v['max-steps']) : undefined,
         ...(v.thinking !== undefined ? { thinking: boolean(v.thinking) } : {}),
         ...(v['reasoning-effort'] !== undefined ? { reasoningEffort: v['reasoning-effort'] } : {}),
         ...(v['timeout-seconds'] !== undefined ? { timeoutSeconds: integer(v['timeout-seconds']) } : {}),
-        ...(v['max-output-tokens'] !== undefined ? { maxOutputTokens: integer(v['max-output-tokens']) } : {}) }, agent));
+        ...(v['max-output-tokens'] !== undefined ? { maxOutputTokens: integer(v['max-output-tokens']) } : {}) }, agent, { enterApiKey: v['api-key'] }));
     }
     case 'agent': {
       if (p[1] !== 'run') throw new Error('Use agent run --prompt "...".');
@@ -225,10 +227,12 @@ export async function run(argv) {
       if (strategy && !agent) throw new Error('Select a named agent first.');
       const spot = v.activity === 'spot-trading' || (!v.activity && agent && (await readAgentState(agent)).tasks['spot-trading']?.mode === 'paper');
       if (spot && !agent) throw new Error('Create a named agent with agentstreams agent create NAME first.');
-      const inference = agent ? (await agentSetupState(agent)).inference : (await liveProfile(project)).inference;
+      const savedInference = await readInferenceProfile(project, { withKey: true });
+      const inference = savedInference?.inference ?? (agent ? (await agentSetupState(agent)).inference : (await liveProfile(project)).inference);
       if (!inference) throw new Error('Configure inference first with agentstreams inference set, or install the MCP integration in your harness.');
-      const config = { ...inference, ...(v['max-steps'] ? { maxSteps: integer(v['max-steps']) } : {}) };
+      const config = inferenceConfig({ ...inference, ...(v['max-steps'] ? { maxSteps: integer(v['max-steps']) } : {}) });
       const controller = new AbortController();
+      const options = { prompt: v.prompt, signal: controller.signal, storedApiKey: savedInference?.apiKey };
       const stop = () => controller.abort(new Error('AGENT_INTERRUPTED'));
       process.once('SIGINT', stop); process.once('SIGTERM', stop);
       let client;
@@ -236,18 +240,18 @@ export async function run(argv) {
         if (spot) {
           const { runTradingAgent } = await import('./trading-agent.mjs');
           const events = [];
-          const result = await runTradingAgent(agent, config, { prompt: v.prompt, signal: controller.signal, emit: v.json ? event => events.push(event) : emit });
+          const result = await runTradingAgent(agent, config, { ...options, emit: v.json ? event => events.push(event) : emit });
           return emit({ ...result, ...(v.json ? { events } : {}) });
         }
         if (strategy) {
           const { runStrategyAgent } = await import('./strategy-agent.mjs');
           const events = [];
-          const result = await runStrategyAgent(agent, v.activity, config, { prompt: v.prompt, signal: controller.signal, emit: v.json ? event => events.push(event) : emit });
+          const result = await runStrategyAgent(agent, v.activity, config, { ...options, emit: v.json ? event => events.push(event) : emit });
           return emit({ ...result, ...(v.json ? { events } : {}) });
         }
         const { runAgent } = await import('./agent.mjs');
         client = await gatewayFor(project);
-        return await runAgent(client, config, { prompt: v.prompt, signal: controller.signal, emit });
+        return await runAgent(client, config, { ...options, emit });
       } finally { process.removeListener('SIGINT', stop); process.removeListener('SIGTERM', stop); await client?.dispose(); }
     }
     case 'request':
@@ -314,7 +318,8 @@ export async function run(argv) {
       const { summary, config } = await inspectNearProfile(profile.configPath, profile.stateRoot);
       const ok = !process.exitCode && !summary.pendingIntent && !summary.executorBusyOrInterrupted && !summary.policyUpdatePending;
       if (!ok) process.exitCode = 1;
-      return emit({ ok, node: process.versions.node, paymentsEnabled: profile.paymentsEnabled, inferenceConfigured: Boolean(setup?.inference ?? profile.inference), runtimePolicy: config.runtimePolicy, ...summary });
+      const inference = setup?.inference ?? (await readInferenceProfile(project))?.inference ?? profile.inference;
+      return emit({ ok, node: process.versions.node, paymentsEnabled: profile.paymentsEnabled, inferenceConfigured: Boolean(inference), runtimePolicy: config.runtimePolicy, ...summary });
     }
     case 'payments': { if (Boolean(v.enable) === Boolean(v.disable)) throw new Error('Choose exactly one of --enable or --disable.'); return emit(await setPayments(project, v.enable)); }
     case 'install': {

@@ -22,7 +22,7 @@ const { values } = parseArgs({
 });
 if (values.help) {
   console.log(
-    "agentStreams on NEAR\n  npm run demo:agent -- --sandbox [--ai] [--json] [--capture]\n  npm run demo:agent -- --config .local/near/deployment.json [--ai]\n  npm run recover:near -- --config <file> --recover <session-id>\nSandbox executes real local NEAR transactions using valueless fixture tokens. --ai calls the configured Qwen/OpenAI model."
+    "agentStreams on NEAR\n  npm run demo:agent -- --sandbox [--ai] [--json] [--capture]\n  npm run demo:agent -- --config .local/near/deployment.json [--ai]\n  npm run recover:near -- --config <file> --recover <session-id>\nSandbox executes real local NEAR transactions using valueless fixture tokens. --ai uses the provider configured through agentstream inference set."
   );
 } else {
   let sandbox, service;

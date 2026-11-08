@@ -1,5 +1,11 @@
 export const NEAR_AI_BASE_URL = 'https://cloud-api.near.ai/v1';
 export const NEAR_AI_CATALOG_URL = `${NEAR_AI_BASE_URL}/model/list`;
+export const INFERENCE_KEY_SETUP = 'Run agentstream inference set with --api-key to enter the inference API key.';
+
+export function validateInferenceKey(key) {
+  if (typeof key !== 'string' || !key.length || key.length > 8192 || /[^\x21-\x7E]/.test(key)) throw new Error('INFERENCE_CREDENTIAL_INVALID');
+  return key;
+}
 
 export function inferenceConfig(input) {
   if (!input || typeof input.model !== 'string' || !input.model.trim() || input.model.length > 256) throw new Error('Provide --model.');
@@ -9,8 +15,8 @@ export function inferenceConfig(input) {
   if (url.username || url.password || url.search || url.hash || !(url.protocol === 'https:' || (url.protocol === 'http:' && ['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname)))) throw new Error('Inference URL must use HTTPS or loopback without embedded credentials.');
   const baseUrl = url.href.replace(/\/$/, '');
   if (provider === 'near-ai' && baseUrl !== NEAR_AI_BASE_URL) throw new Error('The near-ai provider uses https://cloud-api.near.ai/v1. Use openai-compatible for a custom endpoint.');
-  const apiKeyEnv = input.apiKeyEnv ?? (provider === 'near-ai' ? 'NEAR_AI_API_KEY' : undefined);
-  if (apiKeyEnv !== undefined && !/^[A-Z][A-Z0-9_]{0,127}$/.test(apiKeyEnv)) throw new Error('Provide an environment variable NAME via --api-key-env, never the key itself.');
+  if (input.apiKeyEnv !== undefined) throw new Error(INFERENCE_KEY_SETUP);
+  const apiKeyStored = input.apiKeyStored === true;
   const maxSteps = input.maxSteps ?? 12;
   const timeoutSeconds = input.timeoutSeconds ?? 120;
   if (!Number.isInteger(timeoutSeconds) || timeoutSeconds < 10 || timeoutSeconds > 600) throw new Error('timeoutSeconds must be between 10 and 600.');
@@ -20,7 +26,7 @@ export function inferenceConfig(input) {
   if (input.reasoningEffort !== undefined && !['low', 'medium', 'high'].includes(input.reasoningEffort)) throw new Error('reasoningEffort must be low, medium or high.');
   const maxOutputTokens = input.maxOutputTokens ?? (provider === 'near-ai' ? 2048 : undefined);
   if (maxOutputTokens !== undefined && (!Number.isInteger(maxOutputTokens) || maxOutputTokens < 1 || maxOutputTokens > 131072)) throw new Error('maxOutputTokens must be between 1 and 131072.');
-  return { provider, protocol: 'openai-chat', baseUrl, model: input.model, ...(apiKeyEnv ? { apiKeyEnv } : {}),
+  return { provider, protocol: 'openai-chat', baseUrl, model: input.model, ...(apiKeyStored ? { apiKeyStored } : {}),
     ...(input.thinking !== undefined ? { thinking: input.thinking } : {}),
     ...(input.reasoningEffort !== undefined ? { reasoningEffort: input.reasoningEffort } : {}),
     ...(maxOutputTokens !== undefined ? { maxOutputTokens } : {}), timeoutSeconds, maxSteps };

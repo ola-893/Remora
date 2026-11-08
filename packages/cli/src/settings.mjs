@@ -7,7 +7,7 @@ import { readConfig } from '@ola-893/agentstreams-core/internal-config';
 import { runtimePolicy, serviceConfig } from '@ola-893/agentstreams-core/internal-runtime-policy';
 import { inspectNearProfile, NearAgentStreamsClient } from '@ola-893/agentstreams-core/near';
 import { inferenceConfig } from './inference.mjs';
-import { withAgentState } from './agents.mjs';
+import { promptInferenceKey, readInferenceProfile, writeInferenceProfile } from './inference-profile.mjs';
 export { inferenceConfig } from './inference.mjs';
 
 export function usdc(value) {
@@ -28,7 +28,7 @@ export async function showSettings(project) {
   const { client, summary } = await inspectNearProfile(profile.configPath, profile.stateRoot);
   return { network: config.network, vaultId: config.vaultId, agentId: config.agentId, recipientId: config.recipientId, paymentsEnabled: profile.paymentsEnabled,
     financialPolicy: (await client.getVault()).policy, financialUnits: 'raw USDC (1 USDC = 1000000)', runtimePolicy: config.runtimePolicy,
-    service: { url: config.serviceUrl, ...config.service }, inference: profile.inference || null, ...summary };
+    service: { url: config.serviceUrl, ...config.service }, inference: (await readInferenceProfile(project))?.inference ?? profile.inference ?? null, ...summary };
 }
 export async function setRuntime(project, patch) {
   if (!Object.keys(patch).length) throw new Error('Specify at least one runtime guardrail. See --help.');
@@ -51,14 +51,13 @@ export async function setService(project, patch) {
   await atomicWrite(profile.configPath, JSON.stringify(validated, null, 2));
   return { service: { url: validated.serviceUrl, recipient: validated.recipientId, ...validated.service }, restartRequired: 'Restart running agents/MCP servers after service changes.' };
 }
-export async function setInference(project, input, agent) {
-  const inference = inferenceConfig(input);
-  if (agent) await withAgentState(agent, state => { state.inference = inference; });
-  else {
-    const { file, configPath, stateRoot, ...saved } = await liveProfile(project);
-    await atomicWrite(file, JSON.stringify({ ...saved, inference }, null, 2));
-  }
-  return { inference, credentialsStored: false,
+export async function setInference(project, input, agent, { enterApiKey = false } = {}) {
+  const needsKey = enterApiKey || input.provider === 'near-ai';
+  const inference = inferenceConfig({ ...input, apiKeyStored: needsKey });
+  if (!agent) await liveProfile(project);
+  const apiKey = needsKey ? await promptInferenceKey() : undefined;
+  await writeInferenceProfile(project, inference, apiKey);
+  return { inference, credentialsStored: needsKey,
     ...(inference.provider === 'near-ai' ? { attestationVerified: false, policySignerLocation: 'local host' } : {}),
     next: 'agentstreams agent run --prompt "Describe the task you want the agent to perform."' };
 }

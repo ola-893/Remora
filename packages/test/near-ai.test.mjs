@@ -1,8 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
+import { once } from 'node:events';
+import { createServer } from 'node:http';
 import { promisify } from 'node:util';
-import { mkdtemp, mkdir, writeFile, readFile, realpath, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile, readFile, realpath, readdir, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { KeyPair } from 'near-api-js';
@@ -14,15 +16,17 @@ import { initProject } from '../cli/src/config.mjs';
 const exec = promisify(execFile);
 const model = 'z-ai/glm-5.3-flash';
 
-test('NEAR AI preset pins its endpoint and stores only a provider-specific key reference', () => {
+test('NEAR AI preset pins its endpoint and rejects environment key references', () => {
   const config = inferenceConfig({ provider: 'near-ai', model });
   assert.equal(config.baseUrl, NEAR_AI_BASE_URL);
-  assert.equal(config.apiKeyEnv, 'NEAR_AI_API_KEY');
+  assert.equal(config.apiKeyEnv, undefined);
   assert.equal(config.maxOutputTokens, 2048);
   assert.equal(config.provider, 'near-ai');
-  assert.equal(inferenceConfig({ provider: 'near-ai', model, apiKeyEnv: 'MY_NEAR_KEY' }).apiKeyEnv, 'MY_NEAR_KEY');
+  const stored = inferenceConfig({ provider: 'near-ai', model, apiKeyStored: true });
+  assert.equal(stored.apiKeyEnv, undefined);
+  assert.equal(stored.apiKeyStored, true);
   for (const baseUrl of ['https://attacker.invalid/v1', 'http://cloud-api.near.ai/v1', 'https://cloud-api.near.ai/v1?key=secret', 'https://user:password@cloud-api.near.ai/v1']) assert.throws(() => inferenceConfig({ provider: 'near-ai', model, baseUrl }));
-  assert.throws(() => inferenceConfig({ provider: 'near-ai', model, apiKeyEnv: '' }));
+  assert.throws(() => inferenceConfig({ provider: 'near-ai', model, apiKeyEnv: 'MY_NEAR_KEY' }), /inference set with --api-key/);
   assert.throws(() => inferenceConfig({ provider: 'unknown', model, baseUrl: 'https://service.invalid/v1' }));
   assert.equal(inferenceConfig({ baseUrl: 'http://localhost:11434/v1', model: 'local' }).provider, 'openai-compatible');
 });
@@ -63,10 +67,9 @@ test('public catalog pagination reports capabilities without treating provider m
   await assert.rejects(listInferenceModels({ fetchImpl: async () => new Response('', { status: 503 }) }), /NEAR_AI_CATALOG_HTTP_503/);
 });
 
-test('named NEAR transport drives the shared tool loop, keeps the key off tools, and closes on error', async t => {
-  const previous = process.env.NEAR_AI_API_KEY;
-  process.env.NEAR_AI_API_KEY = 'near-ai-protocol-fixture-key';
-  t.after(() => { if (previous === undefined) delete process.env.NEAR_AI_API_KEY; else process.env.NEAR_AI_API_KEY = previous; });
+test('named NEAR transport drives the shared tool loop, keeps the key off tools, and closes on error', async () => {
+  const storedApiKey = 'near-ai-protocol-fixture-key';
+  const inference = { provider: 'near-ai', model, apiKeyStored: true };
   // Explicit test double: this validates the provider wire protocol, not live cloud inference or NEAR settlement.
   const client = new OfflineGateway();
   client.runtimePolicy = { closeOnExit: true, healthPollSeconds: 60 };
@@ -76,7 +79,7 @@ test('named NEAR transport drives the shared tool loop, keeps the key off tools,
   client.close = async () => { closes++; const current = await client.check(); return current.sessionId ? originalClose({ sessionId: current.sessionId }) : { decision: 'CLOSE', alreadyClosed: true }; };
   let turns = 0;
   const events = [];
-  await runAgent(client, { provider: 'near-ai', model, thinking: false }, { prompt: 'Request the paid API.', emit: e => events.push(e), fetchImpl: async (url, init) => {
+  await runAgent(client, { ...inference, thinking: false }, { storedApiKey, prompt: 'Request the paid API.', emit: e => events.push(e), fetchImpl: async (url, init) => {
     assert.equal(url, `${NEAR_AI_BASE_URL}/chat/completions`);
     assert.equal(init.headers.authorization, 'Bearer near-ai-protocol-fixture-key');
     assert.equal(init.redirect, 'error');
@@ -93,19 +96,17 @@ test('named NEAR transport drives the shared tool loop, keeps the key off tools,
   assert.equal(turns, 2); assert.equal(closes, 1);
   assert.ok(events.some(e => e.type === 'answer'));
   assert.equal(JSON.stringify(events).includes('near-ai-protocol-fixture-key'), false);
-  await assert.rejects(runAgent(client, { provider: 'near-ai', model }, { prompt: 'Request data.', fetchImpl: async () => new Response('upstream details must not be echoed', { status: 401 }) }), /INFERENCE_HTTP_401/);
+  await assert.rejects(runAgent(client, inference, { storedApiKey, prompt: 'Request data.', fetchImpl: async () => new Response('upstream details must not be echoed', { status: 401 }) }), /INFERENCE_HTTP_401/);
   assert.equal(closes, 2);
-  await assert.rejects(runAgent(client, { provider: 'near-ai', model }, { prompt: 'Request data.', fetchImpl: async () => Response.json({ choices: [{ finish_reason: 'length', message: { role: 'assistant', content: null } }] }) }), /INFERENCE_OUTPUT_LIMIT/);
+  await assert.rejects(runAgent(client, inference, { storedApiKey, prompt: 'Request data.', fetchImpl: async () => Response.json({ choices: [{ finish_reason: 'length', message: { role: 'assistant', content: null } }] }) }), /INFERENCE_OUTPUT_LIMIT/);
   assert.equal(closes, 3);
-  process.env.NEAR_AI_API_KEY = 'private-value-with-newline\n';
-  await assert.rejects(runAgent(client, { provider: 'near-ai', model }, { prompt: 'Request data.' }), error => error.message === 'INFERENCE_CREDENTIAL_INVALID');
-  delete process.env.NEAR_AI_API_KEY;
+  await assert.rejects(runAgent(client, inference, { storedApiKey: 'private-value-with-newline\n', prompt: 'Request data.' }), error => error.message === 'INFERENCE_CREDENTIAL_INVALID');
   let touched = false;
-  await assert.rejects(runAgent(client, { provider: 'near-ai', model }, { prompt: 'Request data.', fetchImpl: async () => { touched = true; } }), /NEAR_AI_API_KEY/);
+  await assert.rejects(runAgent(client, inference, { prompt: 'Request data.', fetchImpl: async () => { touched = true; } }), /inference set with --api-key/);
   assert.equal(touched, false);
 });
 
-test('CLI saves the NEAR preset without RPC or reading a key value into configuration', async t => {
+test('CLI prompts for a NEAR AI key and ignores an existing environment key', async t => {
   const directory = await realpath(await mkdtemp(join(tmpdir(), 'agentpay-near-ai-')));
   t.after(() => rm(directory, { recursive: true, force: true }));
   const project = join(directory, 'project'), home = join(directory, 'private');
@@ -118,7 +119,11 @@ test('CLI saves the NEAR preset without RPC or reading a key value into configur
   const deployment = join(directory, 'deployment.json');
   await writeFile(deployment, JSON.stringify({ network: 'testnet', rpcUrl: 'https://rpc.invalid', serviceUrl: 'http://127.0.0.1:5321', vaultId: 'vault.testnet', agentId: 'agent.testnet', ownerId: 'owner.testnet', recipientId: 'provider.testnet', tokenId: '3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af', agentKeyFile: keys.agent, policyKeyFile: keys.policy }));
   const env = { ...process.env, AGENTSTREAMS_HOME: home, NEAR_AI_API_KEY: 'fixture-value-must-never-be-saved' };
-  const run = async args => JSON.parse((await exec(process.execPath, [resolve('packages/cli/bin/agentstreams.mjs'), ...args], { cwd: project, env })).stdout);
+  const run = async (args, input) => {
+    const call = exec(process.execPath, [resolve('packages/cli/bin/agentstreams.mjs'), ...args], { cwd: project, env });
+    call.child.stdin.end(input);
+    return JSON.parse((await call).stdout);
+  };
   const previousHome = process.env.AGENTSTREAMS_HOME;
   process.env.AGENTSTREAMS_HOME = home;
   try { await initProject(project, { deployment }); }
@@ -126,14 +131,71 @@ test('CLI saves the NEAR preset without RPC or reading a key value into configur
     if (previousHome === undefined) delete process.env.AGENTSTREAMS_HOME;
     else process.env.AGENTSTREAMS_HOME = previousHome;
   }
-  const result = await run(['inference', 'set', '--provider', 'near-ai', '--model', model, '--thinking', 'false', '--max-output-tokens', '1024']);
-  assert.equal(result.credentialsStored, false); assert.equal(result.attestationVerified, false);
+  const set = ['inference', 'set', '--provider', 'near-ai', '--model', model, '--thinking', 'false', '--max-output-tokens', '1024'];
+  await assert.rejects(run(set), /No inference API key entered/);
+  const key = 'near-ai-cli-fixture-key';
+  const result = await run(set, `${key}\n`);
+  assert.equal(result.credentialsStored, true); assert.equal(result.attestationVerified, false);
   assert.equal(result.inference.baseUrl, NEAR_AI_BASE_URL);
   assert.equal(result.inference.maxOutputTokens, 1024);
   const saved = await run(['inference', 'show']);
-  assert.equal(saved.provider, 'near-ai'); assert.equal(saved.apiKeyEnv, 'NEAR_AI_API_KEY');
-  const { profileId } = JSON.parse(await readFile(join(project, '.agentstreams/config.json')));
-  assert.equal((await readFile(join(home, 'profiles', profileId, 'profile.json'), 'utf8')).includes(env.NEAR_AI_API_KEY), false);
+  assert.equal(saved.provider, 'near-ai'); assert.equal(saved.apiKeyStored, true);
+  assert.equal(JSON.stringify(saved).includes(key), false);
+  const directoryPath = join(home, 'inference');
+  const [profileFile] = await readdir(directoryPath);
+  assert.equal(JSON.parse(await readFile(join(directoryPath, profileFile), 'utf8')).apiKey, key);
   await assert.rejects(run(['inference', 'set', '--provider', 'near-ai', '--model', model, '--base-url', 'https://attacker.invalid/v1']), /near-ai provider uses/);
   assert.deepEqual(await run(['inference', 'show']), saved);
+});
+
+test('CLI stores a provider key privately and uses it in a later agent process', async t => {
+  const project = await realpath(await mkdtemp(join(tmpdir(), 'agentstreams-inference-key-')));
+  t.after(() => rm(project, { recursive: true, force: true }));
+  const key = 'inference-fixture-local-key';
+  const env = { ...process.env, AGENTSTREAMS_HOME: join(project, 'private'), OPENAI_API_KEY: 'fixture-environment-key' };
+  const requests = [];
+  const server = createServer(async (request, response) => {
+    let body = '';
+    for await (const chunk of request) body += chunk;
+    requests.push({ path: request.url, authorization: request.headers.authorization, body });
+    response.writeHead(200, { 'content-type': 'application/json' });
+    response.end(JSON.stringify({ choices: [{ message: { content: 'Fixture response' } }] }));
+  }).listen(0, '127.0.0.1');
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  await once(server, 'listening');
+  const endpoint = `http://127.0.0.1:${server.address().port}`;
+  const run = async (args, input) => {
+    const call = exec(process.execPath, [resolve('packages/cli/bin/agentstreams.mjs'), ...args], { cwd: project, env });
+    call.child.stdin.end(input);
+    const { stdout, stderr } = await call;
+    assert.equal((stdout + stderr).includes(key), false);
+    return JSON.parse(stdout);
+  };
+  await run(['agent', 'create', 'local']);
+  await run(['task', 'enable', 'portfolio-rebalance']);
+  const set = ['inference', 'set', '--base-url', `${endpoint}/v1`, '--model', 'fixture-model'];
+  const invoke = ['agent', 'run', '--activity', 'portfolio-rebalance', '--prompt', 'Hello', '--json'];
+  const saved = await run([...set, '--api-key'], `${key}\n`);
+  assert.equal(saved.credentialsStored, true);
+  assert.equal((await run(['inference', 'show'])).apiKeyStored, true);
+  const directory = join(env.AGENTSTREAMS_HOME, 'inference');
+  const [file] = await readdir(directory);
+  assert.equal((await stat(join(directory, file))).mode & 0o777, 0o600);
+  await assert.rejects(run([...set, '--api-key-env', 'OPENAI_API_KEY']), /Unknown option '--api-key-env'/);
+  await assert.rejects(run([...set, '--api-key'], 'invalid key\n'), /INFERENCE_CREDENTIAL_INVALID/);
+  assert.equal((await run(invoke)).completed, true);
+  assert.equal(requests[0].path, '/v1/chat/completions');
+  assert.equal(requests[0].authorization, `Bearer ${key}`);
+  assert.equal(requests[0].body.includes(key), false);
+  await run(set);
+  const profilePath = join(directory, file);
+  const profile = JSON.parse(await readFile(profilePath, 'utf8'));
+  assert.equal(profile.apiKey, undefined);
+  assert.equal((await run(invoke)).completed, true);
+  assert.equal(requests[1].authorization, undefined);
+  profile.inference.apiKeyEnv = 'OPENAI_API_KEY';
+  await writeFile(profilePath, JSON.stringify(profile));
+  assert.equal((await run(['inference', 'show'])).apiKeyEnv, undefined);
+  await assert.rejects(run(invoke), /inference set with --api-key/);
+  assert.equal(requests.length, 2);
 });
