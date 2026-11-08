@@ -1,0 +1,39 @@
+{
+  "verifiedAt": "2026-11-02T16:01:38.544Z",
+  "network": "testnet",
+  "runId": "cf573ebc-976e-4d58-84d9-aab7e0ed518a",
+  "vaultId": "agentpay.agentpay-owner-20261102-adf970.testnet",
+  "ownerId": "agentpay-owner-20261102-adf970.testnet",
+  "providerId": "agentpay-provider-20261102-b685bb.testnet",
+  "heldRaw": "99340",
+  "liabilitiesRaw": "99340",
+  "ownerUsdcRaw": "19900000",
+  "providerUsdcRaw": "660",
+  "vault": {
+    "version": "2.0.0",
+    "owner_id": "agentpay-owner-20261102-adf970.testnet",
+    "token_id": "3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af",
+    "agent_id": "research-agent.agentpay-owner-20261102-adf970.testnet",
+    "agent_key": "ed25519:KPYgFYtnLrCDzSKohQNFNSXmkXGCg2P8igTSA3HoCfU",
+    "policy_key": "ed25519:DzJL2TxqVPXkaJE3BpTcxPktM7tomUuvMSPBpvCertb7",
+    "policy": {
+      "budget": "100000",
+      "max_deposit": "10000",
+      "max_rate": "100",
+      "max_duration_seconds": 1000,
+      "recipients": [
+        "agentpay-provider-20261102-b685bb.testnet"
+      ]
+    },
+    "available": "99340",
+    "spent": "660",
+    "reserved": "0",
+    "claimable_total": "0",
+    "pending_total": "0",
+    "next_nonce": "2",
+    "active_session": null,
+    "paused": false,
+    "now": "1793635295"
+  },
+  "conserved": true
+}

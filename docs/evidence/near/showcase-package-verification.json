@@ -1,0 +1,89 @@
+{
+  "verifiedAt": "2026-11-07T13:12:55.196Z",
+  "installedOutsideCheckout": true,
+  "installedFrom": "local tarballs",
+  "packages": [
+    {
+      "name": "@ola-893/agentpay-core",
+      "version": "0.3.0",
+      "integrity": "sha512-Bkmo0Uh9XuxW3LX9VXOb9U1JwENhy2/cUDvZg3bhoG0dNX+9xJDQ7K96NZ7KSU+Ljuul4xpElPMartUR3o6pTQ=="
+    },
+    {
+      "name": "@ola-893/agentpay-cli",
+      "version": "0.3.0",
+      "integrity": "sha512-NaDcnHZ3u3VfRp3ai/JttS0uOUiX3q3l1Nnp+ctulySyzKw+N9RaJBNyNtCLDnL+7DfLB8cR8MQG0kE2UxT5HA=="
+    }
+  ],
+  "checks": [
+    "operational command help",
+    "removed demo/simulate rejected",
+    "cold testnet setup instructions",
+    "cursor installer",
+    "codex installer",
+    "generic MCP config",
+    "installed recorded UI HTTP",
+    "portable native runtime imports",
+    "read-only public RPC replay verification: deployed WASM, final receipts and settled stream"
+  ],
+  "browserVisualQA": false,
+  "publishedToNpm": false,
+  "publicReplayVerification": {
+    "verifiedAt": "2026-11-07T13:12:55.189Z",
+    "network": "testnet",
+    "readOnly": true,
+    "simulation": false,
+    "recording": {
+      "runId": "d2d8706b-0775-4930-bd75-228b92d32151",
+      "capturedAt": "2026-11-07T12:49:25.186Z",
+      "events": 37,
+      "transactions": 5,
+      "finalHash": "e50ffca4884de495d21c4ffdb1bffbe4fc680e57706adf7c88723e5a3ffdb05b"
+    },
+    "vaultId": "review1107.agentpay-owner-20261102-adf970.testnet",
+    "codeHash": "5mdkYU39APh6Bfx8GPK54UpsDJ68ZJRTtGZf5s7Bvvo4",
+    "receipts": [
+      {
+        "hash": "4Wnj2Yxwubbm1D45Bo2V6cR93jZM9hdZJSPj1hkxRXGG",
+        "signerId": "review-agent1107.agentpay-owner-20261102-adf970.testnet",
+        "method": "open_stream",
+        "final": true,
+        "explorerUrl": "https://testnet.nearblocks.io/txns/4Wnj2Yxwubbm1D45Bo2V6cR93jZM9hdZJSPj1hkxRXGG"
+      },
+      {
+        "hash": "2vnefbuitrVoVpNm9SRm75n5dV9YN7nM16DuYyfcQsEw",
+        "signerId": "review-agent1107.agentpay-owner-20261102-adf970.testnet",
+        "method": "close_stream",
+        "final": true,
+        "explorerUrl": "https://testnet.nearblocks.io/txns/2vnefbuitrVoVpNm9SRm75n5dV9YN7nM16DuYyfcQsEw"
+      },
+      {
+        "hash": "8HEFg1A2yBWfXTa3AdenDgNupyt2j3EJaCybgYYci42h",
+        "signerId": "review-agent1107.agentpay-owner-20261102-adf970.testnet",
+        "method": "open_stream",
+        "final": true,
+        "explorerUrl": "https://testnet.nearblocks.io/txns/8HEFg1A2yBWfXTa3AdenDgNupyt2j3EJaCybgYYci42h"
+      },
+      {
+        "hash": "7Nkpr5ViXUyKLrBMe32yCVXrYGteLLjQNEEAnmBWnavM",
+        "signerId": "review-agent1107.agentpay-owner-20261102-adf970.testnet",
+        "method": "close_stream",
+        "final": true,
+        "explorerUrl": "https://testnet.nearblocks.io/txns/7Nkpr5ViXUyKLrBMe32yCVXrYGteLLjQNEEAnmBWnavM"
+      },
+      {
+        "hash": "61839ZyxuhpKJX1Jm2mSo3j9h6ihCic8ABCGyCUnNE2d",
+        "signerId": "agentpay-provider-20261102-b685bb.testnet",
+        "method": "claim",
+        "final": true,
+        "explorerUrl": "https://testnet.nearblocks.io/txns/61839ZyxuhpKJX1Jm2mSo3j9h6ihCic8ABCGyCUnNE2d"
+      }
+    ],
+    "currentVault": {
+      "available": "49390",
+      "spent": "610",
+      "reserved": "0",
+      "activeSession": null
+    },
+    "scope": "RPC verifies deployed WASM, final payment receipts and settled stream state. HTTP responses and policy observations are saved offchain evidence, not independently attested."
+  }
+}

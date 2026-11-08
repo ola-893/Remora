@@ -1,0 +1,18 @@
+{
+  "hash": "43ke7LsXFxGAqKP7Xfy2brioLvV8xddrKpAwGYGVRvdh",
+  "signerId": "owner.sandbox",
+  "receiverId": "vault.sandbox",
+  "value": {
+    "sequence": "1",
+    "root": "39db472c2e69bc4599a09854afa391fb8d6627dc717539efbfbe52df4ed194e2",
+    "recorded_at": "1793369873"
+  },
+  "receiptFailures": [],
+  "receiptIds": [
+    "BirceATAnBhbP2CNcVo1cv5BvF7fiRVw2ihJnjJxHygq",
+    "EUPjrC2Js7quvEp4Jt54VNX5ndi1y6qdwWj1fFnc3Vbh"
+  ],
+  "logs": [
+    "EVENT_JSON:{\"data\":[{\"recorded_at\":\"1793369873\",\"root\":\"39db472c2e69bc4599a09854afa391fb8d6627dc717539efbfbe52df4ed194e2\",\"sequence\":\"1\"}],\"event\":\"decision_anchored\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+  ]
+}

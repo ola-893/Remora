@@ -1,0 +1,61 @@
+{
+  "verification": {
+    "verifiedAt": "2026-11-03T10:03:47.882Z",
+    "installedOutsideCheckout": true,
+    "installedFrom": "local tarballs",
+    "packages": [
+      {
+        "name": "@ola-893/agentpay-core",
+        "version": "0.2.0",
+        "integrity": "sha512-QVKBDdID63seob8EBZrlnVZlr/0fwQmR5HDQqbxy0xT0QVQUQgJniVGCzvm3JGr+cumhFm3o/SwEvW5Ase9rOA=="
+      },
+      {
+        "name": "@ola-893/agentpay-cli",
+        "version": "0.3.0",
+        "integrity": "sha512-yPGJ33Kf0VczVomXasCEYZ3A73AiunUzLrOKO30bP1E/Y6l0P07O09CuyP6LQTsfb/UIwvwzPYuweaR4donesw=="
+      }
+    ],
+    "checks": [
+      "operational command help",
+      "removed demo/simulate rejected",
+      "cold testnet setup instructions",
+      "cursor installer",
+      "codex installer",
+      "generic MCP config",
+      "installed recorded UI HTTP",
+      "portable native runtime imports",
+      "installed NEAR AI public model discovery; no key, wallet or inference charge"
+    ],
+    "browserVisualQA": false,
+    "publishedToNpm": false,
+    "nearAiCatalog": {
+      "provider": "near-ai",
+      "catalogUrl": "https://cloud-api.near.ai/v1/model/list",
+      "fetchedAt": "2026-11-03T10:03:47.875Z",
+      "total": 64,
+      "agentCompatible": 49,
+      "attestationVerified": false,
+      "authenticatedInferenceTested": false
+    }
+  },
+  "automatedTests": {
+    "suite": "npm run test:distribution",
+    "passed": 34,
+    "providerProtocolFixtureTests": 5,
+    "authenticatedNearAiInference": false
+  },
+  "additionalChecks": [
+    "npm run check:distribution",
+    "npm run pack:distribution",
+    "node scripts/check-docs.mjs",
+    "git diff --check"
+  ],
+  "scope": {
+    "nearAiInferenceAdapter": true,
+    "publicCatalogVerified": true,
+    "inferenceAttestationVerified": false,
+    "policySignerInTEE": false,
+    "defaultProviderChanged": false,
+    "publishedToNpm": false
+  }
+}

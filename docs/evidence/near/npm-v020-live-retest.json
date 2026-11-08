@@ -1,0 +1,513 @@
+{
+  "startedAt": "2026-11-02T19:34:51.449Z",
+  "installedFrom": "npm registry; CLI only with transitive core dependency",
+  "installedOutsideCheckout": true,
+  "injectedFailureTest": true,
+  "events": [
+    {
+      "name": "import-runtime-only-profile",
+      "result": {
+        "mode": "testnet",
+        "paymentsEnabled": false,
+        "vaultId": "judge02.agentpay-owner-20261102-adf970.testnet",
+        "agentId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+        "importedAuthorities": [
+          "agent",
+          "policy"
+        ],
+        "next": "agentpay doctor"
+      }
+    },
+    {
+      "name": "before",
+      "result": {
+        "ok": true,
+        "node": "22.23.2",
+        "paymentsEnabled": false,
+        "inferenceConfigured": false,
+        "runtimePolicy": {
+          "maxConsecutive5xx": 3,
+          "maxConsecutiveTransportErrors": 2,
+          "maxConsecutiveHealthFailures": 2,
+          "idleTimeoutSeconds": 120,
+          "maxRequestsPerStream": 1000,
+          "healthPollSeconds": 10,
+          "failureCooldownSeconds": 1,
+          "reuseStream": true,
+          "closeOnExit": true
+        },
+        "network": "testnet",
+        "vaultId": "judge02.agentpay-owner-20261102-adf970.testnet",
+        "agentId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+        "policySignerMatches": true,
+        "restrictedKey": true,
+        "availableUSDC": "98390",
+        "reservedUSDC": "0",
+        "spentUSDC": "1610",
+        "activeSession": null,
+        "pendingIntent": false,
+        "executorBusyOrInterrupted": false,
+        "policyUpdatePending": false,
+        "agentNEAR": "496212481760813200000000",
+        "vaultTokenBalance": "100000"
+      }
+    },
+    {
+      "name": "service",
+      "result": {
+        "service": {
+          "url": "http://127.0.0.1:5364",
+          "recipient": "agentpay-owner-20261102-adf970.testnet",
+          "healthPath": "/health",
+          "quotePath": "/quote",
+          "requestPath": "/research",
+          "tiers": [
+            "basic",
+            "premium"
+          ]
+        },
+        "restartRequired": "Restart running agents/MCP servers after service changes."
+      }
+    },
+    {
+      "name": "failure-policy",
+      "result": {
+        "runtimePolicy": {
+          "maxConsecutive5xx": 3,
+          "maxConsecutiveTransportErrors": 2,
+          "maxConsecutiveHealthFailures": 2,
+          "idleTimeoutSeconds": 120,
+          "maxRequestsPerStream": 10,
+          "healthPollSeconds": 10,
+          "failureCooldownSeconds": 1,
+          "reuseStream": true,
+          "closeOnExit": true
+        },
+        "enforcement": "local payment worker; thresholds reload on the next checkpoint",
+        "restartRequired": "Restart running agents/MCP servers after changing reuse, polling or exit behavior."
+      }
+    },
+    {
+      "name": "lower-onchain-rate",
+      "result": {
+        "financialPolicy": {
+          "budget": "100000",
+          "max_deposit": "10000",
+          "max_rate": "5",
+          "max_duration_seconds": 1000,
+          "recipients": [
+            "agentpay-owner-20261102-adf970.testnet"
+          ]
+        },
+        "units": "raw USDC",
+        "transactionHash": "AvPbBA1rgsvMUz33rSLjSyPDxdCB6d3RK3HDmgtxMXQ9",
+        "explorerUrl": "https://testnet.nearblocks.io/txns/AvPbBA1rgsvMUz33rSLjSyPDxdCB6d3RK3HDmgtxMXQ9"
+      }
+    },
+    {
+      "name": "configured-limit-denies-basic",
+      "result": {
+        "decision": "DENY",
+        "reason": "RATE_LIMIT"
+      }
+    },
+    {
+      "name": "restore-onchain-rate",
+      "result": {
+        "financialPolicy": {
+          "budget": "100000",
+          "max_deposit": "10000",
+          "max_rate": "100",
+          "max_duration_seconds": 1000,
+          "recipients": [
+            "agentpay-owner-20261102-adf970.testnet"
+          ]
+        },
+        "units": "raw USDC",
+        "transactionHash": "13pjd7PYHP9vmC24YdEsaK4hgTEbCXMfMuiWXsLLJXQE",
+        "explorerUrl": "https://testnet.nearblocks.io/txns/13pjd7PYHP9vmC24YdEsaK4hgTEbCXMfMuiWXsLLJXQE"
+      }
+    },
+    {
+      "name": "explicit-open",
+      "result": {
+        "decision": "CONTINUE",
+        "sessionId": "2d052465-825f-4284-9fa1-c1fa4a814425",
+        "receipt": {
+          "hash": "Cgr3nDHUwZqL7rm2aFt5auRgxkSH8uBj3nM9EvLnFxFB",
+          "signerId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+          "receiverId": "judge02.agentpay-owner-20261102-adf970.testnet",
+          "value": {
+            "session_id": "2d052465-825f-4284-9fa1-c1fa4a814425",
+            "recipient_id": "agentpay-owner-20261102-adf970.testnet",
+            "quote_hash": "283a20ed042dfe0de5d37b88c1ee97bd5542444c3923eac1ac744b37373ad647",
+            "deposit": "10000",
+            "rate": "10",
+            "duration_seconds": 1000,
+            "started_at": "1793648124",
+            "closed_at": null,
+            "earned": "0",
+            "refunded": "0"
+          },
+          "receiptFailures": [],
+          "receiptIds": [
+            "13ibyzeTC9umjrzT6SGRCYHwfS3pHwf8zjeqAJDBhCss",
+            "Chwcfdkz5HMNqarH6TKUicKJ3apNR3M7T6FtiMaUQyya"
+          ],
+          "logs": [
+            "EVENT_JSON:{\"data\":[{\"closed_at\":null,\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"0\",\"quote_hash\":\"283a20ed042dfe0de5d37b88c1ee97bd5542444c3923eac1ac744b37373ad647\",\"rate\":\"10\",\"recipient_id\":\"agentpay-owner-20261102-adf970.testnet\",\"refunded\":\"0\",\"session_id\":\"2d052465-825f-4284-9fa1-c1fa4a814425\",\"started_at\":\"1793648124\"}],\"event\":\"opened\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+          ]
+        },
+        "monitoring": "Run agentpay monitor for automatic health and idle closure between requests."
+      }
+    },
+    {
+      "name": "new-process-reuses-stream",
+      "result": {
+        "mode": "testnet",
+        "status": 200,
+        "payment": {
+          "events": [
+            {
+              "decision": "CONTINUE",
+              "reason": "SERVICE_HEALTHY_OR_WITHIN_FAILURE_LIMIT",
+              "sessionId": "2d052465-825f-4284-9fa1-c1fa4a814425"
+            },
+            {
+              "decision": "CONTINUE",
+              "reason": "REQUEST_WITHIN_POLICY",
+              "counters": {
+                "requests": 1,
+                "consecutive5xx": 0,
+                "transportErrors": 0,
+                "healthFailures": 0,
+                "lastRequestAt": 1793648134
+              },
+              "sessionId": "2d052465-825f-4284-9fa1-c1fa4a814425"
+            }
+          ]
+        },
+        "untrustedContent": "{\"request\":1,\"session_id\":\"2d052465-825f-4284-9fa1-c1fa4a814425\",\"source\":\"AgentPay local research fixture\",\"content\":\"This paid API response reused the active NEAR payment session. Provider earnings accrue by time, not request count.\"}",
+        "truncated": false
+      }
+    },
+    {
+      "name": "injected-503-1",
+      "result": {
+        "mode": "testnet",
+        "status": 503,
+        "payment": {
+          "events": [
+            {
+              "decision": "CONTINUE",
+              "reason": "SERVICE_HEALTHY_OR_WITHIN_FAILURE_LIMIT",
+              "sessionId": "2d052465-825f-4284-9fa1-c1fa4a814425"
+            },
+            {
+              "decision": "CONTINUE",
+              "reason": "REQUEST_WITHIN_POLICY",
+              "counters": {
+                "requests": 2,
+                "consecutive5xx": 1,
+                "transportErrors": 0,
+                "healthFailures": 0,
+                "lastRequestAt": 1793648141
+              },
+              "sessionId": "2d052465-825f-4284-9fa1-c1fa4a814425"
+            }
+          ]
+        },
+        "untrustedContent": "{\"error\":\"INJECTED_TEST_503\",\"injected\":true}",
+        "truncated": false
+      }
+    },
+    {
+      "name": "injected-503-2",
+      "result": {
+        "mode": "testnet",
+        "status": 503,
+        "payment": {
+          "events": [
+            {
+              "decision": "CONTINUE",
+              "reason": "SERVICE_HEALTHY_OR_WITHIN_FAILURE_LIMIT",
+              "sessionId": "2d052465-825f-4284-9fa1-c1fa4a814425"
+            },
+            {
+              "decision": "CONTINUE",
+              "reason": "REQUEST_WITHIN_POLICY",
+              "counters": {
+                "requests": 3,
+                "consecutive5xx": 2,
+                "transportErrors": 0,
+                "healthFailures": 0,
+                "lastRequestAt": 1793648153
+              },
+              "sessionId": "2d052465-825f-4284-9fa1-c1fa4a814425"
+            }
+          ]
+        },
+        "untrustedContent": "{\"error\":\"INJECTED_TEST_503\",\"injected\":true}",
+        "truncated": false
+      }
+    },
+    {
+      "name": "injected-503-3",
+      "result": {
+        "mode": "testnet",
+        "status": 503,
+        "payment": {
+          "events": [
+            {
+              "decision": "CONTINUE",
+              "reason": "SERVICE_HEALTHY_OR_WITHIN_FAILURE_LIMIT",
+              "sessionId": "2d052465-825f-4284-9fa1-c1fa4a814425"
+            },
+            {
+              "decision": "CLOSE",
+              "reason": "SERVICE_5XX_LIMIT",
+              "sessionId": "2d052465-825f-4284-9fa1-c1fa4a814425"
+            },
+            {
+              "decision": "CLOSE",
+              "sessionId": "2d052465-825f-4284-9fa1-c1fa4a814425",
+              "receipt": {
+                "hash": "2aW5Vrzo7uXpd6rFKmwu1mfBie6B9M7ekWUeL2Z5m3F7",
+                "signerId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+                "receiverId": "judge02.agentpay-owner-20261102-adf970.testnet",
+                "value": {
+                  "session_id": "2d052465-825f-4284-9fa1-c1fa4a814425",
+                  "recipient_id": "agentpay-owner-20261102-adf970.testnet",
+                  "quote_hash": "283a20ed042dfe0de5d37b88c1ee97bd5542444c3923eac1ac744b37373ad647",
+                  "deposit": "10000",
+                  "rate": "10",
+                  "duration_seconds": 1000,
+                  "started_at": "1793648124",
+                  "closed_at": "1793648164",
+                  "earned": "400",
+                  "refunded": "9600"
+                },
+                "receiptFailures": [],
+                "receiptIds": [
+                  "6BjN5JwnrJfAbemjUVVQhvPuaRW6Zh2fbLnRAaCY5Sr6",
+                  "4Tcr5u6J2c8B6dHNYGzJ7EK3t6XD4tRhMMghgBfsDqzg"
+                ],
+                "logs": [
+                  "EVENT_JSON:{\"data\":[{\"closed_at\":\"1793648164\",\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"400\",\"quote_hash\":\"283a20ed042dfe0de5d37b88c1ee97bd5542444c3923eac1ac744b37373ad647\",\"rate\":\"10\",\"recipient_id\":\"agentpay-owner-20261102-adf970.testnet\",\"refunded\":\"9600\",\"session_id\":\"2d052465-825f-4284-9fa1-c1fa4a814425\",\"started_at\":\"1793648124\"}],\"event\":\"closed\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+                ]
+              },
+              "reason": "SERVICE_5XX_LIMIT",
+              "explorerUrl": "https://testnet.nearblocks.io/txns/2aW5Vrzo7uXpd6rFKmwu1mfBie6B9M7ekWUeL2Z5m3F7"
+            }
+          ]
+        },
+        "untrustedContent": "{\"error\":\"INJECTED_TEST_503\",\"injected\":true}",
+        "truncated": false
+      }
+    },
+    {
+      "name": "cloud-inference-config",
+      "result": {
+        "inference": {
+          "protocol": "openai-chat",
+          "baseUrl": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+          "model": "qwen3.5-plus",
+          "apiKeyEnv": "QWEN_API_KEY",
+          "thinking": false,
+          "maxSteps": 8
+        },
+        "credentialsStored": false,
+        "next": "agentpay agent run --prompt \"Use the configured paid API to answer my question.\""
+      }
+    },
+    {
+      "name": "after-agent",
+      "result": {
+        "ok": true,
+        "node": "22.23.2",
+        "paymentsEnabled": true,
+        "inferenceConfigured": true,
+        "runtimePolicy": {
+          "maxConsecutive5xx": 3,
+          "maxConsecutiveTransportErrors": 2,
+          "maxConsecutiveHealthFailures": 2,
+          "idleTimeoutSeconds": 120,
+          "maxRequestsPerStream": 10,
+          "healthPollSeconds": 10,
+          "failureCooldownSeconds": 1,
+          "reuseStream": true,
+          "closeOnExit": true
+        },
+        "network": "testnet",
+        "vaultId": "judge02.agentpay-owner-20261102-adf970.testnet",
+        "agentId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+        "policySignerMatches": true,
+        "restrictedKey": true,
+        "availableUSDC": "97680",
+        "reservedUSDC": "0",
+        "spentUSDC": "2320",
+        "activeSession": null,
+        "pendingIntent": false,
+        "executorBusyOrInterrupted": false,
+        "policyUpdatePending": false,
+        "agentNEAR": "494947226916424600000000",
+        "vaultTokenBalance": "100000"
+      }
+    },
+    {
+      "name": "cleanup-close",
+      "result": {
+        "decision": "CLOSE",
+        "alreadyClosed": true
+      }
+    },
+    {
+      "name": "cleanup-disable",
+      "result": {
+        "mode": "testnet",
+        "paymentsEnabled": false
+      }
+    }
+  ],
+  "cliVersion": "0.2.0",
+  "coreVersion": "0.2.0",
+  "agentEvents": [
+    {
+      "type": "tool",
+      "name": "agentpay_fetch",
+      "result": {
+        "decision": "DENY",
+        "reason": "RATE_LIMIT"
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentpay_fetch",
+      "result": {
+        "mode": "testnet",
+        "status": 200,
+        "payment": {
+          "events": [
+            {
+              "decision": "OPEN",
+              "reason": "WITHIN_POLICY"
+            },
+            {
+              "decision": "CONTINUE",
+              "sessionId": "89ac4864-3b97-4019-9990-e1b6207637ff",
+              "receipt": {
+                "hash": "AbKuVgTtc6BQtJYJx9AiSvxu8EpuHuCwazwfzVCNnVJs",
+                "signerId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+                "receiverId": "judge02.agentpay-owner-20261102-adf970.testnet",
+                "value": {
+                  "session_id": "89ac4864-3b97-4019-9990-e1b6207637ff",
+                  "recipient_id": "agentpay-owner-20261102-adf970.testnet",
+                  "quote_hash": "283a20ed042dfe0de5d37b88c1ee97bd5542444c3923eac1ac744b37373ad647",
+                  "deposit": "10000",
+                  "rate": "10",
+                  "duration_seconds": 1000,
+                  "started_at": "1793648187",
+                  "closed_at": null,
+                  "earned": "0",
+                  "refunded": "0"
+                },
+                "receiptFailures": [],
+                "receiptIds": [
+                  "GJyJj4pZpiaLPpvgSuTMZZ37EX7n3kfWWQahuQwHbinw",
+                  "AZsinFf5Bz65VSxy8d7wpUNYPLAJWBdFYkefy8bQd8bm"
+                ],
+                "logs": [
+                  "EVENT_JSON:{\"data\":[{\"closed_at\":null,\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"0\",\"quote_hash\":\"283a20ed042dfe0de5d37b88c1ee97bd5542444c3923eac1ac744b37373ad647\",\"rate\":\"10\",\"recipient_id\":\"agentpay-owner-20261102-adf970.testnet\",\"refunded\":\"0\",\"session_id\":\"89ac4864-3b97-4019-9990-e1b6207637ff\",\"started_at\":\"1793648187\"}],\"event\":\"opened\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+                ]
+              },
+              "explorerUrl": "https://testnet.nearblocks.io/txns/AbKuVgTtc6BQtJYJx9AiSvxu8EpuHuCwazwfzVCNnVJs"
+            },
+            {
+              "decision": "CONTINUE",
+              "reason": "REQUEST_WITHIN_POLICY",
+              "counters": {
+                "requests": 1,
+                "consecutive5xx": 0,
+                "transportErrors": 0,
+                "healthFailures": 0,
+                "lastRequestAt": 1793648194
+              },
+              "sessionId": "89ac4864-3b97-4019-9990-e1b6207637ff"
+            }
+          ]
+        },
+        "untrustedContent": "{\"request\":1,\"session_id\":\"89ac4864-3b97-4019-9990-e1b6207637ff\",\"source\":\"AgentPay local research fixture\",\"content\":\"This paid API response reused the active NEAR payment session. Provider earnings accrue by time, not request count.\"}",
+        "truncated": false
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentpay_fetch",
+      "result": {
+        "mode": "testnet",
+        "status": 200,
+        "payment": {
+          "events": [
+            {
+              "decision": "CONTINUE",
+              "reason": "SERVICE_HEALTHY_OR_WITHIN_FAILURE_LIMIT",
+              "sessionId": "89ac4864-3b97-4019-9990-e1b6207637ff"
+            },
+            {
+              "decision": "CONTINUE",
+              "reason": "REQUEST_WITHIN_POLICY",
+              "counters": {
+                "requests": 2,
+                "consecutive5xx": 0,
+                "transportErrors": 0,
+                "healthFailures": 0,
+                "lastRequestAt": 1793648204
+              },
+              "sessionId": "89ac4864-3b97-4019-9990-e1b6207637ff"
+            }
+          ]
+        },
+        "untrustedContent": "{\"request\":2,\"session_id\":\"89ac4864-3b97-4019-9990-e1b6207637ff\",\"source\":\"AgentPay local research fixture\",\"content\":\"This paid API response reused the active NEAR payment session. Provider earnings accrue by time, not request count.\"}",
+        "truncated": false
+      }
+    },
+    {
+      "type": "answer",
+      "text": "The second basic tier request was also successful. It reused the existing session (same sessionId: 89ac4864-3b97-4019-9990-e1b6207637ff) and the counters show requests: 2.\n\n**Summary of results:**\n\n1. **Premium tier request**: DENIED with reason \"RATE_LIMIT\"\n\n2. **First basic tier request**: SUCCESS\n   - Session opened: 89ac4864-3b97-4019-9990-e1b6207637ff\n   - Request count: 1\n   - Untrusted content indicated this was request 1, reusing the active NEAR payment session\n\n3. **Second basic tier request**: SUCCESS\n   - Session reused: 89ac4864-3b97-4019-9990-e1b6207637ff\n   - Request count: 2\n   - Untrusted content indicated this was request 2, reusing the same active session\n\nThe API correctly denied the premium tier due to rate limiting, while allowing both basic tier requests. The host automatically handled stream lifecycle - opening a new session for the first basic request and reusing it for the second request.",
+      "steps": 4
+    },
+    {
+      "type": "stream",
+      "decision": "CLOSE",
+      "sessionId": "89ac4864-3b97-4019-9990-e1b6207637ff",
+      "receipt": {
+        "hash": "FNXbrC2mV5H7c6B4GfgjtygBBBZ8QjG55thkw11rNzUe",
+        "signerId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+        "receiverId": "judge02.agentpay-owner-20261102-adf970.testnet",
+        "value": {
+          "session_id": "89ac4864-3b97-4019-9990-e1b6207637ff",
+          "recipient_id": "agentpay-owner-20261102-adf970.testnet",
+          "quote_hash": "283a20ed042dfe0de5d37b88c1ee97bd5542444c3923eac1ac744b37373ad647",
+          "deposit": "10000",
+          "rate": "10",
+          "duration_seconds": 1000,
+          "started_at": "1793648187",
+          "closed_at": "1793648218",
+          "earned": "310",
+          "refunded": "9690"
+        },
+        "receiptFailures": [],
+        "receiptIds": [
+          "EEaE854wwNZXoWBjeJ9tugS4NxhJ8c2xVfJnRcQfxJ5B",
+          "HX21UvKmBswERBvo8srE5r8pdfDnfUAKqb2jSkzL7TEn"
+        ],
+        "logs": [
+          "EVENT_JSON:{\"data\":[{\"closed_at\":\"1793648218\",\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"310\",\"quote_hash\":\"283a20ed042dfe0de5d37b88c1ee97bd5542444c3923eac1ac744b37373ad647\",\"rate\":\"10\",\"recipient_id\":\"agentpay-owner-20261102-adf970.testnet\",\"refunded\":\"9690\",\"session_id\":\"89ac4864-3b97-4019-9990-e1b6207637ff\",\"started_at\":\"1793648187\"}],\"event\":\"closed\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+        ]
+      },
+      "reason": "AGENT_EXIT"
+    }
+  ],
+  "passed": true,
+  "finishedAt": "2026-11-02T19:37:07.474Z"
+}

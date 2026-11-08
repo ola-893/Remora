@@ -1,0 +1,62 @@
+{
+  "checkedAt": "2026-11-07T13:12:50.678Z",
+  "version": "0.3.0",
+  "executionModulesUnchanged": true,
+  "executionModuleHashes": {
+    "src/agent.mjs": "8e873c6397648dcb11d6be4820b8ff9365ff7fc5370bff40b8ede5f73494652b",
+    "src/inference.mjs": "a677ecc22ae5dbb1a8784f02520d8c9e427c1bd7abdbec8f18ec19b25b7a220b",
+    "src/repository-analysis.mjs": "e3770b24592c2c1294157f84d99071241d45ba11930be3256c47647ab5ac3e34",
+    "src/repository-service.mjs": "983938b58a66c6d05129047cb1ff8cd1a3d955018d25abc8e0064a83282c193a",
+    "src/config.mjs": "686f1ef0497a0f1a2ede406d607fb17cca8ccfc567442dccb787ff77e31024a6",
+    "src/settings.mjs": "5caee888feb6a21d5baab2fdfd47341a6a352c152043c18d126fc300a277053c"
+  },
+  "packages": [
+    {
+      "name": "@ola-893/agentpay-core",
+      "version": "0.3.0",
+      "integrity": "sha512-Bkmo0Uh9XuxW3LX9VXOb9U1JwENhy2/cUDvZg3bhoG0dNX+9xJDQ7K96NZ7KSU+Ljuul4xpElPMartUR3o6pTQ=="
+    },
+    {
+      "name": "@ola-893/agentpay-cli",
+      "version": "0.3.0",
+      "integrity": "sha512-NaDcnHZ3u3VfRp3ai/JttS0uOUiX3q3l1Nnp+ctulySyzKw+N9RaJBNyNtCLDnL+7DfLB8cR8MQG0kE2UxT5HA=="
+    }
+  ],
+  "harnessProfileHomeVerified": true,
+  "readOnlyMcpDecision": {
+    "decision": "DENY",
+    "reason": "RATE_LIMIT"
+  },
+  "finalDoctor": {
+    "ok": true,
+    "node": "22.23.2",
+    "paymentsEnabled": false,
+    "inferenceConfigured": true,
+    "runtimePolicy": {
+      "maxConsecutive5xx": 3,
+      "maxConsecutiveTransportErrors": 2,
+      "maxConsecutiveHealthFailures": 2,
+      "idleTimeoutSeconds": 180,
+      "maxRequestsPerStream": 20,
+      "healthPollSeconds": 10,
+      "failureCooldownSeconds": 1,
+      "reuseStream": true,
+      "closeOnExit": true
+    },
+    "network": "testnet",
+    "vaultId": "review1107.agentpay-owner-20261102-adf970.testnet",
+    "agentId": "review-agent1107.agentpay-owner-20261102-adf970.testnet",
+    "policySignerMatches": true,
+    "restrictedKey": true,
+    "availableUSDC": "49390",
+    "reservedUSDC": "0",
+    "spentUSDC": "610",
+    "activeSession": null,
+    "pendingIntent": false,
+    "executorBusyOrInterrupted": false,
+    "policyUpdatePending": false,
+    "agentNEAR": "497657718541268200000000",
+    "vaultTokenBalance": "49390"
+  },
+  "passed": true
+}

@@ -1,0 +1,333 @@
+{
+  "verifiedAt": "2026-11-02T18:21:10.692Z",
+  "installedOutsideCheckout": true,
+  "installedFrom": "local tarballs",
+  "packages": [
+    {
+      "name": "@ola-893/agentpay-core",
+      "version": "0.2.0",
+      "integrity": "sha512-PZ7FbXRnM1D9sU3qGEbeXl73x+2IVS77QlBQIz6RdTOGPBoXjgcuGvCKL6akk9xmv8iRphstGqQYaJgAB6V7eA=="
+    },
+    {
+      "name": "@ola-893/agentpay-cli",
+      "version": "0.2.0",
+      "integrity": "sha512-cjKa7bRtAB2tex2F5n/0MjWk5FuCt8QkNgUid4PHR/bDEBc5Pz3Wx8/kbDycg5QZiN76dIfaZYr3gIFN6DlljA=="
+    }
+  ],
+  "checks": [
+    "offline quickstart",
+    "doctor",
+    "cursor installer",
+    "codex installer",
+    "stdio MCP lifecycle and denial",
+    "installed recorded UI HTTP",
+    "portable native runtime imports",
+    "read-only public RPC replay verification: deployed WASM, final receipts and settled stream",
+    "installed CLI real testnet OPEN / 10 requests / CONTINUE / CLOSE / DENY"
+  ],
+  "browserVisualQA": false,
+  "publishedToNpm": false,
+  "publicReplayVerification": {
+    "verifiedAt": "2026-11-02T18:20:03.706Z",
+    "network": "testnet",
+    "readOnly": true,
+    "simulation": false,
+    "recording": {
+      "runId": "cf573ebc-976e-4d58-84d9-aab7e0ed518a",
+      "capturedAt": "2026-11-02T12:27:48.162Z",
+      "events": 22,
+      "transactions": 3,
+      "finalHash": "d17d81638b223dc8cf4306f35abe525cdec7d3362ee2b592d1f7d0a0309683f7"
+    },
+    "vaultId": "agentpay.agentpay-owner-20261102-adf970.testnet",
+    "codeHash": "5mdkYU39APh6Bfx8GPK54UpsDJ68ZJRTtGZf5s7Bvvo4",
+    "receipts": [
+      {
+        "hash": "FV23QJ77hkD7voHYt9NhWU8WdHzKjQ5QN5oVMQDEJ46z",
+        "signerId": "research-agent.agentpay-owner-20261102-adf970.testnet",
+        "method": "open_stream",
+        "final": true,
+        "explorerUrl": "https://testnet.nearblocks.io/txns/FV23QJ77hkD7voHYt9NhWU8WdHzKjQ5QN5oVMQDEJ46z"
+      },
+      {
+        "hash": "8FF27EJmwHQgWa2CyTt7MiXnfNTVRqujLTUdvgo7S2iC",
+        "signerId": "research-agent.agentpay-owner-20261102-adf970.testnet",
+        "method": "close_stream",
+        "final": true,
+        "explorerUrl": "https://testnet.nearblocks.io/txns/8FF27EJmwHQgWa2CyTt7MiXnfNTVRqujLTUdvgo7S2iC"
+      },
+      {
+        "hash": "GLcCc9BtNwpahtnXvJmeuLo1A4HVTpdDEULRbmmAgCzH",
+        "signerId": "agentpay-provider-20261102-b685bb.testnet",
+        "method": "claim",
+        "final": true,
+        "explorerUrl": "https://testnet.nearblocks.io/txns/GLcCc9BtNwpahtnXvJmeuLo1A4HVTpdDEULRbmmAgCzH"
+      }
+    ],
+    "currentVault": {
+      "available": "96560",
+      "spent": "3440",
+      "reserved": "0",
+      "activeSession": null
+    },
+    "scope": "RPC verifies deployed WASM, final payment receipts and settled stream state. HTTP responses and policy observations are saved offchain evidence, not independently attested."
+  },
+  "live": {
+    "network": "testnet",
+    "vaultId": "judge02.agentpay-owner-20261102-adf970.testnet",
+    "openTransaction": "Ap3ooNVpNcXTDtiDnMmHE1WDABrYmvtzNLKeLAaRrzj6",
+    "closeTransaction": "qMccAFUpk18ksCrxWUcJPhP9NF8pdRPsgd9RYzHdLnA",
+    "premiumDenied": "RATE_LIMIT",
+    "activeSessionAfter": null,
+    "pendingIntentAfter": false
+  },
+  "freshDeploymentRun": {
+    "verifiedAt": "2026-11-02T18:21:10.691Z",
+    "installedOutsideCheckout": true,
+    "installedFrom": "local tarballs",
+    "setup": {
+      "status": "DEPLOYED",
+      "network": "testnet",
+      "ownerId": "agentpay-owner-20261102-adf970.testnet",
+      "vaultId": "judge02.agentpay-owner-20261102-adf970.testnet",
+      "agentId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+      "recipientId": "agentpay-owner-20261102-adf970.testnet",
+      "paymentsEnabled": false,
+      "ownerUSDCFundingAddress": "agentpay-owner-20261102-adf970.testnet",
+      "usdcFaucet": "https://faucet.circle.com/",
+      "transactions": [
+        {
+          "step": "create-vault",
+          "hash": "GozMVXiVxb4QgNbPyoNUvr2LcoGJ1YS64QpNSgkAenQ2",
+          "explorerUrl": "https://testnet.nearblocks.io/txns/GozMVXiVxb4QgNbPyoNUvr2LcoGJ1YS64QpNSgkAenQ2"
+        },
+        {
+          "step": "create-agent",
+          "hash": "8QNfDiky6k1bDVBAsof2mGc9uTy7cqNRCqd8jCWhJXJ4",
+          "explorerUrl": "https://testnet.nearblocks.io/txns/8QNfDiky6k1bDVBAsof2mGc9uTy7cqNRCqd8jCWhJXJ4"
+        },
+        {
+          "step": "deploy-and-initialize",
+          "hash": "G91PPxmRRTSNm9n9SGMSupwi88zMsdaj76NCwGp6vEjg",
+          "explorerUrl": "https://testnet.nearblocks.io/txns/G91PPxmRRTSNm9n9SGMSupwi88zMsdaj76NCwGp6vEjg"
+        },
+        {
+          "step": "register-usdc-judge02.agentpay-owner-20261102-adf970.testnet",
+          "hash": "7mxzpQotdkm37fzvmSg973NjpsAyoowTsnZtwKozVkCT",
+          "explorerUrl": "https://testnet.nearblocks.io/txns/7mxzpQotdkm37fzvmSg973NjpsAyoowTsnZtwKozVkCT"
+        }
+      ],
+      "next": "Get Circle test USDC for the owner (Near Testnet). Then agentpay fund --amount 100000 --owner-key /absolute/path/owner.json. Owner/admin setup credentials are kept separately from the runtime profile."
+    },
+    "funding": {
+      "network": "testnet",
+      "amountRawUSDC": "100000",
+      "transactionHash": "FcBXPiJepyVTUV5UyiagUiVs75HVGQULHZn3mDpHoo7A",
+      "explorerUrl": "https://testnet.nearblocks.io/txns/FcBXPiJepyVTUV5UyiagUiVs75HVGQULHZn3mDpHoo7A",
+      "next": "agentpay doctor; agentpay payments --enable; agentpay demo --pay --fixture"
+    },
+    "before": {
+      "ok": true,
+      "node": "22.23.2",
+      "paymentsEnabled": false,
+      "network": "testnet",
+      "vaultId": "judge02.agentpay-owner-20261102-adf970.testnet",
+      "agentId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+      "policySignerMatches": true,
+      "restrictedKey": true,
+      "availableUSDC": "100000",
+      "reservedUSDC": "0",
+      "spentUSDC": "0",
+      "activeSession": null,
+      "pendingIntent": false,
+      "executorBusyOrInterrupted": false,
+      "agentNEAR": "500000000000000000000000",
+      "vaultTokenBalance": "100000"
+    },
+    "result": {
+      "mode": "testnet",
+      "fixture": true,
+      "requestsReusingSession": 10,
+      "admission": {
+        "decision": "OPEN",
+        "reason": "WITHIN_POLICY",
+        "deposit": "10000",
+        "approvalId": "daf02d93-6413-492b-af86-a9cd1838391c",
+        "paymentsEnabled": true
+      },
+      "opened": {
+        "decision": "CONTINUE",
+        "sessionId": "99cc3e95-ca31-490d-ba6e-ad39588ba39b",
+        "receipt": {
+          "hash": "Ap3ooNVpNcXTDtiDnMmHE1WDABrYmvtzNLKeLAaRrzj6",
+          "signerId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+          "receiverId": "judge02.agentpay-owner-20261102-adf970.testnet",
+          "value": {
+            "session_id": "99cc3e95-ca31-490d-ba6e-ad39588ba39b",
+            "recipient_id": "agentpay-owner-20261102-adf970.testnet",
+            "quote_hash": "94c7cd140377d0def19502a89b994c97c41ae41f4fe9e5706a4e4661edcb111b",
+            "deposit": "10000",
+            "rate": "10",
+            "duration_seconds": 1000,
+            "started_at": "1793643646",
+            "closed_at": null,
+            "earned": "0",
+            "refunded": "0"
+          },
+          "receiptFailures": [],
+          "receiptIds": [
+            "BiXEXtCM85Q9oZbxwLhVLTNgpmDqTb14zFwmiVDdm7Qo",
+            "9AKSKfTjV1fbUX157ehR3R3be5zf4srxE2G3NRPAPD4"
+          ],
+          "logs": [
+            "EVENT_JSON:{\"data\":[{\"closed_at\":null,\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"0\",\"quote_hash\":\"94c7cd140377d0def19502a89b994c97c41ae41f4fe9e5706a4e4661edcb111b\",\"rate\":\"10\",\"recipient_id\":\"agentpay-owner-20261102-adf970.testnet\",\"refunded\":\"0\",\"session_id\":\"99cc3e95-ca31-490d-ba6e-ad39588ba39b\",\"started_at\":\"1793643646\"}],\"event\":\"opened\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+          ]
+        }
+      },
+      "continued": {
+        "decision": "CONTINUE",
+        "reason": "SERVICE_HEALTHY",
+        "sessionId": "99cc3e95-ca31-490d-ba6e-ad39588ba39b"
+      },
+      "closed": {
+        "decision": "CLOSE",
+        "sessionId": "99cc3e95-ca31-490d-ba6e-ad39588ba39b",
+        "receipt": {
+          "hash": "qMccAFUpk18ksCrxWUcJPhP9NF8pdRPsgd9RYzHdLnA",
+          "signerId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+          "receiverId": "judge02.agentpay-owner-20261102-adf970.testnet",
+          "value": {
+            "session_id": "99cc3e95-ca31-490d-ba6e-ad39588ba39b",
+            "recipient_id": "agentpay-owner-20261102-adf970.testnet",
+            "quote_hash": "94c7cd140377d0def19502a89b994c97c41ae41f4fe9e5706a4e4661edcb111b",
+            "deposit": "10000",
+            "rate": "10",
+            "duration_seconds": 1000,
+            "started_at": "1793643646",
+            "closed_at": "1793643663",
+            "earned": "170",
+            "refunded": "9830"
+          },
+          "receiptFailures": [],
+          "receiptIds": [
+            "3GZdRegfoDX9JmcMo8woHAxmVXTupr7doy2x3rSr97fP",
+            "gSR7MQ4Vy3VoP59pszp2rSeKgTTSshk4qnVWBWyfkee"
+          ],
+          "logs": [
+            "EVENT_JSON:{\"data\":[{\"closed_at\":\"1793643663\",\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"170\",\"quote_hash\":\"94c7cd140377d0def19502a89b994c97c41ae41f4fe9e5706a4e4661edcb111b\",\"rate\":\"10\",\"recipient_id\":\"agentpay-owner-20261102-adf970.testnet\",\"refunded\":\"9830\",\"session_id\":\"99cc3e95-ca31-490d-ba6e-ad39588ba39b\",\"started_at\":\"1793643646\"}],\"event\":\"closed\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+          ]
+        }
+      },
+      "denied": {
+        "decision": "DENY",
+        "reason": "RATE_LIMIT"
+      },
+      "providerPayout": "claimable; no provider key loaded",
+      "transactions": [
+        {
+          "hash": "Ap3ooNVpNcXTDtiDnMmHE1WDABrYmvtzNLKeLAaRrzj6",
+          "explorerUrl": "https://testnet.nearblocks.io/txns/Ap3ooNVpNcXTDtiDnMmHE1WDABrYmvtzNLKeLAaRrzj6"
+        },
+        {
+          "hash": "qMccAFUpk18ksCrxWUcJPhP9NF8pdRPsgd9RYzHdLnA",
+          "explorerUrl": "https://testnet.nearblocks.io/txns/qMccAFUpk18ksCrxWUcJPhP9NF8pdRPsgd9RYzHdLnA"
+        }
+      ]
+    },
+    "after": {
+      "ok": true,
+      "node": "22.23.2",
+      "paymentsEnabled": false,
+      "network": "testnet",
+      "vaultId": "judge02.agentpay-owner-20261102-adf970.testnet",
+      "agentId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+      "policySignerMatches": true,
+      "restrictedKey": true,
+      "availableUSDC": "99830",
+      "reservedUSDC": "0",
+      "spentUSDC": "170",
+      "activeSession": null,
+      "pendingIntent": false,
+      "executorBusyOrInterrupted": false,
+      "agentNEAR": "499374885919549900000000",
+      "vaultTokenBalance": "100000"
+    },
+    "reconciled": {
+      "resolved": true,
+      "reason": "NO_PENDING_INTENT"
+    },
+    "publishedToNpm": false
+  },
+  "candidateVersion": "0.2.0",
+  "tests": {
+    "distribution": 24,
+    "nativeNear": 25,
+    "frontend": 6,
+    "strictPublicTypes": "passed",
+    "frontendLint": "passed",
+    "build": "passed"
+  },
+  "browserQALimit": "Local browser use disabled in Work settings; candidate viewer HTTP, recording provenance and frontend checks passed.",
+  "replayProvenance": {
+    "testnet": {
+      "runId": "cf573ebc-976e-4d58-84d9-aab7e0ed518a",
+      "kind": "real public NEAR testnet settlement; local HTTP research fixture",
+      "journalEvents": 22,
+      "finalTransactions": 3,
+      "digest": "d17d81638b223dc8cf4306f35abe525cdec7d3362ee2b592d1f7d0a0309683f7",
+      "rpcChecks": {
+        "verifiedAt": "2026-11-02T18:20:03.706Z",
+        "network": "testnet",
+        "readOnly": true,
+        "simulation": false,
+        "recording": {
+          "runId": "cf573ebc-976e-4d58-84d9-aab7e0ed518a",
+          "capturedAt": "2026-11-02T12:27:48.162Z",
+          "events": 22,
+          "transactions": 3,
+          "finalHash": "d17d81638b223dc8cf4306f35abe525cdec7d3362ee2b592d1f7d0a0309683f7"
+        },
+        "vaultId": "agentpay.agentpay-owner-20261102-adf970.testnet",
+        "codeHash": "5mdkYU39APh6Bfx8GPK54UpsDJ68ZJRTtGZf5s7Bvvo4",
+        "receipts": [
+          {
+            "hash": "FV23QJ77hkD7voHYt9NhWU8WdHzKjQ5QN5oVMQDEJ46z",
+            "signerId": "research-agent.agentpay-owner-20261102-adf970.testnet",
+            "method": "open_stream",
+            "final": true,
+            "explorerUrl": "https://testnet.nearblocks.io/txns/FV23QJ77hkD7voHYt9NhWU8WdHzKjQ5QN5oVMQDEJ46z"
+          },
+          {
+            "hash": "8FF27EJmwHQgWa2CyTt7MiXnfNTVRqujLTUdvgo7S2iC",
+            "signerId": "research-agent.agentpay-owner-20261102-adf970.testnet",
+            "method": "close_stream",
+            "final": true,
+            "explorerUrl": "https://testnet.nearblocks.io/txns/8FF27EJmwHQgWa2CyTt7MiXnfNTVRqujLTUdvgo7S2iC"
+          },
+          {
+            "hash": "GLcCc9BtNwpahtnXvJmeuLo1A4HVTpdDEULRbmmAgCzH",
+            "signerId": "agentpay-provider-20261102-b685bb.testnet",
+            "method": "claim",
+            "final": true,
+            "explorerUrl": "https://testnet.nearblocks.io/txns/GLcCc9BtNwpahtnXvJmeuLo1A4HVTpdDEULRbmmAgCzH"
+          }
+        ],
+        "currentVault": {
+          "available": "96560",
+          "spent": "3440",
+          "reserved": "0",
+          "activeSession": null
+        },
+        "scope": "RPC verifies deployed WASM, final payment receipts and settled stream state. HTTP responses and policy observations are saved offchain evidence, not independently attested."
+      }
+    },
+    "sandbox": {
+      "runId": "1a8e62f8-420b-4999-aca5-8a2dfc870ff6",
+      "kind": "real local NEAR blockchain execution; fixture token; no public explorer",
+      "journalEvents": 27,
+      "finalTransactions": 3,
+      "digest": "dcf7a6d79c00b0baabcaa156f125fc24cca68b3798c90ae58b37cb9be56ae88e",
+      "verificationLimit": "Saved journal/receipts and source capture path; stopped local chain has no public RPC attestation"
+    }
+  }
+}

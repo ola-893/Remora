@@ -1,0 +1,62 @@
+{
+  "verifiedAt": "2026-11-02T17:58:48.885Z",
+  "installedOutsideCheckout": true,
+  "installedFrom": "npm registry; CLI only with transitive core dependency",
+  "packages": [
+    {
+      "name": "@ola-893/agentpay-core",
+      "version": "0.1.0",
+      "integrity": "sha512-qV/iSek9jixePfM4YFdnUh+lkZ8RuKTXZf8t9GafS0IN2IONDHG9O5gNDpM87pJl1xFFQ6ZID5Y395RWkUB4Sg==",
+      "tarball": "https://registry.npmjs.org/@ola-893/agentpay-core/-/agentpay-core-0.1.0.tgz",
+      "url": "https://www.npmjs.com/package/@ola-893/agentpay-core"
+    },
+    {
+      "name": "@ola-893/agentpay-cli",
+      "version": "0.1.0",
+      "integrity": "sha512-4u66pqdqgL2x41jWrqLxGr/iPFkz7sG/JVi2rZP2siPaGXu9UQKi7VCWuyM+i3u42ojuKIak2hU/o4JXxCmY3g==",
+      "tarball": "https://registry.npmjs.org/@ola-893/agentpay-cli/-/agentpay-cli-0.1.0.tgz",
+      "url": "https://www.npmjs.com/package/@ola-893/agentpay-cli"
+    }
+  ],
+  "checks": [
+    "offline quickstart",
+    "doctor",
+    "cursor installer",
+    "codex installer",
+    "stdio MCP lifecycle and denial",
+    "installed recorded UI HTTP",
+    "portable native runtime imports"
+  ],
+  "browserVisualQA": false,
+  "publishedToNpm": true,
+  "releaseChannel": "NEAR testnet preview",
+  "publisher": "ola-893",
+  "tests": {
+    "distribution": 21,
+    "nativeNear": 25,
+    "strictTypes": "passed",
+    "documentationLinks": "passed"
+  },
+  "comparisonWithOriginalTestnetArchives": [
+    {
+      "before": "@agentpay/core",
+      "after": "@ola-893/agentpay-core",
+      "previousIntegrity": "sha512-Agtg5P6Z6nsqXJz4VBbYPnEwN8nVm4MHJS4C4AYzNzX6JHrOXdf8WVNE9NDmUfrOjvYM2ZJ0W64U8EI5y4pc2w==",
+      "releaseIntegrity": "sha512-qV/iSek9jixePfM4YFdnUh+lkZ8RuKTXZf8t9GafS0IN2IONDHG9O5gNDpM87pJl1xFFQ6ZID5Y395RWkUB4Sg==",
+      "changesBeyondPackageNameAndImportRename": [
+        "package/README.md"
+      ]
+    },
+    {
+      "before": "@agentpay/cli",
+      "after": "@ola-893/agentpay-cli",
+      "previousIntegrity": "sha512-OBUyLFv5nPon0QhNvED690ef4xABMAjZefpStnOrow+xgf1xDXRrYd0PwxQupM726QCqNeIEgOp5RXzBa134Ag==",
+      "releaseIntegrity": "sha512-4u66pqdqgL2x41jWrqLxGr/iPFkz7sG/JVi2rZP2siPaGXu9UQKi7VCWuyM+i3u42ojuKIak2hU/o4JXxCmY3g==",
+      "changesBeyondPackageNameAndImportRename": [
+        "package/README.md"
+      ]
+    }
+  ],
+  "publicHostingDeployed": false,
+  "attestedSigner": false
+}

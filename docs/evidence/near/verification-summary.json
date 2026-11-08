@@ -1,0 +1,11 @@
+{
+  "verifiedAt": "2026-10-30T14:27:51.928Z",
+  "network": "sandbox",
+  "nativeChecks": 19,
+  "legacyChecks": 243,
+  "totalChecks": 262,
+  "failures": 0,
+  "contractSourceSha256": "35584f93d8b087a65e2bdcdcbe9fba5544ea700dfb19de74a85cccac7ee7ad71",
+  "wasmSha256": "46dddb8489817ae54e68320f63340a730948bf5670b22cc86d42c2b4ea814e0b",
+  "testLogSha256": "4f2ca864d731439ad803d5363ebff8aa22b70730190b65a7499e9fc9cabb8dfd"
+}

@@ -1,0 +1,19 @@
+{
+  "hash": "CdMqmNUjAJPEJVn8LbohgyLqQX93DuTQDp7uSDS6NaiB",
+  "signerId": "agentpay-owner-20261102-adf970.testnet",
+  "receiverId": "3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af",
+  "value": "100000",
+  "receiptFailures": [],
+  "receiptIds": [
+    "Gteb5n9HGeKerx6GW7rjts924TcVzLBevZBUV457SuBW",
+    "8q69x7kZXtz2F1DHBxsoSDLtdRcKnD3oganDgzauDqod",
+    "A6iQB7iXhVFpXYgteaBiqBeptiD9ERQxtVoW3u49P5bW",
+    "8ZqoK8pdCnXF9UMMbRPdM52qsYdqF1XB5DNAcYe5QenN",
+    "2AwXKQ1u66Dio1L6nB8zsw7nZmTKXb4EJ1LgyvysfDjb",
+    "3y95q3sWFE7WSmmyu6QDWfpkoPm7x14wEPsSftfZCgE2"
+  ],
+  "logs": [
+    "EVENT_JSON:{\"standard\":\"nep141\",\"version\":\"1.0.0\",\"event\":\"ft_transfer\",\"data\":[{\"old_owner_id\":\"agentpay-owner-20261102-adf970.testnet\",\"new_owner_id\":\"agentpay.agentpay-owner-20261102-adf970.testnet\",\"amount\":\"100000\"}]}",
+    "EVENT_JSON:{\"data\":[{\"amount\":\"100000\"}],\"event\":\"funded\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+  ]
+}

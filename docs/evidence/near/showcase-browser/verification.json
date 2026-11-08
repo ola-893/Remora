@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-11-07T13:09:48.439Z",
+  "engine": "Chromium via Playwright",
+  "installedPackage": true,
+  "checks": {
+    "analysisPanelContrast": true,
+    "findingsDrawerAndFocusRestoration": true,
+    "rejectedContractReceiptLinked": true,
+    "searchAndEmptyStateReset": true,
+    "desktopAndMobileNoHorizontalOverflow": true,
+    "docsNavigation": true,
+    "replayCannotSign": true
+  },
+  "errors": [],
+  "screenshots": [
+    "desktop.png",
+    "findings.png",
+    "mobile-findings.png"
+  ],
+  "passed": true
+}

@@ -1,0 +1,268 @@
+{
+  "startedAt": "2026-11-03T08:26:07.282Z",
+  "inference": "Codex CLI via stored ChatGPT subscription sign-in",
+  "model": "gpt-6-astra",
+  "publishedCliVersion": "0.2.0",
+  "standaloneModelApiKeyUsed": false,
+  "events": [
+    {
+      "name": "before",
+      "result": {
+        "ok": true,
+        "node": "22.23.2",
+        "paymentsEnabled": false,
+        "inferenceConfigured": false,
+        "runtimePolicy": {
+          "maxConsecutive5xx": 3,
+          "maxConsecutiveTransportErrors": 2,
+          "maxConsecutiveHealthFailures": 2,
+          "idleTimeoutSeconds": 120,
+          "maxRequestsPerStream": 1000,
+          "healthPollSeconds": 10,
+          "failureCooldownSeconds": 1,
+          "reuseStream": true,
+          "closeOnExit": true
+        },
+        "network": "testnet",
+        "vaultId": "judge02.agentpay-owner-20261102-adf970.testnet",
+        "agentId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+        "policySignerMatches": true,
+        "restrictedKey": true,
+        "availableUSDC": "97680",
+        "reservedUSDC": "0",
+        "spentUSDC": "2320",
+        "activeSession": null,
+        "pendingIntent": false,
+        "executorBusyOrInterrupted": false,
+        "policyUpdatePending": false,
+        "agentNEAR": "494947226916424600000000",
+        "vaultTokenBalance": "100000"
+      }
+    },
+    {
+      "name": "service",
+      "result": {
+        "service": {
+          "url": "http://127.0.0.1:5368",
+          "recipient": "agentpay-owner-20261102-adf970.testnet",
+          "healthPath": "/health",
+          "quotePath": "/quote",
+          "requestPath": "/research",
+          "tiers": [
+            "basic",
+            "premium"
+          ]
+        },
+        "restartRequired": "Restart running agents/MCP servers after service changes."
+      }
+    },
+    {
+      "name": "rules",
+      "result": {
+        "runtimePolicy": {
+          "maxConsecutive5xx": 3,
+          "maxConsecutiveTransportErrors": 2,
+          "maxConsecutiveHealthFailures": 2,
+          "idleTimeoutSeconds": 120,
+          "maxRequestsPerStream": 5,
+          "healthPollSeconds": 10,
+          "failureCooldownSeconds": 1,
+          "reuseStream": true,
+          "closeOnExit": true
+        },
+        "enforcement": "local payment worker; thresholds reload on the next checkpoint",
+        "restartRequired": "Restart running agents/MCP servers after changing reuse, polling or exit behavior."
+      }
+    },
+    {
+      "name": "install-codex",
+      "result": {
+        "target": "codex",
+        "dryRun": false,
+        "changedFiles": [
+          ".codex/config.toml",
+          "AGENTS.md"
+        ],
+        "scope": "project",
+        "secretsInConfig": false
+      }
+    },
+    {
+      "name": "cleanup-close",
+      "result": {
+        "decision": "CLOSE",
+        "alreadyClosed": true
+      }
+    },
+    {
+      "name": "cleanup-disable",
+      "result": {
+        "mode": "testnet",
+        "paymentsEnabled": false
+      }
+    }
+  ],
+  "codexExit": {
+    "code": 0,
+    "signal": null
+  },
+  "codexEvents": [
+    {
+      "type": "thread.started",
+      "thread_id": "01a1a084-0b8f-7253-be8d-ac8ff0ebbaa3"
+    },
+    {
+      "type": "turn.started"
+    },
+    {
+      "type": "item.completed",
+      "item": {
+        "id": "item_0",
+        "type": "agent_message",
+        "text": "I\u2019ll check premium first, then use AgentPay for the two basic requests and close the returned session."
+      }
+    },
+    {
+      "type": "item.started",
+      "item": {
+        "id": "item_1",
+        "type": "mcp_tool_call",
+        "server": "agentpay",
+        "tool": "agentpay_check",
+        "arguments": {
+          "tier": "premium"
+        },
+        "result": null,
+        "error": null,
+        "status": "in_progress"
+      }
+    },
+    {
+      "type": "item.completed",
+      "item": {
+        "id": "item_1",
+        "type": "mcp_tool_call",
+        "server": "agentpay",
+        "tool": "agentpay_check",
+        "arguments": {
+          "tier": "premium"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"decision\":\"DENY\",\"reason\":\"RATE_LIMIT\"}"
+            }
+          ],
+          "structured_content": null
+        },
+        "error": null,
+        "status": "completed"
+      }
+    },
+    {
+      "type": "item.completed",
+      "item": {
+        "id": "item_2",
+        "type": "agent_message",
+        "text": "Premium returned `DENY` with reason `RATE_LIMIT`. I\u2019ll proceed with basic."
+      }
+    },
+    {
+      "type": "item.started",
+      "item": {
+        "id": "item_3",
+        "type": "mcp_tool_call",
+        "server": "agentpay",
+        "tool": "agentpay_fetch",
+        "arguments": {
+          "tier": "basic",
+          "query": "q=codex-subscription"
+        },
+        "result": null,
+        "error": null,
+        "status": "in_progress"
+      }
+    },
+    {
+      "type": "item.completed",
+      "item": {
+        "id": "item_3",
+        "type": "mcp_tool_call",
+        "server": "agentpay",
+        "tool": "agentpay_fetch",
+        "arguments": {
+          "tier": "basic",
+          "query": "q=codex-subscription"
+        },
+        "result": null,
+        "error": {
+          "message": "MCP tool call requires approval, but approval policy is never"
+        },
+        "status": "failed"
+      }
+    },
+    {
+      "type": "item.completed",
+      "item": {
+        "id": "item_4",
+        "type": "agent_message",
+        "text": "Premium check: `DENY` (`RATE_LIMIT`).\n\nThe first basic fetch was blocked before execution: the MCP tool required approval, but the approval policy was `never`. No session ID was returned, so I stopped before the second fetch and had no session to close. No transaction hashes were observed."
+      }
+    },
+    {
+      "type": "turn.completed",
+      "usage": {
+        "input_tokens": 71113,
+        "cached_input_tokens": 52480,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 214,
+        "reasoning_output_tokens": 0
+      }
+    }
+  ],
+  "toolCalls": [
+    {
+      "id": "item_1",
+      "type": "mcp_tool_call",
+      "server": "agentpay",
+      "tool": "agentpay_check",
+      "arguments": {
+        "tier": "premium"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"decision\":\"DENY\",\"reason\":\"RATE_LIMIT\"}"
+          }
+        ],
+        "structured_content": null
+      },
+      "error": null,
+      "status": "completed"
+    },
+    {
+      "id": "item_3",
+      "type": "mcp_tool_call",
+      "server": "agentpay",
+      "tool": "agentpay_fetch",
+      "arguments": {
+        "tier": "basic",
+        "query": "q=codex-subscription"
+      },
+      "result": null,
+      "error": {
+        "message": "MCP tool call requires approval, but approval policy is never"
+      },
+      "status": "failed"
+    }
+  ],
+  "passed": false,
+  "finishedAt": "2026-11-03T08:26:33.957Z",
+  "connectionVerified": true,
+  "premiumCheckVerified": true,
+  "paymentTestCompleted": false,
+  "paymentApprovalRequired": true,
+  "readOnlySandboxPreserved": true
+}

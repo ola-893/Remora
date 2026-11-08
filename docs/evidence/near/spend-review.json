@@ -1,0 +1,83 @@
+{
+  "sha256": "39db472c2e69bc4599a09854afa391fb8d6627dc717539efbfbe52df4ed194e2",
+  "payload": {
+    "network": "sandbox",
+    "recordedAt": "2026-10-30T14:17:52.976Z",
+    "vaultId": "vault.sandbox",
+    "vault": {
+      "version": "2.0.0",
+      "owner_id": "owner.sandbox",
+      "token_id": "token.sandbox",
+      "agent_id": "agent.sandbox",
+      "agent_key": "ed25519:HZYrKxyjRi1Dki5hYKdERKus4LmH1aZZAgjvzKsi8WL4",
+      "policy_key": "ed25519:9G6j4N8GN6jRWTDrG18enHGKgng2ERL9V8iTJtNnduQd",
+      "policy": {
+        "budget": "100000",
+        "max_deposit": "10000",
+        "max_rate": "100",
+        "max_duration_seconds": 1000,
+        "recipients": [
+          "provider.sandbox",
+          "outsider.sandbox"
+        ]
+      },
+      "available": "1000000",
+      "spent": "0",
+      "reserved": "0",
+      "claimable_total": "0",
+      "pending_total": "0",
+      "next_nonce": "0",
+      "active_session": null,
+      "paused": false,
+      "now": "1793369872"
+    },
+    "health": {
+      "ok": true,
+      "observed_at": 1793369872
+    },
+    "prices": {
+      "decision": "ALLOW",
+      "reason": "SANDBOX_FIXTURE_NO_MARKET_PRICE"
+    },
+    "decisions": [
+      {
+        "tier": "basic",
+        "quote": {
+          "version": 1,
+          "vault_id": "vault.sandbox",
+          "token_id": "token.sandbox",
+          "recipient_id": "provider.sandbox",
+          "tier": "basic",
+          "rate": "10",
+          "duration_seconds": 1000,
+          "expires_at": 1793370172
+        },
+        "decision": {
+          "decision": "OPEN",
+          "reason": "WITHIN_POLICY",
+          "deposit": "10000"
+        }
+      },
+      {
+        "tier": "premium",
+        "quote": {
+          "version": 1,
+          "vault_id": "vault.sandbox",
+          "token_id": "token.sandbox",
+          "recipient_id": "provider.sandbox",
+          "tier": "premium",
+          "rate": "200",
+          "duration_seconds": 1000,
+          "expires_at": 1793370172
+        },
+        "decision": {
+          "decision": "DENY",
+          "reason": "RATE_LIMIT"
+        }
+      }
+    ],
+    "signed": false,
+    "transactionSimulated": false,
+    "anchored": false
+  }
+}

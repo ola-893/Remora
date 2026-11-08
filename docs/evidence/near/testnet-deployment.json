@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-11-02T12:21:43.809Z",
+  "network": "testnet",
+  "ownerId": "agentpay-owner-20261102-adf970.testnet",
+  "vaultId": "agentpay.agentpay-owner-20261102-adf970.testnet",
+  "agentId": "research-agent.agentpay-owner-20261102-adf970.testnet",
+  "recipientId": "agentpay-provider-20261102-b685bb.testnet",
+  "tokenId": "3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af",
+  "serviceHosting": "Local fixture; no public provider hosting",
+  "artifact": {
+    "bytes": 352944,
+    "sha256": "46dddb8489817ae54e68320f63340a730948bf5670b22cc86d42c2b4ea814e0b",
+    "codeHash": "5mdkYU39APh6Bfx8GPK54UpsDJ68ZJRTtGZf5s7Bvvo4",
+    "blockHash": "CJnWDEUF8LM99g1HupyxzVv7bKgQ7Ltdpjhgx24xJUw2"
+  },
+  "checks": {
+    "deployedWasmMatches": true,
+    "restrictedAgentKey": true,
+    "ownerAndTokenMatch": true,
+    "providerAllowlistMatches": true,
+    "tokenStorageRegistered": true
+  },
+  "vault": {
+    "version": "2.0.0",
+    "owner_id": "agentpay-owner-20261102-adf970.testnet",
+    "token_id": "3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af",
+    "agent_id": "research-agent.agentpay-owner-20261102-adf970.testnet",
+    "agent_key": "ed25519:KPYgFYtnLrCDzSKohQNFNSXmkXGCg2P8igTSA3HoCfU",
+    "policy_key": "ed25519:DzJL2TxqVPXkaJE3BpTcxPktM7tomUuvMSPBpvCertb7",
+    "policy": {
+      "budget": "100000",
+      "max_deposit": "10000",
+      "max_rate": "100",
+      "max_duration_seconds": 1000,
+      "recipients": [
+        "agentpay-provider-20261102-b685bb.testnet"
+      ]
+    },
+    "available": "0",
+    "spent": "0",
+    "reserved": "0",
+    "claimable_total": "0",
+    "pending_total": "0",
+    "next_nonce": "0",
+    "active_session": null,
+    "paused": false,
+    "now": "1793622077"
+  },
+  "registrations": {
+    "agentpay-owner-20261102-adf970.testnet": {
+      "total": "1250000000000000000000",
+      "available": "0"
+    },
+    "agentpay.agentpay-owner-20261102-adf970.testnet": {
+      "total": "1250000000000000000000",
+      "available": "0"
+    },
+    "agentpay-provider-20261102-b685bb.testnet": {
+      "total": "1250000000000000000000",
+      "available": "0"
+    }
+  },
+  "ownerUsdcBalance": "0",
+  "providerUsdcBalance": "0",
+  "transactions": [
+    {
+      "name": "create-vault",
+      "hash": "G38JkLKT5FyUiPEMJwCSjbxmmCkqd6xMCbKBbZvvUsNE",
+      "signerId": "agentpay-owner-20261102-adf970.testnet",
+      "receiverId": "agentpay.agentpay-owner-20261102-adf970.testnet",
+      "receiptFailures": [],
+      "receiptIds": [
+        "8xfcmjKBwS5pDNfMft6CfoZGKjnqVtcjKWVgrawpFGpy",
+        "8xBYQrGVGVL6JR92XK81rrsx32K41hvbwJqUeLRWXXdE"
+      ]
+    },
+    {
+      "name": "create-agent",
+      "hash": "HeCNR7QP2SR5AfePfhUGh9yhodMyvNcWbXte99q1Kqs3",
+      "signerId": "agentpay-owner-20261102-adf970.testnet",
+      "receiverId": "research-agent.agentpay-owner-20261102-adf970.testnet",
+      "receiptFailures": [],
+      "receiptIds": [
+        "7b2C6Zo55USpGX6tFn2fstsE2DNuhKXbpEgkY2g6W9j6",
+        "GeHTR9sHp9q5saP4MuQPV43yMjQCrPoygagD7Gc7CEbY"
+      ]
+    },
+    {
+      "name": "deploy-and-initialize",
+      "hash": "AeZNTQLeNhUb2r4cb1CyaQ6RWJoBj5AGrjzEH82Gqygt",
+      "signerId": "agentpay.agentpay-owner-20261102-adf970.testnet",
+      "receiverId": "agentpay.agentpay-owner-20261102-adf970.testnet",
+      "receiptFailures": [],
+      "receiptIds": [
+        "2St3kodLYNBKtJmLr3vYwRD36YcZbApi6uSwSMCg4FxN",
+        "5HBMQVpfxaZWoSHY7ukUizKN5VRkxaaVqwczgXxT94Ww"
+      ]
+    },
+    {
+      "name": "register-usdc-agentpay.agentpay-owner-20261102-adf970.testnet",
+      "hash": "6wMZKWz1KfG1RsTvL6booZM6hhqjNgs7xDxqz8y7HHdS",
+      "signerId": "agentpay-owner-20261102-adf970.testnet",
+      "receiverId": "3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af",
+      "receiptFailures": [],
+      "receiptIds": [
+        "CqeRMeJ8MSkxveUW9S45Qhioo4Nt7TqsdWdym5j76vPp",
+        "8QHhy9hwqM6RxSt9PqKnmvhRLSBSjjPYjAZrqSFmaYiU"
+      ]
+    },
+    {
+      "name": "register-usdc-agentpay-owner-20261102-adf970.testnet",
+      "hash": "3AgCzYheyU7XJzxCFiLsyuihMh6n9Kx18y4wiQfjcLxc",
+      "signerId": "agentpay-owner-20261102-adf970.testnet",
+      "receiverId": "3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af",
+      "receiptFailures": [],
+      "receiptIds": [
+        "61BTTjNrP1od6GBbPygK8K7HYwPZmGoy5f8T1RkbsKN3",
+        "EQcYJimDMhgAByAw9NFpEACYAcGx7HTskJFHzPxk185n"
+      ]
+    },
+    {
+      "name": "register-usdc-agentpay-provider-20261102-b685bb.testnet",
+      "hash": "4ceyMLDt5JA64AiUJtjYoAvEAeYrjSS3MDUwTCAhr6af",
+      "signerId": "agentpay-owner-20261102-adf970.testnet",
+      "receiverId": "3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af",
+      "receiptFailures": [],
+      "receiptIds": [
+        "2g5GxCMKvks9R9Aec4Azpt1b2GS3ykpPgQfny3rGWvGL",
+        "3o5Gf7D8A3eSt948KAQxXz2D8FKpQZfoYW7RtmqhEwXV"
+      ]
+    }
+  ]
+}

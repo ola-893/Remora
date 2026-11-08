@@ -1,0 +1,390 @@
+{
+  "network": "sandbox",
+  "recordedAt": "2026-10-30T14:18:44.813Z",
+  "deployments": {
+    "token": "4NMPucLHW5FwPyGpTjUfiqYTaDYuDiMJvEBbx29kebM5",
+    "vault": "33cAD9HJDtDYFVBwuzo7EobaUDoqfmwHJuJSUp8SJ3JE",
+    "funding": "41HS6C1WB6fsWEHusG5iW96dGT3JaHMmCwdnp6oLnbGh"
+  },
+  "requestsReused": 10,
+  "stream": {
+    "session_id": "worker-session",
+    "recipient_id": "provider.sandbox",
+    "quote_hash": "ccb4c2dd1d64700d6f5ade4525ad659f0c9a5c2f2552c6dbaf36e36a7213a333",
+    "deposit": "10000",
+    "rate": "10",
+    "duration_seconds": 1000,
+    "started_at": "1793369880",
+    "closed_at": "1793369882",
+    "earned": "20",
+    "refunded": "9980"
+  },
+  "finalVault": {
+    "version": "2.0.0",
+    "owner_id": "owner.sandbox",
+    "token_id": "token.sandbox",
+    "agent_id": "agent.sandbox",
+    "agent_key": "ed25519:728UyX8UBfacavvyoNBEP9H7a5qSnqCNxhWb5DAUXzWe",
+    "policy_key": "ed25519:CWgBBUyHDUborvd4k5F3U5nLsJjTiB5s8gmQoiY57DiA",
+    "policy": {
+      "budget": "13250",
+      "max_deposit": "10000",
+      "max_rate": "100",
+      "max_duration_seconds": 1000,
+      "recipients": [
+        "provider.sandbox",
+        "outsider.sandbox"
+      ]
+    },
+    "available": "976770",
+    "spent": "13250",
+    "reserved": "0",
+    "claimable_total": "10100",
+    "pending_total": "0",
+    "next_nonce": "7",
+    "active_session": null,
+    "paused": false,
+    "now": "1793370532"
+  },
+  "receipts": [
+    {
+      "hash": "7Wj64WWZd5PcU7VzTvVzEHfA11AJxxugT3RDa5uHNgd3",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "DYq8zTiWPL42KQgxCJngueigyJmfjdShTb1441m4LkTL",
+        "2SYmGWhCQC21ZXDgXKS1HPt4scagQCZJEWXjwWjLJYHn"
+      ],
+      "receiptFailures": [],
+      "value": {
+        "session_id": "worker-session",
+        "recipient_id": "provider.sandbox",
+        "quote_hash": "ccb4c2dd1d64700d6f5ade4525ad659f0c9a5c2f2552c6dbaf36e36a7213a333",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1793369880",
+        "closed_at": null,
+        "earned": "0",
+        "refunded": "0"
+      }
+    },
+    {
+      "hash": "EoBnWMyVYzS3LnWuFcqtEZWVYiN6Jon918YFGxt2S8Wh",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "4d9JswDmhEt16GCS3CnMuWqAoAx88Vkn6VCd5RQB5qbW",
+        "BdWr5T71Uixc5KsS6xyWp7wRdxYxiHUranRFaeNfYJn2"
+      ],
+      "receiptFailures": [],
+      "value": {
+        "session_id": "worker-session",
+        "recipient_id": "provider.sandbox",
+        "quote_hash": "ccb4c2dd1d64700d6f5ade4525ad659f0c9a5c2f2552c6dbaf36e36a7213a333",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1793369880",
+        "closed_at": "1793369882",
+        "earned": "20",
+        "refunded": "9980"
+      }
+    },
+    {
+      "hash": "EhkPvcsyq4f1eJWUcmDkydAchTH24tnN5bL1AzrVYgTm",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "HQFxNTASixYx4hHeZ4ifvEQfA2Le7TgstxYVM4vS57Ht",
+        "FuEnG4XDbotz6yWwrEXtjjPmthkbSfD1vKTY5KFEgEsj",
+        "9mnB6tziVDdXi3zUtEwCfZN6WhYQCQJjjXzh6WqG4hTp",
+        "C2SPTqazmoegGG4xM4fxBGE4vw1ExeN8P8rh26epWLmX",
+        "ynj3rRDhxEJhwXaJLNpWcC2n2t1sU2wnxWdY9g3Vy6P",
+        "2BjJK1FhruQTwMbhKn2KRLEYyvW4QJW8bvsotNQLEumP"
+      ],
+      "receiptFailures": [],
+      "value": true
+    },
+    {
+      "hash": "EoYT6MqJcsikktpzh7zutJUJ5mUzrjYAMyPdP2ie1vQa",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "ErVNaxgPveEkcUPHWk9T2DS58AMc3DdZPDUPnurkGUbk",
+        "FkVB4obcHMpzVg4DQ6mccFux4pp3M6rbK7CGKUjdazi2",
+        "5YAA5QHKfzBGjQLYubcVHCu3pg3T76exr4cgmMgxZ3ZX",
+        "CM86Vw6tAAVnteBx6ct8m6W9fvRbCPTUR3NtwDNqrmfp",
+        "4uiztzBocqw7ZD889Ntgz5Z7U4Mv7wZYYwHTv3Q9ZPvH",
+        "DZLMrLzzJq84jLzzTXPiuECPPL5pVo1pAJ4p97zQvi75"
+      ],
+      "receiptFailures": [],
+      "value": true
+    },
+    {
+      "hash": "FwtSSK7Pm6vxn7aZsCc9WKk73fEN2ETUvSRE7Y5BqS2o",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "8WHTzJhkrq9Mpzhw76XjRCcdEm6fmJramoUzcby4e3om",
+        "HyhsgnbJUYcjFfVqDCV4kBhzdEhWaCcBiUKQ8nzydHCN"
+      ],
+      "receiptFailures": [],
+      "value": {
+        "session_id": "recover-session",
+        "recipient_id": "provider.sandbox",
+        "quote_hash": "ccb4c2dd1d64700d6f5ade4525ad659f0c9a5c2f2552c6dbaf36e36a7213a333",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1793369887",
+        "closed_at": null,
+        "earned": "0",
+        "refunded": "0"
+      }
+    },
+    {
+      "hash": "9NqgdB7aKk5HNjSc4fFce2HCpzqteeAUJRtSL6ovWN7p",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "FZLhBepp4ZrFUpyVaUkLSzNEu77iXGpi5yX9wdz8UgWg",
+        "57wR1ocQDLYY7iMADuBW5DWsCMGgqsCrwUdxh23UQjaN"
+      ],
+      "receiptFailures": [],
+      "value": null
+    },
+    {
+      "hash": "6kXYDTot9eqSUz5Hk5EySZArQid5iY6ZkfhgYQx49XaL",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "5rH6X1CmMSyTe8LvPKp4UYoCxs6yWGpg13LRQS8ukUrx",
+        "518SdRMQimvFDdgFxiLfpjsizZCkj5tgzLdZvm9o1NGW"
+      ],
+      "receiptFailures": [],
+      "value": {
+        "session_id": "recover-session",
+        "recipient_id": "provider.sandbox",
+        "quote_hash": "ccb4c2dd1d64700d6f5ade4525ad659f0c9a5c2f2552c6dbaf36e36a7213a333",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1793369887",
+        "closed_at": "1793369889",
+        "earned": "20",
+        "refunded": "9980"
+      }
+    },
+    {
+      "hash": "F5YgE9rEVPCL8w33yHkvGki1fuTfqW2zPRBf9xnNNf3f",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "8JUJTSZBy9v5QxdBnQgNoEgbJhe3TfinPqG2Q6vBsjpr",
+        "HRVMemtnmLkRX2EoGDcT1DUaCxxPFUissrF1uz5qFFhC"
+      ],
+      "receiptFailures": [],
+      "value": null
+    },
+    {
+      "hash": "3rkkV1zJhNW7dHsVgf7LqvdPa3ofmenFqV7PAQu15BnY",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "DiX6RywB3ZqciwXDb8kUUJmXeV3h6JmRejUGtNvzeCUo",
+        "2tcCSB1FVZunRFtqK4c4zgmExMGhcfVgo1aGeDDd7hZj"
+      ],
+      "receiptFailures": [],
+      "value": {
+        "session_id": "partial-withdrawal",
+        "recipient_id": "provider.sandbox",
+        "quote_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "deposit": "10000",
+        "rate": "100",
+        "duration_seconds": 100,
+        "started_at": "1793369891",
+        "closed_at": null,
+        "earned": "0",
+        "refunded": "0"
+      }
+    },
+    {
+      "hash": "A62y7YzNNteJkYPWqnwHn61DiULYxYnwttnYNsq8jVGY",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "72knyjyU5K3kqpKsA76MTKKeSR9g7Lfm5eaWhmhthZXp",
+        "6Ayxn34uJBUYiGPGdFoMfNrm8UQVuQQnDJSYvTtifV7r",
+        "Hprs89gWL2qge9HBcbkXMoiPjUVVj8tcg4rjyqhLGRWL",
+        "HJH76ALQivoGbtkjr7rcRgRcz6oQtpUHLYDvV1wfCfXo",
+        "B3zKipeqMAXAWFNhbUNacEpUYkUHcUNJtvQFUcVjY9Wx",
+        "8hrrxAfWPu2s11J5KjVWvHPTQWuK2NK4GERw63r9xdKw"
+      ],
+      "receiptFailures": [],
+      "value": true
+    },
+    {
+      "hash": "FUpTyaaM2oNo4S8BuAsmTmqnNCoJ7ofUCM4ynXhsKcRe",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "HrWYUPDNQ2pvaqnsRfk5FdRmUXFdsGn9oGMpYNqNo1Yd",
+        "6JD29nJXZmucFRYrvEmLsH2GeeMYNEUstLpAGhgDcVim"
+      ],
+      "receiptFailures": [],
+      "value": {
+        "session_id": "partial-withdrawal",
+        "recipient_id": "provider.sandbox",
+        "quote_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "deposit": "10000",
+        "rate": "100",
+        "duration_seconds": 100,
+        "started_at": "1793369891",
+        "closed_at": "1793369923",
+        "earned": "3200",
+        "refunded": "6800"
+      }
+    },
+    {
+      "hash": "Hc4foUchRKy5tgPyL9SykebMdDqTeW8S3DBiSxySPfsE",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "AHoa8SQXSoEpdsrkLJFrgVHiwEhvJnsNYK4Zjibu4RnR",
+        "AzWkzQ4gNMgucPRNgmy5ytY7eCVxCQGkkAQ8qCwxPctr"
+      ],
+      "receiptFailures": [],
+      "value": {
+        "session_id": "unregistered-recipient",
+        "recipient_id": "outsider.sandbox",
+        "quote_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "deposit": "10",
+        "rate": "10",
+        "duration_seconds": 1,
+        "started_at": "1793369923",
+        "closed_at": null,
+        "earned": "0",
+        "refunded": "0"
+      }
+    },
+    {
+      "hash": "3VzLa2yA99QWtQncsDtpbzPU5ik3XVPaUT8TvQamdwUb",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "8trdDa32SeeCgNp5pQvEADyR4bxSyBiYJFGgECB9EgQ5",
+        "Fh7rLxwi62txrgKDyZmERTuGGMXKuNxwVSbqtWHi5GvZ"
+      ],
+      "receiptFailures": [],
+      "value": {
+        "session_id": "unregistered-recipient",
+        "recipient_id": "outsider.sandbox",
+        "quote_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "deposit": "10",
+        "rate": "10",
+        "duration_seconds": 1,
+        "started_at": "1793369923",
+        "closed_at": "1793369927",
+        "earned": "10",
+        "refunded": "0"
+      }
+    },
+    {
+      "hash": "6ESFkrwvYuxuDSow4dxXt6A1bd52MJ29PRGwgzhDuhS9",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "6GxLkYtrKTS4gh6tXbD4wPyf5ELwcoJx1QsCELJUnSPE",
+        "Eaa5LKVGqLSRWtsnxyY6b8DpBpEQE8bmfWdi5tCnmtPt",
+        "XcasJ8ormmxNeKnH4qXeCffzq5v1E1fqD3CsaziiqZz",
+        "EP6K7CuR3RJpffkFryNaYFhCYmx4LynLZKXapLZT95Yz",
+        "EUBHCqcEwP1UQuW2kiJFoSMcTtoDoX6YCeP6dKUJu9xR",
+        "CabnwTcWMA89UoVqFLy7br5WghUtiMvPSTEWF28c9KPq",
+        "DY2MYGE5tJLbd27FQz2ZJEm5XF2EyfnAcbQsqdkREs7g"
+      ],
+      "receiptFailures": [
+        {
+          "id": "Eaa5LKVGqLSRWtsnxyY6b8DpBpEQE8bmfWdi5tCnmtPt",
+          "error": {
+            "ActionError": {
+              "index": 0,
+              "kind": {
+                "FunctionCallError": {
+                  "ExecutionError": "Smart contract panicked: The account outsider.sandbox is not registered"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "value": false
+    },
+    {
+      "hash": "65a5L9opQD87qXzRZWEnqK7YVD9VRFA67yPgicDL4Z9h",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "8hRexf1h7cfVA8EiiysTJJraZjAfRoTHRsQDtjbk4UxJ",
+        "FGFhypff8NuDHBze1kjTP5enUGzCTAVfy8YkVebFG1as",
+        "246rNqadA1xkcY82vo93ZWYTMNXhjZCa3PnTxZyAtbgF",
+        "7LxbBugznwhqEH97dMH2WrcCJBq8XhCEV2BVnhLm4EhG",
+        "8V7huVzsEGjQsDttsMhyTgPRvmrvou2xmbZ7hfsCPSup",
+        "EHyz5cWYFMucjRo9qbqkNpTARuxyWKyHzXda2qzxx3Bn"
+      ],
+      "receiptFailures": [],
+      "value": true
+    },
+    {
+      "hash": "3dx15JBiy6Hm6qQySG4jZhyx5eLBccSjuHDrUbZx91m7",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "aZHkxqeFv1PnMoxYiJHfiMnvyubA7XcLjcpedoraRj3",
+        "3PdX3z4XVWYbPPi1AEuT69b6phtMVeS9rxQoS634XtHs"
+      ],
+      "receiptFailures": [],
+      "value": null
+    },
+    {
+      "hash": "DG7LxkhatKgG3cGinDgdrdSiWAXSiqWiW7HqHdQDZRoC",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "EqEbbfhoSHjGsLwJw39Kyprk45vUApQ6VhhW7Ua6BgW6",
+        "HiynNoekwPKXBvCDn2zdrrU4ubARiBVfLefmZ5anfvcf"
+      ],
+      "receiptFailures": [],
+      "value": {
+        "session_id": "budget-one",
+        "recipient_id": "provider.sandbox",
+        "quote_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "deposit": "10000",
+        "rate": "100",
+        "duration_seconds": 100,
+        "started_at": "1793369932",
+        "closed_at": null,
+        "earned": "0",
+        "refunded": "0"
+      }
+    },
+    {
+      "hash": "iix8UuDTGetZ1tnihHRFEqzuyxJX7aSwaPhGEiwEsEA",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "6a34S65vdfH6p1JpwsbRH5NTzvkRGfwS2WJ2L9uADbY2",
+        "HYwBb1Ros7RQ69Y1e4bjssoyY2PYYWTChEQF82V8vdQe"
+      ],
+      "receiptFailures": [],
+      "value": {
+        "session_id": "budget-one",
+        "recipient_id": "provider.sandbox",
+        "quote_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "deposit": "10000",
+        "rate": "100",
+        "duration_seconds": 100,
+        "started_at": "1793369932",
+        "closed_at": "1793370529",
+        "earned": "10000",
+        "refunded": "0"
+      }
+    },
+    {
+      "hash": "CzoERuasvEyPox7mUUHDkvEmdtr8chgSms9oZvipFNgF",
+      "receiverId": "vault.sandbox",
+      "receiptIds": [
+        "Bc6LqugijcZjLgeWLtdRWK3UwHVD8k2mMepPixbpswYv",
+        "2BL8yt64mUq89GsA31BJoL9zJVYg65dhkHF58t6nJ8bD"
+      ],
+      "receiptFailures": [],
+      "value": {
+        "sequence": "1",
+        "root": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "recorded_at": "1793370531"
+      }
+    }
+  ]
+}

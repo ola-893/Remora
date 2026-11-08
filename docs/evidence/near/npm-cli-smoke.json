@@ -1,0 +1,189 @@
+{
+  "verifiedAt": "2026-11-02T18:03:18.840Z",
+  "installedOutsideCheckout": true,
+  "installedFrom": "npm registry; CLI only with transitive core dependency",
+  "packages": [
+    {
+      "name": "@ola-893/agentpay-core",
+      "version": "0.1.0",
+      "integrity": "sha512-qV/iSek9jixePfM4YFdnUh+lkZ8RuKTXZf8t9GafS0IN2IONDHG9O5gNDpM87pJl1xFFQ6ZID5Y395RWkUB4Sg==",
+      "tarball": "https://registry.npmjs.org/@ola-893/agentpay-core/-/agentpay-core-0.1.0.tgz",
+      "url": "https://www.npmjs.com/package/@ola-893/agentpay-core"
+    },
+    {
+      "name": "@ola-893/agentpay-cli",
+      "version": "0.1.0",
+      "integrity": "sha512-4u66pqdqgL2x41jWrqLxGr/iPFkz7sG/JVi2rZP2siPaGXu9UQKi7VCWuyM+i3u42ojuKIak2hU/o4JXxCmY3g==",
+      "tarball": "https://registry.npmjs.org/@ola-893/agentpay-cli/-/agentpay-cli-0.1.0.tgz",
+      "url": "https://www.npmjs.com/package/@ola-893/agentpay-cli"
+    }
+  ],
+  "checks": [
+    "offline quickstart",
+    "doctor",
+    "cursor installer",
+    "codex installer",
+    "stdio MCP lifecycle and denial",
+    "installed recorded UI HTTP",
+    "portable native runtime imports",
+    "installed CLI real testnet OPEN / 10 requests / CONTINUE / CLOSE / DENY"
+  ],
+  "browserVisualQA": true,
+  "publishedToNpm": true,
+  "live": {
+    "network": "testnet",
+    "vaultId": "agentpay.agentpay-owner-20261102-adf970.testnet",
+    "openTransaction": "C6uu3iSriu2TULJmYHCfoKGy3onTipAez5ztFLsqNcyh",
+    "closeTransaction": "GXh2mBBgzEXHbET3Su27Zsts7PxmjM4Qi1RfcPN5ZpVG",
+    "premiumDenied": "RATE_LIMIT",
+    "activeSessionAfter": null,
+    "pendingIntentAfter": false
+  },
+  "liveRun": {
+    "verifiedAt": "2026-11-02T18:03:18.839Z",
+    "installedOutsideCheckout": true,
+    "installedFrom": "npm registry; CLI only with transitive core dependency",
+    "before": {
+      "ok": true,
+      "node": "22.23.2",
+      "paymentsEnabled": false,
+      "network": "testnet",
+      "vaultId": "agentpay.agentpay-owner-20261102-adf970.testnet",
+      "agentId": "research-agent.agentpay-owner-20261102-adf970.testnet",
+      "policySignerMatches": true,
+      "restrictedKey": true,
+      "availableUSDC": "96720",
+      "reservedUSDC": "0",
+      "spentUSDC": "3280",
+      "activeSession": null,
+      "pendingIntent": false,
+      "executorBusyOrInterrupted": false,
+      "agentNEAR": "497481239840387600000000",
+      "vaultTokenBalance": "99340"
+    },
+    "result": {
+      "mode": "testnet",
+      "fixture": true,
+      "requestsReusingSession": 10,
+      "admission": {
+        "decision": "OPEN",
+        "reason": "WITHIN_POLICY",
+        "deposit": "10000",
+        "approvalId": "a593a3d0-59c3-45a9-8407-9c79cc905ce7",
+        "paymentsEnabled": true
+      },
+      "opened": {
+        "decision": "CONTINUE",
+        "sessionId": "74ee7bb8-2eef-4936-b456-ccc8054b4627",
+        "receipt": {
+          "hash": "C6uu3iSriu2TULJmYHCfoKGy3onTipAez5ztFLsqNcyh",
+          "signerId": "research-agent.agentpay-owner-20261102-adf970.testnet",
+          "receiverId": "agentpay.agentpay-owner-20261102-adf970.testnet",
+          "value": {
+            "session_id": "74ee7bb8-2eef-4936-b456-ccc8054b4627",
+            "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+            "quote_hash": "cd56ea0b56fae1614646d90118b1342264fa1ade519a8824ea112d2434e15044",
+            "deposit": "10000",
+            "rate": "10",
+            "duration_seconds": 1000,
+            "started_at": "1793642575",
+            "closed_at": null,
+            "earned": "0",
+            "refunded": "0"
+          },
+          "receiptFailures": [],
+          "receiptIds": [
+            "7Dxbfe5RnRXq9QvtE1HMbKdz1v6YvNZ5DaTRqUF8rFHm",
+            "Dv23Gpt8dhD7aaZPFdwuNQekeNZhpfZSezh4U7mvwBg4"
+          ],
+          "logs": [
+            "EVENT_JSON:{\"data\":[{\"closed_at\":null,\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"0\",\"quote_hash\":\"cd56ea0b56fae1614646d90118b1342264fa1ade519a8824ea112d2434e15044\",\"rate\":\"10\",\"recipient_id\":\"agentpay-provider-20261102-b685bb.testnet\",\"refunded\":\"0\",\"session_id\":\"74ee7bb8-2eef-4936-b456-ccc8054b4627\",\"started_at\":\"1793642575\"}],\"event\":\"opened\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+          ]
+        }
+      },
+      "continued": {
+        "decision": "CONTINUE",
+        "reason": "SERVICE_HEALTHY",
+        "sessionId": "74ee7bb8-2eef-4936-b456-ccc8054b4627"
+      },
+      "closed": {
+        "decision": "CLOSE",
+        "sessionId": "74ee7bb8-2eef-4936-b456-ccc8054b4627",
+        "receipt": {
+          "hash": "GXh2mBBgzEXHbET3Su27Zsts7PxmjM4Qi1RfcPN5ZpVG",
+          "signerId": "research-agent.agentpay-owner-20261102-adf970.testnet",
+          "receiverId": "agentpay.agentpay-owner-20261102-adf970.testnet",
+          "value": {
+            "session_id": "74ee7bb8-2eef-4936-b456-ccc8054b4627",
+            "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+            "quote_hash": "cd56ea0b56fae1614646d90118b1342264fa1ade519a8824ea112d2434e15044",
+            "deposit": "10000",
+            "rate": "10",
+            "duration_seconds": 1000,
+            "started_at": "1793642575",
+            "closed_at": "1793642591",
+            "earned": "160",
+            "refunded": "9840"
+          },
+          "receiptFailures": [],
+          "receiptIds": [
+            "EQutjdGnLpnXW8PQaVC1rUdTkoYf6sepzKEWvp4oRSZs",
+            "JBodfYjmq8wLoPgpcpxuJp26eLRRRsrmjvsVuEwzMk8c"
+          ],
+          "logs": [
+            "EVENT_JSON:{\"data\":[{\"closed_at\":\"1793642591\",\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"160\",\"quote_hash\":\"cd56ea0b56fae1614646d90118b1342264fa1ade519a8824ea112d2434e15044\",\"rate\":\"10\",\"recipient_id\":\"agentpay-provider-20261102-b685bb.testnet\",\"refunded\":\"9840\",\"session_id\":\"74ee7bb8-2eef-4936-b456-ccc8054b4627\",\"started_at\":\"1793642575\"}],\"event\":\"closed\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+          ]
+        }
+      },
+      "denied": {
+        "decision": "DENY",
+        "reason": "RATE_LIMIT"
+      },
+      "providerPayout": "claimable; no provider key loaded"
+    },
+    "after": {
+      "ok": true,
+      "node": "22.23.2",
+      "paymentsEnabled": false,
+      "network": "testnet",
+      "vaultId": "agentpay.agentpay-owner-20261102-adf970.testnet",
+      "agentId": "research-agent.agentpay-owner-20261102-adf970.testnet",
+      "policySignerMatches": true,
+      "restrictedKey": true,
+      "availableUSDC": "96560",
+      "reservedUSDC": "0",
+      "spentUSDC": "3440",
+      "activeSession": null,
+      "pendingIntent": false,
+      "executorBusyOrInterrupted": false,
+      "agentNEAR": "496847718935516800000000",
+      "vaultTokenBalance": "99340"
+    },
+    "reconciled": {
+      "resolved": true,
+      "reason": "NO_PENDING_INTENT"
+    },
+    "publishedToNpm": true
+  },
+  "cliChecks": {
+    "version": "0.1.0",
+    "help": "passed",
+    "unknownCommandExitCode": 1,
+    "paymentsDisabledBlocksLiveDemo": true,
+    "plainDemoRemainsOfflineInLiveProject": true,
+    "earningsPlusRefundEqualsDeposit": true,
+    "vaultAccountingDeltaMatchesEarnings": true,
+    "reconcile": "NO_PENDING_INTENT"
+  },
+  "browserChecks": {
+    "launch": "published CLI via npm exec; agentpay ui --no-open --port 5343",
+    "mode": "Recorded; live execution disabled",
+    "denialDrawer": "RATE_LIMIT; offered rate and snapshot limit; no permit or payment",
+    "escapeClosesDrawer": true,
+    "historySearch": "rate limit returns 1 of 23 recorded entries",
+    "docsNavigation": true,
+    "screenshot": "npm-cli-viewer.png",
+    "scope": "desktop browser; no responsive/mobile audit",
+    "documentationFinding": "Viewer Docs leads with source-checkout sandbox setup; add the published CLI quickstart in a later patch."
+  }
+}

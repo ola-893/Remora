@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-11-02T17:19:57.153Z",
+  "installedOutsideCheckout": true,
+  "packages": [
+    {
+      "name": "@agentpay/core",
+      "version": "0.1.0",
+      "integrity": "sha512-Agtg5P6Z6nsqXJz4VBbYPnEwN8nVm4MHJS4C4AYzNzX6JHrOXdf8WVNE9NDmUfrOjvYM2ZJ0W64U8EI5y4pc2w=="
+    },
+    {
+      "name": "@agentpay/cli",
+      "version": "0.1.0",
+      "integrity": "sha512-OBUyLFv5nPon0QhNvED690ef4xABMAjZefpStnOrow+xgf1xDXRrYd0PwxQupM726QCqNeIEgOp5RXzBa134Ag=="
+    }
+  ],
+  "checks": [
+    "offline quickstart",
+    "doctor",
+    "cursor installer",
+    "codex installer",
+    "stdio MCP lifecycle and denial",
+    "installed recorded UI HTTP",
+    "portable native runtime imports",
+    "installed CLI real testnet OPEN / 10 requests / CONTINUE / CLOSE / DENY"
+  ],
+  "live": {
+    "before": {
+      "ok": true,
+      "node": "22.23.2",
+      "paymentsEnabled": false,
+      "network": "testnet",
+      "vaultId": "agentpay.agentpay-owner-20261102-adf970.testnet",
+      "agentId": "research-agent.agentpay-owner-20261102-adf970.testnet",
+      "policySignerMatches": true,
+      "restrictedKey": true,
+      "availableUSDC": "96880",
+      "reservedUSDC": "0",
+      "spentUSDC": "3120",
+      "activeSession": null,
+      "pendingIntent": false,
+      "executorBusyOrInterrupted": false,
+      "agentNEAR": "498114767327306400000000",
+      "vaultTokenBalance": "99340"
+    },
+    "after": {
+      "ok": true,
+      "node": "22.23.2",
+      "paymentsEnabled": false,
+      "network": "testnet",
+      "vaultId": "agentpay.agentpay-owner-20261102-adf970.testnet",
+      "agentId": "research-agent.agentpay-owner-20261102-adf970.testnet",
+      "policySignerMatches": true,
+      "restrictedKey": true,
+      "availableUSDC": "96720",
+      "reservedUSDC": "0",
+      "spentUSDC": "3280",
+      "activeSession": null,
+      "pendingIntent": false,
+      "executorBusyOrInterrupted": false,
+      "agentNEAR": "497481239840387600000000",
+      "vaultTokenBalance": "99340"
+    },
+    "mode": "testnet",
+    "fixture": true,
+    "requestsReusingSession": 10,
+    "continued": {
+      "decision": "CONTINUE",
+      "reason": "SERVICE_HEALTHY",
+      "sessionId": "8b2d094e-3a16-40ed-8b67-5e11ed9675be"
+    },
+    "denied": {
+      "decision": "DENY",
+      "reason": "RATE_LIMIT"
+    },
+    "openReceipt": {
+      "hash": "5wZfYV6j1fd66Xhd2BayCdTKvkR2HcEXJybWjQTDDuVo",
+      "signerId": "research-agent.agentpay-owner-20261102-adf970.testnet",
+      "receiverId": "agentpay.agentpay-owner-20261102-adf970.testnet",
+      "value": {
+        "session_id": "8b2d094e-3a16-40ed-8b67-5e11ed9675be",
+        "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+        "quote_hash": "831674f9df880ffee02482f0e7e0adb6b98e9611fe0667864053d53fed0e09fc",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1793639974",
+        "closed_at": null,
+        "earned": "0",
+        "refunded": "0"
+      },
+      "receiptFailures": [],
+      "receiptIds": [
+        "4QaAGNWpRtyJznJUXkQP469tnpfZu6BjQsXgq2VEGHRK",
+        "4EZmLcP1druYuoyBLvp4EQUu6xUZZD3wZKBTLFTdqMWd"
+      ],
+      "logs": [
+        "EVENT_JSON:{\"data\":[{\"closed_at\":null,\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"0\",\"quote_hash\":\"831674f9df880ffee02482f0e7e0adb6b98e9611fe0667864053d53fed0e09fc\",\"rate\":\"10\",\"recipient_id\":\"agentpay-provider-20261102-b685bb.testnet\",\"refunded\":\"0\",\"session_id\":\"8b2d094e-3a16-40ed-8b67-5e11ed9675be\",\"started_at\":\"1793639974\"}],\"event\":\"opened\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+      ]
+    },
+    "closeReceipt": {
+      "hash": "54BjCCvALaqYPcKeUygynhRUT3cnUJAZmAsEkdrZHPtu",
+      "signerId": "research-agent.agentpay-owner-20261102-adf970.testnet",
+      "receiverId": "agentpay.agentpay-owner-20261102-adf970.testnet",
+      "value": {
+        "session_id": "8b2d094e-3a16-40ed-8b67-5e11ed9675be",
+        "recipient_id": "agentpay-provider-20261102-b685bb.testnet",
+        "quote_hash": "831674f9df880ffee02482f0e7e0adb6b98e9611fe0667864053d53fed0e09fc",
+        "deposit": "10000",
+        "rate": "10",
+        "duration_seconds": 1000,
+        "started_at": "1793639974",
+        "closed_at": "1793639990",
+        "earned": "160",
+        "refunded": "9840"
+      },
+      "receiptFailures": [],
+      "receiptIds": [
+        "6bCtKuLGvDBHCxgLcwJrGHXfnMDS8XA3jtsCHgzvaL9H",
+        "BsCUXENiWQYmv2qPYHoF6xsBTXMzGcofGCXjRFcWUB26"
+      ],
+      "logs": [
+        "EVENT_JSON:{\"data\":[{\"closed_at\":\"1793639990\",\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"160\",\"quote_hash\":\"831674f9df880ffee02482f0e7e0adb6b98e9611fe0667864053d53fed0e09fc\",\"rate\":\"10\",\"recipient_id\":\"agentpay-provider-20261102-b685bb.testnet\",\"refunded\":\"9840\",\"session_id\":\"8b2d094e-3a16-40ed-8b67-5e11ed9675be\",\"started_at\":\"1793639974\"}],\"event\":\"closed\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+      ]
+    },
+    "providerPayout": "claimable; no provider key loaded"
+  },
+  "priorInterruptedSessionRecovery": {
+    "sessionId": "d6a51807-6473-4721-9317-d4bf14f3b3b0",
+    "reason": "Former RPC endpoint returned explicit deprecation/rate-limit errors",
+    "openTransaction": "GSrWiEKACZMXUTuLpMHrPY9bdvZNFFW3GQ6xWoiiq8AA",
+    "closeTransaction": "98t2T1cNpeXEJULWHZZ8xueahL8dkXtfQLWSb82egBuA",
+    "recoveryUsedOwnerKey": false
+  },
+  "browserVisualQA": false,
+  "publishedToNpm": false,
+  "publicHostingDeployed": false,
+  "attestedSigner": false
+}

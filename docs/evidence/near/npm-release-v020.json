@@ -1,0 +1,33 @@
+{
+  "verifiedAt": "2026-11-02T19:23:30.906Z",
+  "installedOutsideCheckout": true,
+  "installedFrom": "npm registry; CLI only with transitive core dependency",
+  "packages": [
+    {
+      "name": "@ola-893/agentpay-core",
+      "version": "0.2.0",
+      "integrity": "sha512-QVKBDdID63seob8EBZrlnVZlr/0fwQmR5HDQqbxy0xT0QVQUQgJniVGCzvm3JGr+cumhFm3o/SwEvW5Ase9rOA==",
+      "tarball": "https://registry.npmjs.org/@ola-893/agentpay-core/-/agentpay-core-0.2.0.tgz",
+      "url": "https://www.npmjs.com/package/@ola-893/agentpay-core"
+    },
+    {
+      "name": "@ola-893/agentpay-cli",
+      "version": "0.2.0",
+      "integrity": "sha512-8SUPUG6f5w2dvaP/FJPQq41m3zJJcUy6lnGtJpgazyVdb3KDIRoCuBKuuJscj4Bzv5CENL7dhuhSAS9ab5Yr8Q==",
+      "tarball": "https://registry.npmjs.org/@ola-893/agentpay-cli/-/agentpay-cli-0.2.0.tgz",
+      "url": "https://www.npmjs.com/package/@ola-893/agentpay-cli"
+    }
+  ],
+  "checks": [
+    "operational command help",
+    "removed demo/simulate rejected",
+    "cold testnet setup instructions",
+    "cursor installer",
+    "codex installer",
+    "generic MCP config",
+    "installed recorded UI HTTP",
+    "portable native runtime imports"
+  ],
+  "browserVisualQA": false,
+  "publishedToNpm": true
+}

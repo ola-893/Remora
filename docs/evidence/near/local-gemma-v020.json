@@ -1,0 +1,273 @@
+{
+  "startedAt": "2026-11-03T08:34:32.415Z",
+  "publishedCliVersion": "0.2.0",
+  "inference": {
+    "provider": "Ollama local",
+    "baseUrl": "http://127.0.0.1:11434/v1",
+    "model": "hf.co/unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_M"
+  },
+  "modelApiKeyUsed": false,
+  "events": [
+    {
+      "name": "before",
+      "result": {
+        "ok": true,
+        "node": "22.23.2",
+        "paymentsEnabled": false,
+        "inferenceConfigured": false,
+        "runtimePolicy": {
+          "maxConsecutive5xx": 3,
+          "maxConsecutiveTransportErrors": 2,
+          "maxConsecutiveHealthFailures": 2,
+          "idleTimeoutSeconds": 120,
+          "maxRequestsPerStream": 1000,
+          "healthPollSeconds": 10,
+          "failureCooldownSeconds": 1,
+          "reuseStream": true,
+          "closeOnExit": true
+        },
+        "network": "testnet",
+        "vaultId": "judge02.agentpay-owner-20261102-adf970.testnet",
+        "agentId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+        "policySignerMatches": true,
+        "restrictedKey": true,
+        "availableUSDC": "97680",
+        "reservedUSDC": "0",
+        "spentUSDC": "2320",
+        "activeSession": null,
+        "pendingIntent": false,
+        "executorBusyOrInterrupted": false,
+        "policyUpdatePending": false,
+        "agentNEAR": "494947226916424600000000",
+        "vaultTokenBalance": "100000"
+      }
+    },
+    {
+      "name": "service",
+      "result": {
+        "service": {
+          "url": "http://127.0.0.1:5370",
+          "recipient": "agentpay-owner-20261102-adf970.testnet",
+          "healthPath": "/health",
+          "quotePath": "/quote",
+          "requestPath": "/research",
+          "tiers": [
+            "basic",
+            "premium"
+          ]
+        },
+        "restartRequired": "Restart running agents/MCP servers after service changes."
+      }
+    },
+    {
+      "name": "guardrails",
+      "result": {
+        "runtimePolicy": {
+          "maxConsecutive5xx": 3,
+          "maxConsecutiveTransportErrors": 2,
+          "maxConsecutiveHealthFailures": 2,
+          "idleTimeoutSeconds": 180,
+          "maxRequestsPerStream": 5,
+          "healthPollSeconds": 10,
+          "failureCooldownSeconds": 1,
+          "reuseStream": true,
+          "closeOnExit": true
+        },
+        "enforcement": "local payment worker; thresholds reload on the next checkpoint",
+        "restartRequired": "Restart running agents/MCP servers after changing reuse, polling or exit behavior."
+      }
+    },
+    {
+      "name": "local-inference",
+      "result": {
+        "inference": {
+          "protocol": "openai-chat",
+          "baseUrl": "http://127.0.0.1:11434/v1",
+          "model": "hf.co/unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_M",
+          "maxSteps": 8
+        },
+        "credentialsStored": false,
+        "next": "agentpay agent run --prompt \"Use the configured paid API to answer my question.\""
+      }
+    },
+    {
+      "name": "after",
+      "result": {
+        "ok": true,
+        "node": "22.23.2",
+        "paymentsEnabled": true,
+        "inferenceConfigured": true,
+        "runtimePolicy": {
+          "maxConsecutive5xx": 3,
+          "maxConsecutiveTransportErrors": 2,
+          "maxConsecutiveHealthFailures": 2,
+          "idleTimeoutSeconds": 180,
+          "maxRequestsPerStream": 5,
+          "healthPollSeconds": 10,
+          "failureCooldownSeconds": 1,
+          "reuseStream": true,
+          "closeOnExit": true
+        },
+        "network": "testnet",
+        "vaultId": "judge02.agentpay-owner-20261102-adf970.testnet",
+        "agentId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+        "policySignerMatches": true,
+        "restrictedKey": true,
+        "availableUSDC": "96990",
+        "reservedUSDC": "0",
+        "spentUSDC": "3010",
+        "activeSession": null,
+        "pendingIntent": false,
+        "executorBusyOrInterrupted": false,
+        "policyUpdatePending": false,
+        "agentNEAR": "494314588798402300000000",
+        "vaultTokenBalance": "100000"
+      }
+    },
+    {
+      "name": "cleanup-close",
+      "result": {
+        "decision": "CLOSE",
+        "alreadyClosed": true
+      }
+    },
+    {
+      "name": "cleanup-disable",
+      "result": {
+        "mode": "testnet",
+        "paymentsEnabled": false
+      }
+    }
+  ],
+  "agentEvents": [
+    {
+      "type": "tool",
+      "name": "agentpay_fetch",
+      "result": {
+        "mode": "testnet",
+        "status": 200,
+        "payment": {
+          "events": [
+            {
+              "decision": "OPEN",
+              "reason": "WITHIN_POLICY"
+            },
+            {
+              "decision": "CONTINUE",
+              "sessionId": "4d3e5a25-c057-4a16-9cc8-faad58d7b4c2",
+              "receipt": {
+                "hash": "tYFC4M966CRCEuKWuad8oehNiwmURzXBALLhEHoMx8R",
+                "signerId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+                "receiverId": "judge02.agentpay-owner-20261102-adf970.testnet",
+                "value": {
+                  "session_id": "4d3e5a25-c057-4a16-9cc8-faad58d7b4c2",
+                  "recipient_id": "agentpay-owner-20261102-adf970.testnet",
+                  "quote_hash": "b9b6bc0a8a3cf8477ffe427f0457a97b48f83824b7b5244778b629a50aa8fd0e",
+                  "deposit": "10000",
+                  "rate": "10",
+                  "duration_seconds": 1000,
+                  "started_at": "1793694910",
+                  "closed_at": null,
+                  "earned": "0",
+                  "refunded": "0"
+                },
+                "receiptFailures": [],
+                "receiptIds": [
+                  "3v45n8Xk1eeW7FCTeaHwTYuqk4USktjHzegEZibVa6x6",
+                  "3D7a84Mf9J1JaHnzxrY4ppi5F7ZguSJd3XuxE8UQHHF9"
+                ],
+                "logs": [
+                  "EVENT_JSON:{\"data\":[{\"closed_at\":null,\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"0\",\"quote_hash\":\"b9b6bc0a8a3cf8477ffe427f0457a97b48f83824b7b5244778b629a50aa8fd0e\",\"rate\":\"10\",\"recipient_id\":\"agentpay-owner-20261102-adf970.testnet\",\"refunded\":\"0\",\"session_id\":\"4d3e5a25-c057-4a16-9cc8-faad58d7b4c2\",\"started_at\":\"1793694910\"}],\"event\":\"opened\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+                ]
+              },
+              "explorerUrl": "https://testnet.nearblocks.io/txns/tYFC4M966CRCEuKWuad8oehNiwmURzXBALLhEHoMx8R"
+            },
+            {
+              "decision": "CONTINUE",
+              "reason": "REQUEST_WITHIN_POLICY",
+              "counters": {
+                "requests": 1,
+                "consecutive5xx": 0,
+                "transportErrors": 0,
+                "healthFailures": 0,
+                "lastRequestAt": 1793694915
+              },
+              "sessionId": "4d3e5a25-c057-4a16-9cc8-faad58d7b4c2"
+            }
+          ]
+        },
+        "untrustedContent": "{\"request\":1,\"session_id\":\"4d3e5a25-c057-4a16-9cc8-faad58d7b4c2\",\"source\":\"AgentPay local research fixture\",\"content\":\"This paid API response reused the active NEAR payment session. Provider earnings accrue by time, not request count.\"}",
+        "truncated": false
+      }
+    },
+    {
+      "type": "tool",
+      "name": "agentpay_fetch",
+      "result": {
+        "mode": "testnet",
+        "status": 200,
+        "payment": {
+          "events": [
+            {
+              "decision": "CONTINUE",
+              "reason": "SERVICE_HEALTHY_OR_WITHIN_FAILURE_LIMIT",
+              "sessionId": "4d3e5a25-c057-4a16-9cc8-faad58d7b4c2"
+            },
+            {
+              "decision": "CONTINUE",
+              "reason": "REQUEST_WITHIN_POLICY",
+              "counters": {
+                "requests": 2,
+                "consecutive5xx": 0,
+                "transportErrors": 0,
+                "healthFailures": 0,
+                "lastRequestAt": 1793694929
+              },
+              "sessionId": "4d3e5a25-c057-4a16-9cc8-faad58d7b4c2"
+            }
+          ]
+        },
+        "untrustedContent": "{\"request\":2,\"session_id\":\"4d3e5a25-c057-4a16-9cc8-faad58d7b4c2\",\"source\":\"AgentPay local research fixture\",\"content\":\"This paid API response reused the active NEAR payment session. Provider earnings accrue by time, not request count.\"}",
+        "truncated": false
+      }
+    },
+    {
+      "type": "answer",
+      "text": "The two sequential `agentpay_fetch` requests with the query `q=local-gemma-test` at the `basic` tier were successful. Both requests reused the same active NEAR payment session (`4d3e5a25-c057-4a16-9cc8-faad58d7b4c2`).\n\n**Summary of responses:**\n* **First Request:** The payment system opened a new session (decision: `OPEN`) and recorded the first request (counter: `requests: 1`). The untrusted content indicated the session was successfully reused and that provider earnings are based on time rather than request count.\n* **Second Request:** The system recognized the existing session (decision: `CONTINUE`) and recorded the second request (counter: `requests: 2`). The untrusted content remained consistent, confirming session reuse.",
+      "steps": 3
+    },
+    {
+      "type": "stream",
+      "decision": "CLOSE",
+      "sessionId": "4d3e5a25-c057-4a16-9cc8-faad58d7b4c2",
+      "receipt": {
+        "hash": "5UfT733MBgo74NtRo6EcLNGUaK1smqCL1BuziZ5Qx4b6",
+        "signerId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+        "receiverId": "judge02.agentpay-owner-20261102-adf970.testnet",
+        "value": {
+          "session_id": "4d3e5a25-c057-4a16-9cc8-faad58d7b4c2",
+          "recipient_id": "agentpay-owner-20261102-adf970.testnet",
+          "quote_hash": "b9b6bc0a8a3cf8477ffe427f0457a97b48f83824b7b5244778b629a50aa8fd0e",
+          "deposit": "10000",
+          "rate": "10",
+          "duration_seconds": 1000,
+          "started_at": "1793694910",
+          "closed_at": "1793694979",
+          "earned": "690",
+          "refunded": "9310"
+        },
+        "receiptFailures": [],
+        "receiptIds": [
+          "5PPxXdFD1PquFEHjEmNj6NX6bEGKFhdakxRY2cEbFus2",
+          "NpthR5cH3oZcZUjX9VzzcVdi7s2LntSD4zDGMSaouim"
+        ],
+        "logs": [
+          "EVENT_JSON:{\"data\":[{\"closed_at\":\"1793694979\",\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"690\",\"quote_hash\":\"b9b6bc0a8a3cf8477ffe427f0457a97b48f83824b7b5244778b629a50aa8fd0e\",\"rate\":\"10\",\"recipient_id\":\"agentpay-owner-20261102-adf970.testnet\",\"refunded\":\"9310\",\"session_id\":\"4d3e5a25-c057-4a16-9cc8-faad58d7b4c2\",\"started_at\":\"1793694910\"}],\"event\":\"closed\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+        ]
+      },
+      "reason": "AGENT_EXIT"
+    }
+  ],
+  "passed": true,
+  "finishedAt": "2026-11-03T08:36:26.107Z"
+}

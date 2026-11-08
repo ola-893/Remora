@@ -1,0 +1,190 @@
+{
+  "verification": {
+    "verifiedAt": "2026-11-02T19:07:53.916Z",
+    "installedOutsideCheckout": true,
+    "installedFrom": "local tarballs",
+    "packages": [
+      {
+        "name": "@ola-893/agentpay-core",
+        "version": "0.2.0",
+        "integrity": "sha512-tMaar1taW9haYnhr8ppOFmJg6cWa/KFdyRj3CnfxQ5pkmJLtHQo5//EXXY9VS5BJQIFuvqCXajO8KMSeOT1QwQ=="
+      },
+      {
+        "name": "@ola-893/agentpay-cli",
+        "version": "0.2.0",
+        "integrity": "sha512-dhD38roG8T+8C+Oq7j0ByDlmbTBl2AafFlmE2daKYiLlGUCjG27cDNw84/IdzXQgyS2ARJGrwBGJiafvKUp92Q=="
+      }
+    ],
+    "checks": [
+      "operational command help",
+      "removed demo/simulate rejected",
+      "cold testnet setup instructions",
+      "cursor installer",
+      "codex installer",
+      "generic MCP config",
+      "installed recorded UI HTTP",
+      "portable native runtime imports",
+      "installed operational CLI: configuration, OPEN, cross-process request reuse, MCP request/CLOSE, DENY"
+    ],
+    "browserVisualQA": false,
+    "publishedToNpm": false,
+    "live": {
+      "network": "testnet",
+      "vaultId": "judge02.agentpay-owner-20261102-adf970.testnet",
+      "openTransaction": "Drusq6XZxFvQwa17BnQRUeL53ZhJGryfxt3DEyQs57Nj",
+      "premiumDenied": "RATE_LIMIT",
+      "activeSessionAfter": null,
+      "pendingIntentAfter": false
+    }
+  },
+  "live": {
+    "verifiedAt": "2026-11-02T19:07:53.915Z",
+    "installedOutsideCheckout": true,
+    "installedFrom": "local tarballs",
+    "before": {
+      "ok": true,
+      "node": "22.23.2",
+      "paymentsEnabled": false,
+      "inferenceConfigured": false,
+      "runtimePolicy": {
+        "maxConsecutive5xx": 3,
+        "maxConsecutiveTransportErrors": 2,
+        "maxConsecutiveHealthFailures": 1,
+        "idleTimeoutSeconds": 60,
+        "maxRequestsPerStream": 1000,
+        "healthPollSeconds": 10,
+        "failureCooldownSeconds": 30,
+        "reuseStream": true,
+        "closeOnExit": true
+      },
+      "network": "testnet",
+      "vaultId": "judge02.agentpay-owner-20261102-adf970.testnet",
+      "agentId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+      "policySignerMatches": true,
+      "restrictedKey": true,
+      "availableUSDC": "99120",
+      "reservedUSDC": "0",
+      "spentUSDC": "880",
+      "activeSession": null,
+      "pendingIntent": false,
+      "executorBusyOrInterrupted": false,
+      "policyUpdatePending": false,
+      "agentNEAR": "497477771160953800000000",
+      "vaultTokenBalance": "100000"
+    },
+    "result": {
+      "opened": {
+        "decision": "CONTINUE",
+        "sessionId": "515dc5f7-7fc3-40a8-a2b5-a00ec704e9c3",
+        "receipt": {
+          "hash": "Drusq6XZxFvQwa17BnQRUeL53ZhJGryfxt3DEyQs57Nj",
+          "signerId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+          "receiverId": "judge02.agentpay-owner-20261102-adf970.testnet",
+          "value": {
+            "session_id": "515dc5f7-7fc3-40a8-a2b5-a00ec704e9c3",
+            "recipient_id": "agentpay-owner-20261102-adf970.testnet",
+            "quote_hash": "3ceda836c79727086dcebadff8265cc51fa903b594b4bba0b9acdea7e9ec6186",
+            "deposit": "10000",
+            "rate": "10",
+            "duration_seconds": 1000,
+            "started_at": "1793646423",
+            "closed_at": null,
+            "earned": "0",
+            "refunded": "0"
+          },
+          "receiptFailures": [],
+          "receiptIds": [
+            "AGEF6nGQH1xp5gC3HzimSMXhMZ6dR9kFjEcHopSBnbH5",
+            "A5WkpHw1Ld4eA2SvKCsERK9rNKwxxoDvD187N4nH7S35"
+          ],
+          "logs": [
+            "EVENT_JSON:{\"data\":[{\"closed_at\":null,\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"0\",\"quote_hash\":\"3ceda836c79727086dcebadff8265cc51fa903b594b4bba0b9acdea7e9ec6186\",\"rate\":\"10\",\"recipient_id\":\"agentpay-owner-20261102-adf970.testnet\",\"refunded\":\"0\",\"session_id\":\"515dc5f7-7fc3-40a8-a2b5-a00ec704e9c3\",\"started_at\":\"1793646423\"}],\"event\":\"opened\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+          ]
+        },
+        "monitoring": "Run agentpay monitor for automatic health and idle closure between requests."
+      },
+      "continued": {
+        "decision": "CONTINUE",
+        "reason": "SERVICE_HEALTHY_OR_WITHIN_FAILURE_LIMIT",
+        "counters": {
+          "requests": 3,
+          "consecutive5xx": 0,
+          "transportErrors": 0,
+          "healthFailures": 0,
+          "lastRequestAt": 1793646445
+        },
+        "sessionId": "515dc5f7-7fc3-40a8-a2b5-a00ec704e9c3"
+      },
+      "closed": {
+        "decision": "CLOSE",
+        "sessionId": "515dc5f7-7fc3-40a8-a2b5-a00ec704e9c3",
+        "receipt": {
+          "hash": "7QWYYH5VowKJEuF8WApDCxGBV3ug75pRUbLXNBWWyeay",
+          "signerId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+          "receiverId": "judge02.agentpay-owner-20261102-adf970.testnet",
+          "value": {
+            "session_id": "515dc5f7-7fc3-40a8-a2b5-a00ec704e9c3",
+            "recipient_id": "agentpay-owner-20261102-adf970.testnet",
+            "quote_hash": "3ceda836c79727086dcebadff8265cc51fa903b594b4bba0b9acdea7e9ec6186",
+            "deposit": "10000",
+            "rate": "10",
+            "duration_seconds": 1000,
+            "started_at": "1793646423",
+            "closed_at": "1793646458",
+            "earned": "350",
+            "refunded": "9650"
+          },
+          "receiptFailures": [],
+          "receiptIds": [
+            "5YvSK85um8F9SLxi1B5uDZXC6towVPSfQzYDyx5iFrej",
+            "CXR9HMod5JV8nS7JRt48V2zKpRcE9gLVRGmrGREYJQpH"
+          ],
+          "logs": [
+            "EVENT_JSON:{\"data\":[{\"closed_at\":\"1793646458\",\"deposit\":\"10000\",\"duration_seconds\":1000,\"earned\":\"350\",\"quote_hash\":\"3ceda836c79727086dcebadff8265cc51fa903b594b4bba0b9acdea7e9ec6186\",\"rate\":\"10\",\"recipient_id\":\"agentpay-owner-20261102-adf970.testnet\",\"refunded\":\"9650\",\"session_id\":\"515dc5f7-7fc3-40a8-a2b5-a00ec704e9c3\",\"started_at\":\"1793646423\"}],\"event\":\"closed\",\"standard\":\"agentpay\",\"version\":\"1.0.0\"}"
+          ]
+        }
+      },
+      "denied": {
+        "decision": "DENY",
+        "reason": "RATE_LIMIT"
+      },
+      "requestsReusingSession": 4
+    },
+    "after": {
+      "ok": true,
+      "node": "22.23.2",
+      "paymentsEnabled": false,
+      "inferenceConfigured": true,
+      "runtimePolicy": {
+        "maxConsecutive5xx": 3,
+        "maxConsecutiveTransportErrors": 2,
+        "maxConsecutiveHealthFailures": 1,
+        "idleTimeoutSeconds": 120,
+        "maxRequestsPerStream": 1000,
+        "healthPollSeconds": 10,
+        "failureCooldownSeconds": 30,
+        "reuseStream": true,
+        "closeOnExit": true
+      },
+      "network": "testnet",
+      "vaultId": "judge02.agentpay-owner-20261102-adf970.testnet",
+      "agentId": "judge-agent02.agentpay-owner-20261102-adf970.testnet",
+      "policySignerMatches": true,
+      "restrictedKey": true,
+      "availableUSDC": "98770",
+      "reservedUSDC": "0",
+      "spentUSDC": "1230",
+      "activeSession": null,
+      "pendingIntent": false,
+      "executorBusyOrInterrupted": false,
+      "policyUpdatePending": false,
+      "agentNEAR": "496845123169859500000000",
+      "vaultTokenBalance": "100000"
+    },
+    "reconciled": {
+      "resolved": true,
+      "reason": "NO_PENDING_INTENT"
+    },
+    "publishedToNpm": false
+  }
+}
