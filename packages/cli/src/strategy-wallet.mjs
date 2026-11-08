@@ -1,5 +1,6 @@
 import { connectedOwner, ownerTransaction } from './owner-wallet.mjs';
-import { activityBlocker, DCL, EXCHANGE, LENDING, NEAR_ASSET, RNEAR, enforceStrategyPolicy, ftAsset } from './strategy-actions.mjs';
+import { activityBlocker, DCL, EXCHANGE, LENDING, NEAR_ASSET, RNEAR, enforceStrategyPolicy, ftAsset, tokenId } from './strategy-actions.mjs';
+import { rawAmount } from './copy-activity.mjs';
 import { integerAmount, lendingMarket, liquidityMarket, stakingMarket, testnetViews } from './strategy-markets.mjs';
 
 const call = (methodName, args, gas, deposit = '0') => ({ type: 'FunctionCall', params: { methodName, args, gas, deposit } });
@@ -55,7 +56,9 @@ async function liquidityPlan(action, account_id, rpc) {
     const args = { lpt_id, amount: action.amount, min_amount_x: action.minX, min_amount_y: action.minY };
     return { receiverId: DCL, actions: [call('remove_liquidity', args, '150000000000000')], evidence,
       inputs: { 'dcl:liquidity': action.amount }, confirms: async (_receipt, read) => {
-        const after = await read(DCL, 'get_liquidity', { lpt_id });
+        const current = await read(DCL, 'list_liquidities', { account_id });
+        if (!Array.isArray(current)) return false;
+        const after = current.find(position => position.lpt_id === lpt_id);
         return integerAmount(after?.amount ?? '0') === BigInt(amount) - BigInt(action.amount);
       } };
   }
@@ -67,7 +70,7 @@ async function liquidityPlan(action, account_id, rpc) {
   if (!storage || storage.cur_order_slots + storage.cur_liquidity_slots >= storage.max_slots) throw new Error('DCL_STORAGE_REQUIRED: register or add storage in Rhea first.');
   const { tokenX, tokenY } = evidence;
   if (integerAmount(deposits[tokenX] ?? '0') < BigInt(action.amountX) || integerAmount(deposits[tokenY] ?? '0') < BigInt(action.amountY)) {
-    throw new Error('DCL_DEPOSITS_REQUIRED: deposit both required tokens into your Rhea DCL balance first.');
+    throw new Error('DCL_DEPOSITS_REQUIRED: use agentstream task deposit-range to fund the missing token balance.');
   }
   const ids = new Set(positions.map(p => p.lpt_id));
   const args = { pool_id: action.pool, left_point: action.left, right_point: action.right,
@@ -152,7 +155,7 @@ async function reinvestmentPlan(_action, account_id, rpc) {
     const pending = integerAmount(reward.unclaimed_amount);
     if (pending) rewards[reward.reward_token_id] = (BigInt(rewards[reward.reward_token_id] ?? '0') + pending).toString();
   }
-  if (!Object.keys(rewards).length) throw new Error('NO_CLAIMABLE_LENDING_REWARDS');
+  if (!Object.keys(rewards).length) throw new Error('NO_CLAIMABLE_LENDING_REWARDS: this wallet has no accrued Rhea Lending incentives to compound.');
   const shares = (view, token) => integerAmount(view?.supplied?.find(position => position.token_id === token)?.shares ?? '0');
   const evidence = { source: 'rhea-lending-rewards', contract: LENDING, unclaimedInternalUnits: rewards,
     blockHeight: rpc.blockHeight, observedAt: rpc.observedAt };
@@ -170,6 +173,57 @@ const builders = {
   'portfolio-rebalance': portfolioPlan,
   'reward-reinvestment': reinvestmentPlan,
 };
+
+export async function prepareRangeDeposit(input, policy, {
+  execute, ownerId, authorize, connect = connectedOwner, views = testnetViews, transact = ownerTransaction,
+} = {}) {
+  const { pool, token, amount } = input ?? {};
+  const [x, y, fee, ...rest] = typeof pool === 'string' ? pool.split('|') : [];
+  if (Object.keys(input ?? {}).length !== 3 || !tokenId(x) || !tokenId(y) || x >= y ||
+      !/^\d{1,6}$/.test(fee ?? '') || rest.length || ![x, y].includes(token) || !rawAmount(amount)) {
+    throw new Error('INVALID_DCL_DEPOSIT: provide pool, token and a positive atomic amount.');
+  }
+  const activity = 'liquidity-ranges';
+  const inputs = { [ftAsset(token)]: amount };
+  enforceStrategyPolicy(activity, { pool }, policy, inputs);
+  const wallet = await connect({ required: true, ownerId });
+  const { accountId, rpcUrl } = wallet;
+  async function depositBalance() {
+    const { view } = await views(rpcUrl);
+    const [market, storage, deposits, balance, receiverStorage] = await Promise.all([
+      view(DCL, 'get_pool', { pool_id: pool }),
+      view(DCL, 'get_user_storage_detail', { user_id: accountId }),
+      view(DCL, 'list_user_assets', { account_id: accountId }),
+      tokenBalance(view, token, accountId),
+      view(token, 'storage_balance_of', { account_id: DCL }),
+    ]);
+    if (market?.pool_id !== pool || market.token_x !== x || market.token_y !== y || market.state !== 'Running' ||
+        market.whitelist !== null) throw new Error('DCL_POOL_NOT_AVAILABLE');
+    if (!storage?.max_slots) throw new Error('DCL_STORAGE_REQUIRED: register your account with Rhea DCL first.');
+    if (!receiverStorage) throw new Error('DCL_TOKEN_NOT_REGISTERED_FOR_DEPOSITS');
+    if (balance < BigInt(amount)) throw new Error('INSUFFICIENT_WALLET_TOKEN_BALANCE');
+    return integerAmount(deposits?.[token] ?? '0');
+  }
+  let before = await depositBalance();
+  // The testnet DCL receiver used about 920 Tgas in the confirmed deposit receipt.
+  const actions = [call('ft_transfer_call', { receiver_id: DCL, amount, msg: '"Deposit"' }, '1000000000000000', '1')];
+  const plan = { activity, operation: 'deposit', pool, token, amount, receiverId: token, venue: DCL, actions, inputs };
+  if (!execute) return { ...plan, status: 'preview', signedTransactions: 0 };
+  const receipt = await transact({ ownerId: accountId, receiverId: token, actions, rpcUrl,
+    label: `Deposit ${token} into your Rhea liquidity balance on NEAR testnet`,
+    context: { kind: 'activity-preparation', activity, pool, token, amount },
+  }, {
+    beforeSubmit: async () => {
+      before = await depositBalance();
+      await authorize?.(inputs);
+    },
+  });
+  const after = await (await views(rpcUrl)).view(DCL, 'list_user_assets', { account_id: accountId });
+  if (receipt.value !== amount || integerAmount(after?.[token] ?? '0') < before + BigInt(amount)) {
+    throw new Error(`DCL_DEPOSIT_UNCONFIRMED: inspect ${receipt.explorerUrl} before retrying.`);
+  }
+  return { ...plan, status: 'wallet-confirmed', receipt, signedTransactions: 1 };
+}
 
 export async function runWalletStrategy(activity, action, policy, {
   execute, operationId, authorize, ownerId, connect = connectedOwner, views = testnetViews, transact = ownerTransaction,

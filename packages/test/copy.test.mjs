@@ -11,11 +11,45 @@ import { intentsAdapter, minimumOutput } from '../cli/src/copy-intents.mjs';
 import { runTradingAgent } from '../cli/src/trading-agent.mjs';
 import { runModelAgent } from '../cli/src/agent.mjs';
 import { describePaperFill, paperSeed } from '../cli/src/paper-trading.mjs';
-import { appendFill, publicationHistory, verifyAction } from '../cli/src/copy-feed.mjs';
-import { selectedAgent, withAgentState } from '../cli/src/agents.mjs';
+import { appendFill, appendStrategyAction, publicationHistory, publicListingHistory, verifyAction } from '../cli/src/copy-feed.mjs';
+import { createAgent, selectedAgent, withAgentState } from '../cli/src/agents.mjs';
 
 const exec = promisify(execFile);
 const bin = fileURLToPath(new URL('../cli/bin/agentstreams.mjs', import.meta.url));
+
+test('native strategy fills retain their activity and settlement in the signed journal', async t => {
+  const workspace = await mkdtemp(join(tmpdir(), 'remora-native-publication-'));
+  const previousHome = process.env.AGENTSTREAMS_HOME;
+  process.env.AGENTSTREAMS_HOME = join(workspace, 'profiles');
+  t.after(async () => {
+    if (previousHome === undefined) delete process.env.AGENTSTREAMS_HOME;
+    else process.env.AGENTSTREAMS_HOME = previousHome;
+    await rm(workspace, { recursive: true, force: true });
+  });
+  const actions = {
+    'liquidity-ranges': { pool: 'usdc.fakes.testnet|wrap.testnet|2000', left: 40, right: 80, amountX: '0', amountY: '100', minX: '0', minY: '90' },
+    'portfolio-rebalance': { poolId: 0, base: 'wrap.testnet', amount: '100', weights: { 'rft.tokenfactory.testnet': 5000, 'wrap.testnet': 5000 } },
+    'yield-reallocation': { token: 'wrap.testnet', operation: 'supply', amount: '100' },
+    'reward-reinvestment': { operation: 'compound' },
+  };
+  for (const [activity, action] of Object.entries(actions)) {
+    await createAgent(workspace, activity);
+    const agent = await selectedAgent(workspace, activity);
+    const at = Date.now(), settlementRef = 'A'.repeat(44);
+    const entry = { id: 'a'.repeat(64), activity, action, execution: 'wallet', at, expiresAt: at + 120000, settlementRef };
+    const publication = await withAgentState(agent, async state => {
+      state.publish = { enabled: true, activity };
+      return appendStrategyAction(agent, state, entry);
+    });
+    const { actions: [envelope] } = await publicationHistory(agent);
+    const listing = { id: agent.id, publicKey: agent.publicKey, activity };
+    assert.equal(verifyAction(envelope, listing).settlementRef, settlementRef);
+    assert.throws(() => verifyAction(envelope, { ...listing, activity: 'staking-moves' }), /INVALID_SIGNED_ACTION/);
+    const history = [{ type: 'strategy', activity, status: 'wallet-confirmed', at: new Date(at).toISOString(),
+      transactionHash: settlementRef, publication, action }];
+    assert.deepEqual(publicListingHistory({ history }, activity), [{ at: history[0].at, kind: 'wallet-action', receipt: settlementRef }]);
+  }
+});
 
 test('paper trade confirmation uses quoted token units and needs no model summary', async () => {
   const fill = {

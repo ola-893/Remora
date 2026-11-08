@@ -2,7 +2,7 @@ import { claimVault, ownerVaultAction } from './owner-actions.mjs';
 import { readAgentState, withAgentState, agentSetupState, createAgent, listAgents, selectAgent } from './agents.mjs';
 import { activities, executionPolicy, spot, spotOrder } from './copy-activity.mjs';
 import { activityBlocker, activityMode, nativeWalletActivities, strategyActivities, strategyPolicy } from './strategy-actions.mjs';
-import { approveStrategy, runStrategyTask } from './strategy-runtime.mjs';
+import { approveStrategy, prepareStrategyDeposit, runStrategyTask } from './strategy-runtime.mjs';
 import { paperSeed } from './paper-trading.mjs';
 import { intentsConfig } from './copy-intents.mjs';
 import { configurePublish, getListing, originOf, publicationHistory, subscribers } from './copy-feed.mjs';
@@ -14,6 +14,7 @@ import { requirePayoutReconciled, reconcilePayouts } from './vault-money.mjs';
 import { inspectNearProfile, NearAgentStreamsClient } from '@ola-893/agentstreams-core/near';
 
 export const copyFlags = {
+  'task:deposit-range': 'action-json execute',
   'agent:create': '', 'agent:list': '', 'agent:use': '', 'agent:show': '',
   'agent:setup': 'network owner-id recipient vault-name agent-name rpc service deploy resume',
   'task:list': '', 'task:enable': 'paper-balances intents-agent-id intents-key-env intents-grant-env live confidential', 'task:disable': '', 'task:portfolio': '',
@@ -178,6 +179,9 @@ export async function runCopyCommand(command, p, v, workspace, agent, emit, prov
         return { activity: arg, enabled: Boolean(current.tasks[arg]), config: current.tasks[arg] ?? null };
       });
     case 'task:portfolio': return { mode: 'paper', portfolio: state.paper ?? null };
+    case 'task:deposit-range':
+      if (typeof v['action-json'] !== 'string' || v['action-json'].length > 8192) throw new Error('Use task deposit-range --action-json JSON [--execute].');
+      return prepareStrategyDeposit(agent, JSON.parse(v['action-json']), { execute: v.execute });
     case 'task:run':
       if (arg === spot) {
         if (v['action-json'] !== undefined) throw new Error('Spot trading uses --from, --to and --amount-raw.');

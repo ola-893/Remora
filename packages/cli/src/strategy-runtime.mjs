@@ -4,7 +4,7 @@ import { operationKey } from './copy-activity.mjs';
 import { gatewayFor } from './config.mjs';
 import { agentSetupState, readAgentState, withAgentState } from './agents.mjs';
 import { appendStrategyAction } from './copy-feed.mjs';
-import { runWalletStrategy } from './strategy-wallet.mjs';
+import { prepareRangeDeposit, runWalletStrategy } from './strategy-wallet.mjs';
 import { activityBlocker, enforceStrategyPolicy, nativeWalletActivities, sizedStrategyAction, strategyAction } from './strategy-actions.mjs';
 
 function strategyHistory(state, entry) {
@@ -54,6 +54,17 @@ export async function runStrategyTask(agent, activity, input, options = {}) {
     },
   });
   return options.execute ? saveResult(agent, id, result) : result;
+}
+
+export async function prepareStrategyDeposit(agent, action, { execute } = {}) {
+  const activity = 'liquidity-ranges';
+  const policy = strategyPolicyFor(await readAgentState(agent), activity);
+  const { ownerId } = await agentSetupState(agent);
+  return prepareRangeDeposit(action, policy, { execute, ownerId, authorize: async inputs => {
+    const current = strategyPolicyFor(await readAgentState(agent), activity);
+    enforceStrategyPolicy(activity, action, current, inputs);
+    if (JSON.stringify(current) !== JSON.stringify(policy)) throw new Error('STRATEGY_POLICY_CHANGED: run a new preview.');
+  } });
 }
 
 function checkAge(entry, policy, now = Date.now()) {

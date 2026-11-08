@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-08",
+  "network": "testnet",
+  "signer": "Meteor browser wallet",
+  "activities": {
+    "portfolio-rebalance": {
+      "cli": "task run portfolio-rebalance --action-json JSON --execute",
+      "status": "wallet-confirmed",
+      "venue": "ref-finance-101.testnet",
+      "poolId": 0,
+      "input": "0.005 test wNEAR",
+      "outputAtomic": "47124907",
+      "outputToken": "rft.tokenfactory.testnet",
+      "transactionHash": "FyQKcgdRuZURuuZYP6FG6HDvwrQJhiA1uLeXLvbVqFHg"
+    },
+    "yield-reallocation": {
+      "cli": "task run yield-reallocation --action-json JSON --execute",
+      "status": "wallet-confirmed",
+      "venue": "contract.1689937928.burrow.testnet",
+      "operation": "supply",
+      "input": "0.005 test wNEAR",
+      "transactionHash": "Kxuz5KLqK9vpnbycvbvfTAvA4KQGqLcs1243ixjqnAr",
+      "priorWithdrawalTransactionHash": "HDsHnxfpNL2xg4Hq7S7UvfK5unGjfTuVj8sZsLcqrnTN"
+    },
+    "liquidity-ranges": {
+      "cli": [
+        "task deposit-range --action-json JSON --execute",
+        "task run liquidity-ranges --action-json JSON --execute"
+      ],
+      "status": "wallet-confirmed",
+      "venue": "dclv2.ref-dev.testnet",
+      "deposit": {
+        "failedTransactionHash": "DidtzZv9yM9z3h9pDq8vyfq2RN9uKxWFFuVkDa6BCbEz",
+        "failedPrepaidGasTgas": 600,
+        "failedReceiptError": "Exceeded the prepaid gas.",
+        "refund": "0.01 test wNEAR",
+        "transactionHash": "BQpLmV3DJtrnqzSzWobZw3BnqmB4ts6N3Gd4VbR7Zaok",
+        "prepaidGasTgas": 1000,
+        "credited": "0.01 test wNEAR"
+      },
+      "position": "usdc.fakes.testnet|wrap.testnet|2000#2563",
+      "transactionHash": "GmG4VJTfn6ZbTxWB9wn9yGtcJz7bj6oauyGobGkVMVJw",
+      "journalSequence": 1,
+      "followerDiscoveryVerified": true,
+      "publicHistoryIncludesReceipt": true,
+      "unpaidFeedHttpStatus": 402,
+      "followerPreviewAdmission": "VAULT_SETUP_REQUIRED"
+    },
+    "reward-reinvestment": {
+      "cli": "task run reward-reinvestment --action-json JSON",
+      "status": "NO_CLAIMABLE_LENDING_REWARDS",
+      "venue": "contract.1689937928.burrow.testnet",
+      "claimAndSupplySharesVerifiedWithFixture": true,
+      "transactionHash": null
+    }
+  }
+}
