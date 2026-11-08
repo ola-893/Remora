@@ -5,7 +5,7 @@ import { dirname } from 'node:path';
 import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { readFile } from 'node:fs/promises';
-import { projectPath, initProject, readProject, liveProfile, gatewayFor, setPayments } from './config.mjs';
+import { projectPath, readProject, liveProfile, gatewayFor, setPayments } from './config.mjs';
 import { showSettings, setRuntime, setService, setInference, setLimits, reconcileLimits, usdc, durationSeconds } from './settings.mjs';
 
 const version = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')).version;
@@ -13,27 +13,31 @@ const help = `agentStreams ${version} — configure and run agents with native N
 
 Named agents and copy trading:
   agentstreams agent create NAME | list | use NAME | show [NAME]
-  agentstreams wallet connect --network testnet    Connect the owner; keys stay in the browser wallet
+  agentstreams wallet connect --network testnet [--owner-id ACCOUNT]
+                                                Connect an owner or publisher wallet
   agentstreams wallet show | disconnect | reconcile [--hash HASH | --cancel]
   agentstreams agent setup --network testnet [--deploy] [--resume]
   agentstreams agent run [--once]                 Run publication and/or follow a subscribed feed
   agentstreams task list | enable ACTIVITY | disable ACTIVITY
   agentstreams task enable spot-trading --paper-balances ASSET=RAW[,ASSET=RAW]
   agentstreams task enable ACTIVITY            Use the owner wallet on NEAR testnet
-  agentstreams task run ACTIVITY --action-json JSON [--execute] [--no-open]
+  agentstreams task run ACTIVITY --action-json JSON [--execute]
   agentstreams guard set execution --activity ACTIVITY --targets TARGETS --max-inputs ASSET=RAW
   agentstreams task portfolio               Virtual holdings and recent 1Click paper fills
   agentstreams task enable spot-trading --intents-agent-id ID [--live] [--confidential]
   agentstreams task run spot-trading --from ASSET --to ASSET --amount-raw UNITS [--execute]
   agentstreams publish set --url ORIGIN --rate USDC_PER_SECOND --recipient SELLER.testnet [--duration SECONDS]
   agentstreams publish start | status | history | stop
-  agentstreams earnings show | claim --from VAULT --recipient-key PATH
+  agentstreams earnings show | claim --from VAULT
+                                                Approve the claim in the publisher's recipient wallet
   agentstreams discover [--activity ACTIVITY] [--id PUBLISHER --url ORIGIN]
   agentstreams copy PUBLISHER [--url ORIGIN]      Preview a signed offer for free
   agentstreams copy start PUBLISHER [--url ORIGIN]
   agentstreams copy mode observe|approve|auto
-  agentstreams copy pending | approve ACTION [--no-open] | reject ACTION
+  agentstreams copy pending | approve ACTION | reject ACTION
   agentstreams copy pause | resume | stop | status | history
+  agentstreams guard set payment --budget USDC --max-stream USDC --max-rate USDC_PER_SECOND --recipient SELLER.testnet
+                                                Approve on-chain limits in the browser wallet
   agentstreams guard set payment --max-5xx 3 --max-health-failures 2 --reuse true
   agentstreams guard set execution --activity spot-trading --assets A,B --input-asset A --max-input-raw UNITS --copy-input-raw UNITS
   agentstreams guard set feed --stale-seconds 45 --feed-failures 3
@@ -41,19 +45,16 @@ Named agents and copy trading:
   agentstreams fund USDC                         Owner approves funding in the browser wallet
   agentstreams withdraw USDC|all [--agent NAME]   Return available vault USDC to its owner
   agentstreams agent withdraw USDC|all             Same withdrawal for the selected agent
-  Add --owner-key PATH only for explicit local-key signing.
   agentstreams balance | status
   Paper trading uses signed NEAR Intents 1Click dry quotes. Subscription escrow uses NEAR testnet.
 
 Setup (NEAR testnet, funded owner account required):
-  agentstreams init --network testnet
-  agentstreams init --network testnet --owner-id YOUR.testnet --owner-key /path/owner.json --deploy
-  agentstreams init --network testnet --deployment /path/deployment.json
-  agentstreams fund --amount 100000 --owner-key /path/owner.json  Raw USDC units
+  agentstreams wallet connect --network testnet
+  agentstreams init --network testnet --deploy   Approve each setup transaction in the browser wallet
 
 Configure payment and service guardrails:
   agentstreams config show
-  agentstreams config limits --budget 0.10 --max-stream 0.01 --max-rate 0.0001 --max-duration 1000 --owner-key /path/owner.json
+  agentstreams config limits --budget 0.10 --max-stream 0.01 --max-rate 0.0001 --max-duration 1000
   agentstreams config set --max-5xx 3 --max-transport-errors 2 --max-health-failures 2 --idle-timeout 60 --max-requests 100 --reuse true --poll-seconds 10 --close-on-exit true
   agentstreams config reconcile                  Reconcile an uncertain owner policy update
   agentstreams service set --url https://api.example.com --request-path /research --health-path /health --quote-path /quote --tiers basic,premium
@@ -79,13 +80,13 @@ Operate the same streams directly:
   agentstreams stream check [--tier basic]       Read-only admission/health decision
   agentstreams stream open --tier basic          Check policy, then submit OPEN
   agentstreams stream status                     On-chain vault/session state
-  agentstreams stream top-up USDC --owner-key PATH  Replenish an open-ended stream
+  agentstreams stream top-up USDC    Approve replenishment in the browser wallet
   agentstreams stream close [--session ID]       Close and return unused escrow
   agentstreams monitor                           Monitor health/idle limits until stopped
   agentstreams reconcile                         Reconcile uncertain payments and payouts
   agentstreams doctor                            Read-only key, RPC, balance and policy checks
   agentstreams verify [--run /path/run.json]      Verify saved testnet receipts (read-only)
-  agentstreams ui [--run /path/run.json] [--no-open] Replay captured real NEAR runs
+  agentstreams ui [--run /path/run.json] Replay captured real NEAR runs
 
 Common: --project PATH, --agent NAME, --json, --help, --version
 Financial flags and positional fund/withdraw use decimal USDC. Legacy fund --amount uses raw units.
@@ -97,8 +98,8 @@ const integer = value => { if (!/^[0-9]+$/.test(value || '')) throw new Error('E
 const boolean = value => { if (!['true', 'false'].includes(value)) throw new Error('Use true or false.'); return value === 'true'; };
 
 export async function run(argv) {
-  const strings = ['action-json', 'targets', 'max-inputs', 'copy-bps', 'hash', 'paper-balances', 'agent', 'activity', 'id', 'activities', 'rate', 'intents-agent-id', 'intents-key-env', 'intents-grant-env', 'from', 'to', 'amount-raw', 'nova-group', 'nova-account', 'nova-network', 'nova-key-env', 'performance-file', 'recipient-key', 'assets', 'input-asset', 'max-input-raw', 'copy-input-raw', 'max-age', 'max-slippage-bps', 'max-notional', 'stale-seconds', 'feed-failures', 'network', 'deployment', 'session', 'owner-id', 'owner-key', 'recipient', 'amount', 'budget', 'max-stream', 'max-rate', 'max-duration', 'max-5xx', 'max-transport-errors', 'max-health-failures', 'idle-timeout', 'max-requests', 'reuse', 'poll-seconds', 'close-on-exit', 'url', 'health-path', 'quote-path', 'request-path', 'tiers', 'base-url', 'model', 'api-key-env', 'max-steps', 'prompt', 'tier', 'query', 'thinking', 'failure-cooldown', 'provider', 'reasoning-effort', 'max-output-tokens', 'repository', 'basic-rate', 'premium-rate', 'duration', 'run', 'timeout-seconds'];
-  const booleans = ['cancel', 'resume', 'once', 'live', 'confidential', 'execute', 'json', 'help', 'version', 'enable-payments', 'enable', 'disable', 'dry-run', 'no-open', 'deploy'];
+  const strings = ['action-json', 'targets', 'max-inputs', 'copy-bps', 'hash', 'paper-balances', 'agent', 'activity', 'id', 'activities', 'rate', 'intents-agent-id', 'intents-key-env', 'intents-grant-env', 'from', 'to', 'amount-raw', 'nova-group', 'nova-account', 'nova-network', 'nova-key-env', 'performance-file', 'assets', 'input-asset', 'max-input-raw', 'copy-input-raw', 'max-age', 'max-slippage-bps', 'max-notional', 'stale-seconds', 'feed-failures', 'network', 'deployment', 'session', 'owner-id', 'recipient', 'amount', 'budget', 'max-stream', 'max-rate', 'max-duration', 'max-5xx', 'max-transport-errors', 'max-health-failures', 'idle-timeout', 'max-requests', 'reuse', 'poll-seconds', 'close-on-exit', 'url', 'health-path', 'quote-path', 'request-path', 'tiers', 'base-url', 'model', 'api-key-env', 'max-steps', 'prompt', 'tier', 'query', 'thinking', 'failure-cooldown', 'provider', 'reasoning-effort', 'max-output-tokens', 'repository', 'basic-rate', 'premium-rate', 'duration', 'run', 'timeout-seconds'];
+  const booleans = ['cancel', 'resume', 'once', 'live', 'confidential', 'execute', 'json', 'help', 'version', 'enable', 'disable', 'dry-run', 'deploy'];
   const { values: v, positionals: p, tokens } = parseArgs({ args: argv, allowPositionals: true, strict: true, tokens: true, options: {
     ...Object.fromEntries(strings.map(k => [k, { type: 'string' }])), ...Object.fromEntries(booleans.map(k => [k, { type: 'boolean' }])),
     project: { type: 'string', default: '.' }, recording: { type: 'string', default: 'testnet' }, port: { type: 'string', default: '0' },
@@ -109,16 +110,16 @@ export async function run(argv) {
   if (v.help || !p.length) return emit(help);
   const allowed = {
     ...copyFlags,
-    'wallet:connect': 'network rpc port no-open owner-id', 'wallet:show': '', 'wallet:disconnect': '', 'wallet:reconcile': 'hash cancel',
-    init: 'network deployment enable-payments owner-id owner-key recipient vault-name agent-name rpc service deploy resume no-open',
+    'wallet:connect': 'network rpc port owner-id', 'wallet:show': '', 'wallet:disconnect': '', 'wallet:reconcile': 'hash cancel',
+    init: 'network owner-id recipient vault-name agent-name rpc service deploy resume',
     'config:set': 'max-5xx max-transport-errors max-health-failures idle-timeout max-requests reuse poll-seconds close-on-exit failure-cooldown',
-    'config:limits': 'budget max-stream max-rate max-duration recipient owner-key', 'config:show': '', 'config:reconcile': '', config: '',
+    'config:limits': 'budget max-stream max-rate max-duration recipient', 'config:show': '', 'config:reconcile': '', config: '',
     'service:set': 'url recipient health-path quote-path request-path tiers', 'service:show': '', service: '',
     'service:serve': 'repository port deployment basic-rate premium-rate duration',
-    'inference:set': 'provider base-url model api-key-env max-steps thinking reasoning-effort max-output-tokens timeout-seconds', 'inference:models': 'provider', 'inference:show': '', inference: '', 'agent:run': 'prompt max-steps once rpc activity no-open',
-    request: 'tier query', 'stream:check': 'tier', 'stream:open': 'tier', 'stream:status': '', 'stream:close': 'session', 'stream:top-up': 'owner-key no-open',
-    monitor: '', reconcile: '', close: 'session', verify: 'rpc run', fund: 'amount owner-key no-open', doctor: '', payments: 'enable disable',
-    install: 'dry-run', mcp: '', ui: 'no-open recording port run',
+    'inference:set': 'provider base-url model api-key-env max-steps thinking reasoning-effort max-output-tokens timeout-seconds', 'inference:models': 'provider', 'inference:show': '', inference: '', 'agent:run': 'prompt max-steps once rpc activity',
+    request: 'tier query', 'stream:check': 'tier', 'stream:open': 'tier', 'stream:status': '', 'stream:close': 'session',
+    monitor: '', reconcile: '', close: 'session', verify: 'rpc run', fund: 'amount', doctor: '', payments: 'enable disable',
+    install: 'dry-run', mcp: '', ui: 'recording port run',
   };
   const grouped = ['wallet', 'config', 'service', 'inference', 'agent', 'stream', 'task', 'publish', 'earnings', 'guard', 'copy'];
   let command = grouped.includes(p[0]) && p[1] ? `${p[0]}:${p[1]}` : p[0];
@@ -147,7 +148,7 @@ export async function run(argv) {
       const wallet = await import('./owner-wallet.mjs');
       if (p[1] === 'connect') {
         if (v.network && v.network !== 'testnet') throw new Error('Only NEAR testnet owner wallets are supported.');
-        return emit(await wallet.connectOwnerWallet({ port: v.port === '0' ? 5389 : Number(v.port), rpcUrl: provided.includes('rpc') ? v.rpc : undefined, noOpen: v['no-open'], accountId: v['owner-id'] }));
+        return emit(await wallet.connectOwnerWallet({ port: v.port === '0' ? 5389 : Number(v.port), rpcUrl: provided.includes('rpc') ? v.rpc : undefined, accountId: v['owner-id'] }));
       }
       if (p[1] === 'show') return emit(await wallet.connectedOwner() || { connected: false, next: 'agentstream wallet connect --network testnet' });
       if (p[1] === 'disconnect') return emit(await wallet.disconnectOwnerWallet());
@@ -156,14 +157,10 @@ export async function run(argv) {
     }
     case 'init': {
       if (v.network && v.network !== 'testnet') throw new Error('Only native NEAR testnet is supported.');
-      if (!v.deployment) {
-        if (v['enable-payments']) throw new Error('Setup leaves payments disabled; enable them separately after funding.');
-        const { setupTestnet } = await import('./setup.mjs');
-        const result = await setupTestnet(project, { ownerId: v['owner-id'], ownerKeyFile: v['owner-key'], recipientId: v.recipient, vaultLabel: v['vault-name'], agentLabel: v['agent-name'], rpcUrl: v.rpc, serviceUrl: v.service, deploy: v.deploy, resume: v.resume, noOpen: v['no-open'] });
-        if (result.readyToDeploy === false) process.exitCode = 1;
-        return emit(result);
-      }
-      return emit(await initProject(project, { deployment: v.deployment, enablePayments: v['enable-payments'] }));
+      const { setupTestnet } = await import('./setup.mjs');
+      const result = await setupTestnet(project, { ownerId: v['owner-id'], recipientId: v.recipient, vaultLabel: v['vault-name'], agentLabel: v['agent-name'], rpcUrl: provided.includes('rpc') ? v.rpc : undefined, serviceUrl: v.service, deploy: v.deploy, resume: v.resume });
+      if (result.readyToDeploy === false || (v.deploy && result.status === 'OWNER_SETUP_REQUIRED')) process.exitCode = 1;
+      return emit(result);
     }
     case 'config': {
       if (p[1] === 'show' || !p[1]) {
@@ -177,7 +174,7 @@ export async function run(argv) {
         for (const [flag, key] of [['budget','budget'], ['max-stream','max_deposit'], ['max-rate','max_rate']]) if (v[flag] !== undefined) patch[key] = usdc(v[flag]);
         if (v['max-duration']) patch.max_duration_seconds = durationSeconds(v['max-duration']);
         if (v.recipient) patch.recipients = v.recipient.split(',');
-        return emit(await setLimits(project, patch, v['owner-key']));
+        return emit(await setLimits(project, patch));
       }
       if (p[1] !== 'set') throw new Error('Use config show, set, limits or reconcile.');
       const patch = {};
@@ -224,7 +221,6 @@ export async function run(argv) {
     case 'agent': {
       if (p[1] !== 'run') throw new Error('Use agent run --prompt "...".');
       const strategy = strategyActivities.has(v.activity);
-      if (!strategy && v['no-open']) throw new Error('--no-open applies to NEAR testnet activity wallet approval.');
       if (v.activity && !strategy && !['spot-trading', 'paid-api'].includes(v.activity)) throw new Error('Choose an activity from task list or paid-api.');
       if (strategy && !agent) throw new Error('Select a named agent first.');
       const spot = v.activity === 'spot-trading' || (!v.activity && agent && (await readAgentState(agent)).tasks['spot-trading']?.mode === 'paper');
@@ -246,7 +242,7 @@ export async function run(argv) {
         if (strategy) {
           const { runStrategyAgent } = await import('./strategy-agent.mjs');
           const events = [];
-          const result = await runStrategyAgent(agent, v.activity, config, { prompt: v.prompt, noOpen: v['no-open'], signal: controller.signal, emit: v.json ? event => events.push(event) : emit });
+          const result = await runStrategyAgent(agent, v.activity, config, { prompt: v.prompt, signal: controller.signal, emit: v.json ? event => events.push(event) : emit });
           return emit({ ...result, ...(v.json ? { events } : {}) });
         }
         const { runAgent } = await import('./agent.mjs');
@@ -298,7 +294,7 @@ export async function run(argv) {
     case 'fund': {
       if (p[1] && v.amount) throw new Error('Choose a decimal positional amount or legacy --amount.');
       const { fundProject } = await import('./setup.mjs');
-      return emit(await fundProject(project, { ownerKeyFile: v['owner-key'], amount: p[1] ? usdc(p[1]) : v.amount, decimal: Boolean(p[1]), noOpen: v['no-open'] }));
+      return emit(await fundProject(project, { amount: p[1] ? usdc(p[1]) : v.amount, decimal: Boolean(p[1]) }));
     }
     case 'doctor': {
       const setup = agent ? await agentSetupState(agent) : null;
@@ -332,7 +328,7 @@ export async function run(argv) {
       const { startUi, openBrowser } = await import('./ui.mjs');
       const ui = await startUi({ port: Number(v.port), recording: v.recording, runFile: v.run });
       emit({ url: ui.url, mode: 'replay-of-real-near-run', recording: v.recording, readOnly: true });
-      if (!v['no-open']) openBrowser(ui.url);
+      openBrowser(ui.url);
       process.once('SIGINT', () => void ui.close()); process.once('SIGTERM', () => void ui.close());
       return;
     }

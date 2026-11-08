@@ -84,7 +84,7 @@ export async function observeStrategy(agent, state, entry, emit) {
   }
 }
 
-export async function approveStrategy(agent, id, { noOpen = false } = {}) {
+export async function approveStrategy(agent, id) {
   const prepared = await withAgentState(agent, state => {
     const { follow } = state, item = state.pending?.[id];
     if (follow?.status !== 'active' || follow.mode !== 'approve' || item?.status !== 'pending' ||
@@ -100,7 +100,7 @@ export async function approveStrategy(agent, id, { noOpen = false } = {}) {
   try {
     const action = sizedStrategyAction(entry.activity, entry.action, policy);
     const { ownerId } = await agentSetupState(agent);
-    const result = await runWalletStrategy(entry.activity, action, policy, { execute: true, noOpen, operationId: id, ownerId,
+    const result = await runWalletStrategy(entry.activity, action, policy, { execute: true, operationId: id, ownerId,
       authorize: async inputs => {
         const client = await gatewayFor(agent.path);
         try {

@@ -15,9 +15,8 @@ const prefix = join(root, 'global');
 const project = join(root, 'project');
 const out = resolve('.local/distribution');
 const manifest = JSON.parse(await readFile(join(out, 'manifest.json'), 'utf8'));
-const { values } = parseArgs({ options: { registry: { type: 'boolean' }, deployment: { type: 'string' }, 'fixture-port': { type: 'string' }, 'provision-owner': { type: 'string' }, 'owner-key': { type: 'string' }, 'vault-name': { type: 'string', default: 'agentstreams' }, 'agent-name': { type: 'string', default: 'research-agent' }, 'verify-public': { type: 'boolean' }, 'verify-near-ai': { type: 'boolean' } } });
+const { values } = parseArgs({ options: { registry: { type: 'boolean' }, 'fixture-port': { type: 'string' }, 'provision-owner': { type: 'string' }, 'vault-name': { type: 'string', default: 'agentstreams' }, 'agent-name': { type: 'string', default: 'research-agent' }, 'verify-public': { type: 'boolean' }, 'verify-near-ai': { type: 'boolean' } } });
 let client;
-let verified = false;
 try {
   await mkdir(project);
   const registryPackages = [];
@@ -130,34 +129,26 @@ try {
     report.publicReplayVerification = await run(['verify', '--json']);
     report.checks.push('read-only public RPC replay verification: deployed WASM, final receipts and settled stream');
   }
-  if (values.deployment || values['provision-owner']) {
+  if (values['provision-owner']) {
+    if (!/^\d+$/.test(values['fixture-port'] ?? '')) throw new Error('Fresh provisioning needs --fixture-port.');
     const liveProject = join(root, 'live-project');
     await mkdir(liveProject);
-    const liveRun = async args => JSON.parse((await exec(bin, args, { cwd: liveProject, env: { ...process.env, AGENTSTREAMS_HOME: join(root, 'private') } })).stdout);
-    let setup, funding;
-    if (values['provision-owner']) {
-      if (!values['owner-key'] || !/^\d+$/.test(values['fixture-port'] ?? '')) throw new Error('Fresh provisioning needs --owner-key and --fixture-port.');
-      const setupArgs = ['init', '--network', 'testnet', '--owner-id', values['provision-owner'], '--owner-key', resolve(values['owner-key']), '--vault-name', values['vault-name'], '--agent-name', values['agent-name'], '--service', `http://127.0.0.1:${values['fixture-port']}`];
-      const preflight = await liveRun(setupArgs);
-      assert.equal(preflight.readOnly, true);
-      assert.equal(preflight.readyToDeploy, true);
-      setup = await liveRun([...setupArgs, '--deploy']);
-      assert.equal(setup.status, 'DEPLOYED');
-      assert.equal(setup.paymentsEnabled, false);
-      const { privateSetupDirectory, ...publicSetup } = setup;
-      setup = publicSetup;
-      funding = await liveRun(['fund', '--amount', '100000', '--owner-key', resolve(values['owner-key'])]);
-    } else {
-      const source = JSON.parse(await readFile(resolve(values.deployment), 'utf8'));
-      const sourcePath = join(root, 'live-source.json');
-      const runtime = Object.fromEntries(['network', 'rpcUrl', 'serviceUrl', 'vaultId', 'agentId', 'ownerId', 'recipientId', 'tokenId', 'agentKeyFile', 'policyKeyFile'].map(k => [k, source[k]]));
-      if (values['fixture-port']) {
-        if (!['127.0.0.1', 'localhost'].includes(new URL(runtime.serviceUrl).hostname) || !/^\d+$/.test(values['fixture-port'])) throw new Error('Explicit loopback fixture port required.');
-        runtime.serviceUrl = `http://127.0.0.1:${values['fixture-port']}`;
-      }
-      await writeFile(sourcePath, JSON.stringify(runtime), { mode: 0o600 });
-      await liveRun(['init', '--network', 'testnet', '--deployment', sourcePath]);
-    }
+    const liveRun = async args => {
+      const command = exec(bin, args, { cwd: liveProject, env: { ...process.env, AGENTSTREAMS_HOME: join(root, 'private') } });
+      command.child.stderr.pipe(process.stderr, { end: false });
+      return JSON.parse((await command).stdout);
+    };
+    await liveRun(['wallet', 'connect', '--network', 'testnet', '--owner-id', values['provision-owner']]);
+    const setupArgs = ['init', '--network', 'testnet', '--owner-id', values['provision-owner'], '--vault-name', values['vault-name'], '--agent-name', values['agent-name'], '--service', `http://127.0.0.1:${values['fixture-port']}`];
+    const preflight = await liveRun(setupArgs);
+    assert.equal(preflight.readOnly, true);
+    assert.equal(preflight.readyToDeploy, true);
+    const setup = await liveRun([...setupArgs, '--deploy']);
+    assert.equal(setup.status, 'DEPLOYED');
+    assert.equal(setup.paymentsEnabled, false);
+    assert.equal(setup.ownerPrivateKeyStored, false);
+    const funding = await liveRun(['fund', '0.1']);
+    assert.equal(funding.signing, 'browser-wallet');
     const before = await liveRun(['doctor']);
     assert.equal(before.paymentsEnabled, false);
     assert.equal(before.activeSession, null);
@@ -215,17 +206,16 @@ try {
     assert.equal(BigInt(after.spentUSDC) - BigInt(before.spentUSDC), BigInt(stream.earned));
     const reconciled = await liveRun(['reconcile']);
     assert.equal(reconciled.reason, 'NO_PENDING_INTENT');
-    const liveReport = { verifiedAt: new Date().toISOString(), installedOutsideCheckout: true, installedFrom: report.installedFrom, ...(setup ? { setup, funding } : {}), before, result, after, reconciled, publishedToNpm: Boolean(values.registry) };
+    const liveReport = { verifiedAt: new Date().toISOString(), installedOutsideCheckout: true, installedFrom: report.installedFrom, setup, funding, before, result, after, reconciled, publishedToNpm: Boolean(values.registry) };
     await writeFile(join(out, values.registry ? 'npm-live-verification.json' : 'live-verification.json'), JSON.stringify(liveReport, null, 2) + '\n');
     report.checks.push('installed operational CLI: configuration, OPEN, cross-process request reuse, MCP request/CLOSE, DENY');
     report.live = { network: 'testnet', vaultId: before.vaultId, openTransaction: result.opened.receipt.hash, premiumDenied: result.denied.reason, activeSessionAfter: after.activeSession, pendingIntentAfter: after.pendingIntent };
   }
   report.verifiedAt = new Date().toISOString();
   await writeFile(join(out, values.registry ? 'npm-verification.json' : 'verification.json'), JSON.stringify(report, null, 2) + '\n');
-  verified = true;
   process.stdout.write(JSON.stringify(report, null, 2) + '\n');
 } finally {
   await client?.close();
-  if (values['provision-owner'] || (values.deployment && !verified)) process.stderr.write(`Private setup/recovery files retained at ${root}\n`);
+  if (values['provision-owner']) process.stderr.write(`Private setup/recovery files retained at ${root}\n`);
   else await rm(root, { recursive: true, force: true });
 }

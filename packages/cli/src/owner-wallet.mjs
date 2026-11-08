@@ -19,6 +19,13 @@ const rpcDefault = 'https://near-testnet.drpc.org';
 const explorer = hash => `https://testnet.nearblocks.io/txns/${hash}`;
 const hashPattern = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 const accountPattern = /^[a-z0-9]+(?:[-_.][a-z0-9]+)*\.testnet$/;
+const callbackFields = new Map([
+  ['/api/connect', ['accountId', 'publicKey', 'signature', 'walletId']],
+  ['/api/transaction', ['hash']],
+  ['/api/submitting', []],
+  ['/api/cancel', []],
+  ['/api/error', []],
+]);
 const canonical = value => JSON.stringify(sort(value));
 function sort(value) { return Array.isArray(value) ? value.map(sort) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(k => [k, sort(value[k])])) : value; }
 const u32 = n => { const bytes = Buffer.alloc(4); bytes.writeUInt32LE(n); return bytes; };
@@ -108,7 +115,7 @@ export async function startOwnerSession({ kind, plan, minBlockHeight, rpcUrl = r
   const done = new Promise((resolve, reject) => { resolveDone = resolve; rejectDone = reject; });
   // Callers may inspect the server before attaching their completion handler.
   done.catch(() => {});
-  const challenge = { message: `Connect the vault owner to agentStreams on NEAR testnet. Session ${id}. No transaction or spending approval.`, nonce, recipient: 'agentstreams.local', ...(accountId ? { accountId } : {}) };
+  const challenge = { message: `Connect your wallet to agentStreams on NEAR testnet. Session ${id}. No transaction or spending approval.`, nonce, recipient: 'agentstreams.local', ...(accountId ? { accountId } : {}) };
   const server = createServer(async (req, res) => {
     const send = (status, data, type = 'application/json') => {
       res.writeHead(status, { 'content-type': type, 'cache-control': 'no-store', 'x-content-type-options': 'nosniff', 'referrer-policy': 'no-referrer', 'x-frame-options': 'DENY' });
@@ -130,6 +137,11 @@ export async function startOwnerSession({ kind, plan, minBlockHeight, rpcUrl = r
       if (processing) return send(409, { error: 'WALLET_REQUEST_IN_PROGRESS' });
       processing = ownsRequest = true;
       const data = await body(req);
+      const fields = callbackFields.get(path);
+      if (fields && (!data || typeof data !== 'object' || Array.isArray(data) ||
+          Object.keys(data).some(field => !fields.includes(field)))) {
+        return send(400, { error: 'INVALID_WALLET_CALLBACK' });
+      }
       if (path === '/api/connect' && kind === 'connect') {
         const wallet = await verifyOwnerMessage(data, challenge, provider);
         await onConnected?.(wallet);
@@ -164,21 +176,21 @@ export async function startOwnerSession({ kind, plan, minBlockHeight, rpcUrl = r
   return { url: `http://127.0.0.1:${server.address().port}/#${token}`, id, done, close: async () => { clearTimeout(timer); await new Promise(resolve => { server.close(resolve); server.closeAllConnections(); }); } };
 }
 
-async function waitInBrowser(options, { noOpen = false, emit = message => process.stderr.write(JSON.stringify(message) + '\n') } = {}) {
+async function waitInBrowser(options) {
   const session = await startOwnerSession(options);
-  emit({ ownerWalletApproval: true, operation: options.kind === 'connect' ? 'Connect owner wallet' : options.plan.label, url: session.url });
-  if (!noOpen) browserOpen(session.url);
+  process.stderr.write(JSON.stringify({ ownerWalletApproval: true, operation: options.kind === 'connect' ? 'Connect wallet' : options.plan.label, url: session.url }) + '\n');
+  browserOpen(session.url);
   try { return await session.done; } finally { await session.close(); }
 }
 
-export async function connectOwnerWallet({ port = 5389, rpcUrl = rpcDefault, noOpen = false, accountId } = {}) {
+export async function connectOwnerWallet({ port = 5389, rpcUrl = rpcDefault, accountId } = {}) {
   if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('INVALID_OWNER_WALLET_PORT');
   await walletHome();
   const file = await ownerWalletFile();
   const wallet = await waitInBrowser({
     kind: 'connect', port, rpcUrl, accountId,
     onConnected: data => atomicWrite(file, JSON.stringify({ ...data, port, rpcUrl })),
-  }, { noOpen });
+  });
   return { ...wallet, connected: true, port, privateKeysStored: false };
 
 }
@@ -202,7 +214,7 @@ async function archiveOperation(file, operation, status) {
 }
 
 export async function ownerTransaction({ ownerId, receiverId, actions, label, rpcUrl, context = {} }, {
-  noOpen = false, sign = waitInBrowser, provider = new JsonRpcProvider({ url: rpcUrl }), beforeSubmit,
+  sign = waitInBrowser, provider = new JsonRpcProvider({ url: rpcUrl }), beforeSubmit,
 } = {}) {
   const wallet = await connectedOwner({ required: true, ownerId });
   const directory = await safeTarget(await walletHome(), 'owner-operations');
@@ -231,7 +243,7 @@ export async function ownerTransaction({ ownerId, receiverId, actions, label, rp
       kind: 'transaction', port: wallet.port, rpcUrl, provider, plan: operation.plan, minBlockHeight,
       onSubmitting: async () => { await beforeSubmit?.(); operation.status = 'submitting'; await save(); },
       onHash: async hash => { operation.hash = hash; await save(); },
-    }, { noOpen });
+    });
     operation.receipt = receipt;
     await archiveOperation(pendingFile, operation, 'confirmed');
     return receipt;

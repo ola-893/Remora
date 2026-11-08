@@ -26,6 +26,8 @@ test('CLI exposes operational controls and rejects removed scripted commands', a
   assert.match(help, /config limits/);
   assert.match(help, /agent run/);
   assert.match(help, /^agentStreams /);
+  assert.doesNotMatch(help, /--(?:owner|recipient)-key/);
+  assert.doesNotMatch(help, /--no-open/);
   assert.doesNotMatch(help, /agentstreams (?:demo|simulate)/);
   for (const command of ['demo', 'simulate', 'unknown']) await assert.rejects(run(cwd, command), /Unknown command/);
   await assert.rejects(run(cwd, 'init', '--quick'), /Unknown option/);
@@ -41,10 +43,28 @@ test('cold testnet init gives funding/setup steps without generating keys or pre
   assert.equal(result.status, 'OWNER_SETUP_REQUIRED');
   assert.equal(result.signedTransactions, 0);
   assert.match(result.next, /wallet connect/);
-  assert.match(result.localKeyAlternative, /--owner-key/);
+  assert.equal(result.localKeyAlternative, undefined);
   assert.equal(result.usdcFaucet, 'https://faucet.circle.com/');
   await assert.rejects(access(join(cwd, '.agentstreams/config.json')), { code: 'ENOENT' });
   await assert.rejects(run(cwd, 'simulate'), /Unknown command/);
+  await assert.rejects(run(cwd, 'init', '--network', 'testnet', '--deploy'), error =>
+    error.code === 1 && JSON.parse(error.stdout).status === 'OWNER_SETUP_REQUIRED');
+});
+
+test('wallet-only CLI refuses wallet key flags and signing-profile imports before reading files', async t => {
+  const cwd = await project(t);
+  const keyFlags = [
+    ['init'], ['agent', 'setup'], ['fund', '0.1'], ['withdraw', 'all'],
+    ['stream', 'top-up', '0.1'], ['guard', 'set', 'payment'], ['config', 'limits'],
+  ];
+  for (const args of keyFlags) {
+    await assert.rejects(run(cwd, ...args, '--owner-key=private-fixture'), error =>
+      /Unknown option '--owner-key'/.test(error.stderr) && !error.stderr.includes('private-fixture'));
+  }
+  await assert.rejects(run(cwd, 'earnings', 'claim', '--recipient-key', 'missing.json'), /Unknown option '--recipient-key'/);
+  for (const args of [['init'], ['agent', 'setup']]) {
+    await assert.rejects(run(cwd, ...args, '--deployment', 'missing.json'), /--deployment is not supported/);
+  }
 });
 
 test('Cursor installation preserves other servers, supports dry-run/idempotence and refuses conflicts', async t => {

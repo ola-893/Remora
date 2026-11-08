@@ -76,7 +76,7 @@ export async function setupWithBrowser(project, options, { wasmFile, transact = 
       }
     }
     record.pendingStep = definition.name; await save();
-    const receipt = await transact({ ownerId, receiverId: definition.receiverId, actions: definition.actions, label: definition.label, rpcUrl: plan.rpcUrl, context: { kind: 'deployment', recordFile, step: definition.name } }, { noOpen: options.noOpen });
+    const receipt = await transact({ ownerId, receiverId: definition.receiverId, actions: definition.actions, label: definition.label, rpcUrl: plan.rpcUrl, context: { kind: 'deployment', recordFile, step: definition.name } });
     record.steps.push({ name: definition.name, ...receipt }); delete record.pendingStep; await save();
   };
   try {

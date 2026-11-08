@@ -39,7 +39,7 @@ export async function runStrategyAgent(agent, activity, inference, options) {
       },
       async strategy_preview(args) {
         const action = parse(args);
-        const checked = await runStrategyTask(agent, activity, action, { noOpen: options.noOpen, signal: options.signal });
+        const checked = await runStrategyTask(agent, activity, action, { signal: options.signal });
         preview = { action: JSON.stringify(action), at: Date.now() };
         return summary(checked);
       },
@@ -48,7 +48,7 @@ export async function runStrategyAgent(agent, activity, inference, options) {
         if (approvalRequested) throw new Error('STRATEGY_APPROVAL_ALREADY_REQUESTED');
         if (!preview || preview.action !== JSON.stringify(action) || Date.now() - preview.at > 30000) throw new Error('MATCHING_STRATEGY_PREVIEW_REQUIRED');
         approvalRequested = true;
-        result = await runStrategyTask(agent, activity, action, { execute: true, noOpen: options.noOpen, signal: options.signal });
+        result = await runStrategyTask(agent, activity, action, { execute: true, signal: options.signal });
         return summary(result);
       },
     },

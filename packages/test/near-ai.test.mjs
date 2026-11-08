@@ -9,6 +9,7 @@ import { KeyPair } from 'near-api-js';
 import { inferenceConfig, completionBody, listInferenceModels, NEAR_AI_BASE_URL } from '../cli/src/inference.mjs';
 import { runAgent } from '../cli/src/agent.mjs';
 import { OfflineGateway } from '../core/src/offline.mjs';
+import { initProject } from '../cli/src/config.mjs';
 
 const exec = promisify(execFile);
 const model = 'z-ai/glm-5.3-flash';
@@ -118,7 +119,13 @@ test('CLI saves the NEAR preset without RPC or reading a key value into configur
   await writeFile(deployment, JSON.stringify({ network: 'testnet', rpcUrl: 'https://rpc.invalid', serviceUrl: 'http://127.0.0.1:5321', vaultId: 'vault.testnet', agentId: 'agent.testnet', ownerId: 'owner.testnet', recipientId: 'provider.testnet', tokenId: '3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af', agentKeyFile: keys.agent, policyKeyFile: keys.policy }));
   const env = { ...process.env, AGENTSTREAMS_HOME: home, NEAR_AI_API_KEY: 'fixture-value-must-never-be-saved' };
   const run = async args => JSON.parse((await exec(process.execPath, [resolve('packages/cli/bin/agentstreams.mjs'), ...args], { cwd: project, env })).stdout);
-  await run(['init', '--network', 'testnet', '--deployment', deployment]);
+  const previousHome = process.env.AGENTSTREAMS_HOME;
+  process.env.AGENTSTREAMS_HOME = home;
+  try { await initProject(project, { deployment }); }
+  finally {
+    if (previousHome === undefined) delete process.env.AGENTSTREAMS_HOME;
+    else process.env.AGENTSTREAMS_HOME = previousHome;
+  }
   const result = await run(['inference', 'set', '--provider', 'near-ai', '--model', model, '--thinking', 'false', '--max-output-tokens', '1024']);
   assert.equal(result.credentialsStored, false); assert.equal(result.attestationVerified, false);
   assert.equal(result.inference.baseUrl, NEAR_AI_BASE_URL);

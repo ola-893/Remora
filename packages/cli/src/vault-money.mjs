@@ -1,7 +1,6 @@
-import { createHash } from 'node:crypto';
-import { mkdir, open, readdir, unlink } from 'node:fs/promises';
+import { open, readdir, unlink } from 'node:fs/promises';
 import { join } from 'node:path';
-import { actions, baseEncode, encodeTransaction, JsonRpcProvider } from 'near-api-js';
+import { JsonRpcProvider } from 'near-api-js';
 import { atomicWrite, readOptional } from './files.mjs';
 import { fingerprint } from './agents.mjs';
 
@@ -22,28 +21,10 @@ async function finalize(file, intent, outcome) {
   return result;
 }
 
-export async function payout(agent, client, method, args = {}) {
-  const root = join(agent.path, 'payouts');
-  await mkdir(root, { recursive: true, mode: 0o700 });
-  const file = join(root, fingerprint(`${client.vaultId}:${client.accountId}`) + '.pending');
-  const lockFile = file + '.lock';
-  const lock = await open(lockFile, 'wx', 0o600).catch(error => {
-    if (error.code === 'EEXIST') throw new Error('VAULT_PAYOUT_BUSY');
-    throw error;
-  });
-  try {
-    const existing = await readOptional(file);
-    if (existing) throw new Error(`VAULT_PAYOUT_RECONCILIATION_REQUIRED: ${explorer(JSON.parse(existing).hash)}. Run agentstreams reconcile${agent.name ? ' --agent ' + agent.name : ''}.`);
-    const signed = await client.account.createSignedTransaction({ receiverId: client.vaultId, actions: [actions.functionCall(method, args, 100000000000000n)] });
-    const hash = baseEncode(createHash('sha256').update(encodeTransaction(signed.transaction)).digest());
-    const intent = { hash, method, args, accountId: client.accountId, vaultId: client.vaultId, rpcUrl: client.provider.connection.url };
-    await atomicWrite(file, JSON.stringify(intent));
-    let result;
-    try { result = await finalize(file, intent, await client.provider.sendTransactionUntil(signed, 'FINAL')); }
-    catch { throw new Error(`VAULT_PAYOUT_RECONCILIATION_REQUIRED: ${explorer(hash)}. Run agentstreams reconcile${agent.name ? ' --agent ' + agent.name : ''}.`); }
-    if (!result.paid) throw new Error(`VAULT_PAYOUT_FAILED: ${result.explorerUrl}`);
-    return result;
-  } finally { await lock.close(); await unlink(lockFile); }
+export async function requirePayoutReconciled(agent, vaultId, accountId) {
+  const file = join(agent.path, 'payouts', fingerprint(`${vaultId}:${accountId}`) + '.pending');
+  const existing = await readOptional(file);
+  if (existing) throw new Error(`VAULT_PAYOUT_RECONCILIATION_REQUIRED: ${explorer(JSON.parse(existing).hash)}. Run agentstreams reconcile${agent.name ? ' --agent ' + agent.name : ''}.`);
 }
 
 export async function reconcilePayouts(agent) {

@@ -216,7 +216,7 @@ export async function inspectTestnet(
     check(
       "owner-key",
       "pending",
-      "An owner full-access key must be verified before deployment. Supply --owner-key locally; no key material enters this report."
+      "Connect the owner wallet to verify its registered public signing key before deployment."
     );
   else {
     try {

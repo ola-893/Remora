@@ -13,12 +13,12 @@ import { createHash, randomUUID } from 'node:crypto';
 import { createServer } from 'node:net';
 
 const { values: v } = parseArgs({ options: {
-  'owner-id': { type: 'string' }, 'owner-key': { type: 'string' }, recipient: { type: 'string' }, 'provider-key': { type: 'string' },
+  'owner-id': { type: 'string' }, recipient: { type: 'string' },
   'vault-name': { type: 'string', default: 'review1107' }, 'agent-name': { type: 'string', default: 'review-agent1107' },
   repository: { type: 'string', default: '.' }, model: { type: 'string', default: 'hf.co/unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_M' },
   directory: { type: 'string', default: '.local/showcase' }, resume: { type: 'boolean' },
 } });
-for (const key of ['owner-id', 'owner-key', 'recipient', 'provider-key']) if (!v[key]) throw new Error(`Provide --${key}. Never paste keys into arguments; use credential file paths.`);
+for (const key of ['owner-id', 'recipient']) if (!v[key]) throw new Error(`Provide --${key} with a NEAR testnet account ID.`);
 const root = fileURLToPath(new URL('../', import.meta.url)), directory = resolve(v.directory), project = join(directory, 'project'), home = join(directory, 'private');
 await mkdir(project, { recursive: true }); await mkdir(home, { recursive: true, mode: 0o700 });
 const controlPath = join(directory, 'session.json');
@@ -27,6 +27,7 @@ try { control = JSON.parse(await readFile(controlPath)); if (!v.resume) throw ne
 catch (error) { if (error.code !== 'ENOENT') throw error; control = { install: await mkdtemp(join(tmpdir(), 'agentpay-showcase-install-')), project, home }; }
 await writeFile(controlPath, JSON.stringify(control, null, 2), { mode: 0o600 });
 const execute = promisify(execFile), env = { ...process.env, AGENTSTREAMS_HOME: home };
+process.env.AGENTSTREAMS_HOME = home;
 for (const key of Object.keys(env)) if (/(?:API_KEY|AUTH_TOKEN|ACCESS_TOKEN|SECRET_KEY)$/.test(key)) delete env[key];
 const cli = join(control.install, 'node_modules/@ola-893/agentstreams-cli/bin/agentstreams.mjs');
 function jsonObjects(text) {
@@ -41,11 +42,16 @@ function jsonObjects(text) {
   assert.equal(depth, 0); return out;
 }
 const cliEvents = async (...args) => {
-  try { return jsonObjects((await execute(process.execPath, [cli, ...args, '--project', project], { env, cwd: project, maxBuffer: 8000000, timeout: 600000 })).stdout); }
+  try {
+    const command = execute(process.execPath, [cli, ...args, '--project', project], { env, cwd: project, maxBuffer: 8000000, timeout: 3600000 });
+    command.child.stderr.pipe(process.stderr, { end: false });
+    return jsonObjects((await command).stdout);
+  }
   catch (error) {
     if (args[0] === 'agent' && error.stdout) await writeFile(join(directory, 'interrupted-agent-events.json'), error.stdout, { mode: 0o600 });
     if (error.stdout) { const output = jsonObjects(error.stdout); if (output[0]?.readyToDeploy === false) return output; }
-    throw new Error(error.stderr?.trim() || `CLI operation failed: ${args.slice(0, 2).join(' ')}`);
+    const diagnostic = error.stderr?.split('\n').filter(line => !line.includes('"ownerWalletApproval"')).join('\n').trim();
+    throw new Error(diagnostic || `CLI operation failed: ${args.slice(0, 2).join(' ')}`);
   }
 };
 const cliOne = async (...args) => (await cliEvents(...args))[0];
@@ -81,7 +87,7 @@ function request(result, actor) {
   let body; try { body = JSON.parse(result.untrustedContent); } catch { body = { error: 'NON_JSON_RESPONSE' }; }
   event('request', { status: result.status, count: body.request, sessionId: body.session_id, body, actor });
 }
-let provider, reader, providerClient, initialized = false, passed = false;
+let provider, reader, initialized = false, passed = false;
 try {
   console.log('Installing the two packed candidates outside the checkout.');
   await execute('npm', ['install', '--prefix', control.install, '--ignore-scripts', '--no-audit', '--no-fund', '--cache', join(directory, 'npm-cache'), join(root, `.local/distribution/ola-893-agentstreams-core-${version}.tgz`), join(root, `.local/distribution/ola-893-agentstreams-cli-${version}.tgz`)], { env, maxBuffer: 1000000, timeout: 180000 });
@@ -90,14 +96,19 @@ try {
   const { NearAgentPayClient } = await import(pathToFileURL(join(control.install, 'node_modules/@ola-893/agentstreams-core/src/near-gateway.mjs')));
   const { readConfig, readKey } = await import(pathToFileURL(installed.resolve('@ola-893/agentstreams-core/internal-config')));
   report.checks.cleanInstall = true;
-  console.log('Checking cold setup and provider credentials.');
-  const providerKey = await readKey(resolve(v['provider-key'])); assert.equal(providerKey.accountId, v.recipient);
+  console.log('Checking cold setup and connecting the owner wallet.');
   let exists = false; try { await access(join(project, '.agentstreams/config.json')); exists = true; } catch {}
   const portServer = createServer(); await new Promise(done => portServer.listen(0, '127.0.0.1', done)); const port = portServer.address().port; await new Promise(done => portServer.close(done));
   const serviceUrl = `http://127.0.0.1:${port}`;
-  if (!exists) {
+  const wallet = await cliOne('wallet', 'show');
+  if (!exists && !wallet.accountId) {
     const cold = await cliOne('init', '--network', 'testnet'); assert.equal(cold.status, 'OWNER_SETUP_REQUIRED'); report.checks.coldSetupGuidance = true;
-    const args = ['init', '--network', 'testnet', '--owner-id', v['owner-id'], '--owner-key', resolve(v['owner-key']), '--recipient', v.recipient, '--vault-name', v['vault-name'], '--agent-name', v['agent-name'], '--service', serviceUrl];
+  }
+  if (wallet.accountId !== v['owner-id']) {
+    await cliOne('wallet', 'connect', '--network', 'testnet', '--owner-id', v['owner-id']);
+  }
+  if (!exists) {
+    const args = ['init', '--network', 'testnet', '--owner-id', v['owner-id'], '--recipient', v.recipient, '--vault-name', v['vault-name'], '--agent-name', v['agent-name'], '--service', serviceUrl];
     const preflight = await cliOne(...args); report.preflight = preflight;
     if (!preflight.readyToDeploy) throw new Error('TESTNET_PREFLIGHT_FAILED: ' + JSON.stringify(preflight.checks));
     const setup = await cliOne(...args, '--deploy');
@@ -111,8 +122,8 @@ try {
   run.vaultId = config.vaultId;
   reader = new NearAgentPayClient({ vaultId: config.vaultId, rpcUrl: config.rpcUrl });
   const priorClaim = BigInt(await reader.getClaim(v.recipient));
-  if (BigInt((await reader.getVault()).available) < 10000n) report.funding = await cliOne('fund', '--amount', '50000', '--owner-key', resolve(v['owner-key']));
-  report.financialConfiguration = await cliOne('config', 'limits', '--budget', '0.05', '--max-stream', '0.01', '--max-rate', '0.000100', '--max-duration', '1000', '--owner-key', resolve(v['owner-key']));
+  if (BigInt((await reader.getVault()).available) < 10000n) report.funding = await cliOne('fund', '0.05');
+  report.financialConfiguration = await cliOne('config', 'limits', '--budget', '0.05', '--max-stream', '0.01', '--max-rate', '0.000100', '--max-duration', '1000');
   await cliOne('config', 'set', '--max-5xx', '3', '--max-health-failures', '2', '--max-transport-errors', '2', '--idle-timeout', '180', '--max-requests', '20', '--poll-seconds', '10', '--reuse', 'true', '--close-on-exit', 'true', '--failure-cooldown', '1');
   await cliOne('service', 'set', '--url', serviceUrl);
   await cliOne('inference', 'set', '--base-url', 'http://127.0.0.1:11434/v1', '--model', v.model, '--max-steps', '8', '--max-output-tokens', '1024', '--timeout-seconds', '300');
@@ -189,12 +200,14 @@ try {
   const earned = run.events.filter(e => e.type === 'settled').reduce((total, e) => total + BigInt(e.stream.earned), 0n);
   assert.equal(BigInt(report.before.availableUSDC) - BigInt(report.after.availableUSDC), earned);
   report.checks.escrowConserved = true;
-  providerClient = new NearAgentPayClient({ vaultId: config.vaultId, accountId: providerKey.accountId, privateKey: providerKey.privateKey, rpcUrl: config.rpcUrl });
-  const balanceBefore = BigInt(await reader.tokenBalance(providerKey.accountId, config.tokenId));
-  assert.equal(BigInt(await reader.getClaim(providerKey.accountId)), priorClaim + earned);
-  run.providerPayout = await providerClient.claim(); assert.equal(run.providerPayout.value, true); assert.equal(run.providerPayout.receiptFailures.length, 0);
-  assert.equal(BigInt(await reader.tokenBalance(providerKey.accountId, config.tokenId)) - balanceBefore, priorClaim + earned);
-  report.payout = { recipientId: providerKey.accountId, earnedRawUSDC: earned.toString(), priorClaimRawUSDC: priorClaim.toString(), totalPaidRawUSDC: (priorClaim + earned).toString(), hash: run.providerPayout.hash, explorerUrl: `https://testnet.nearblocks.io/txns/${run.providerPayout.hash}` };
+  if ((await cliOne('wallet', 'show')).accountId !== v.recipient) await cliOne('wallet', 'connect', '--network', 'testnet', '--owner-id', v.recipient);
+  const { claimVault } = await import(pathToFileURL(join(dirname(cli), '../src/owner-actions.mjs')));
+  const balanceBefore = BigInt(await reader.tokenBalance(v.recipient, config.tokenId));
+  assert.equal(BigInt(await reader.getClaim(v.recipient)), priorClaim + earned);
+  run.providerPayout = await claimVault(config);
+  assert.equal(run.providerPayout?.value, true);
+  assert.equal(BigInt(await reader.tokenBalance(v.recipient, config.tokenId)) - balanceBefore, priorClaim + earned);
+  report.payout = { recipientId: v.recipient, earnedRawUSDC: earned.toString(), priorClaimRawUSDC: priorClaim.toString(), totalPaidRawUSDC: (priorClaim + earned).toString(), hash: run.providerPayout.hash, explorerUrl: run.providerPayout.explorerUrl };
   report.checks.separateProviderReceivedUSDC = true;
   run.finalVault = await reader.getVault(); run.ok = true; event('finished', { ok: true });
   const { verifyRun } = await import(pathToFileURL(installed.resolve('@ola-893/agentstreams-core/internal-evidence-audit')));

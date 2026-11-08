@@ -1,7 +1,5 @@
-import { ownerVaultAction } from './owner-actions.mjs';
-import { resolve } from 'node:path';
+import { claimVault, ownerVaultAction } from './owner-actions.mjs';
 import { readAgentState, withAgentState, agentSetupState, createAgent, listAgents, selectAgent } from './agents.mjs';
-import { initProject } from './config.mjs';
 import { activities, executionPolicy, spot, spotOrder } from './copy-activity.mjs';
 import { activityBlocker, activityMode, nativeWalletActivities, strategyActivities, strategyPolicy } from './strategy-actions.mjs';
 import { approveStrategy, runStrategyTask } from './strategy-runtime.mjs';
@@ -11,22 +9,22 @@ import { configurePublish, getListing, originOf, publicationHistory, subscribers
 import { changeMode, decideAction, previewCopy, reconcileCopy, runCopyAgent, runSpotTask, startCopy, stopCopy } from './copy-runtime.mjs';
 import { settings, setLimits, setRuntime, reconcileLimits, usdc, durationSeconds } from './settings.mjs';
 import { setupTestnet } from './setup.mjs';
-import { payout, reconcilePayouts } from './vault-money.mjs';
-import { readKey } from '@ola-893/agentstreams-core/internal-config';
+import { connectedOwner } from './owner-wallet.mjs';
+import { requirePayoutReconciled, reconcilePayouts } from './vault-money.mjs';
 import { inspectNearProfile, NearAgentStreamsClient } from '@ola-893/agentstreams-core/near';
 
 export const copyFlags = {
   'agent:create': '', 'agent:list': '', 'agent:use': '', 'agent:show': '',
-  'agent:setup': 'network deployment owner-id owner-key recipient vault-name agent-name rpc service deploy resume no-open',
+  'agent:setup': 'network owner-id recipient vault-name agent-name rpc service deploy resume',
   'task:list': '', 'task:enable': 'paper-balances intents-agent-id intents-key-env intents-grant-env live confidential', 'task:disable': '', 'task:portfolio': '',
-  'task:run': 'from to amount-raw action-json execute no-open',
+  'task:run': 'from to amount-raw action-json execute',
   'publish:set': 'activities url port rate duration recipient nova-group nova-account nova-network nova-key-env performance-file',
   'publish:start': '', 'publish:stop': '', 'publish:status': '', 'publish:history': '',
-  'earnings:show': '', 'earnings:claim': 'from recipient-key', discover: 'activity url id',
-  'copy:preview': 'url', 'copy:start': 'url activity', 'copy:mode': '', 'copy:pending': '', 'copy:approve': 'no-open', 'copy:reject': '',
+  'earnings:show': '', 'earnings:claim': 'from', discover: 'activity url id',
+  'copy:preview': 'url', 'copy:start': 'url activity', 'copy:mode': '', 'copy:pending': '', 'copy:approve': '', 'copy:reject': '',
   'copy:pause': '', 'copy:resume': '', 'copy:stop': '', 'copy:status': '', 'copy:history': '',
-  'guard:show': '', 'guard:set': 'activity targets max-inputs copy-bps budget max-stream max-rate max-duration recipient owner-key max-5xx max-transport-errors max-health-failures idle-timeout max-requests reuse poll-seconds close-on-exit failure-cooldown assets input-asset max-input-raw copy-input-raw max-age max-slippage-bps max-notional stale-seconds feed-failures',
-  withdraw: 'owner-key no-open', 'agent:withdraw': 'owner-key no-open', 'stream:top-up': 'owner-key no-open', balance: '', status: '',
+  'guard:show': '', 'guard:set': 'activity targets max-inputs copy-bps budget max-stream max-rate max-duration recipient max-5xx max-transport-errors max-health-failures idle-timeout max-requests reuse poll-seconds close-on-exit failure-cooldown assets input-asset max-input-raw copy-input-raw max-age max-slippage-bps max-notional stale-seconds feed-failures',
+  withdraw: '', 'agent:withdraw': '', 'stream:top-up': '', balance: '', status: '',
 };
 
 export const copyPositionals = new Set(['agent:withdraw', 'stream:top-up', 'agent:create', 'agent:use', 'agent:show', 'task:enable', 'task:disable', 'task:run', 'copy:start', 'copy:mode', 'copy:approve', 'copy:reject', 'guard:set']);
@@ -45,7 +43,7 @@ async function guard(agent, scope, flags, provided) {
   const payment = Object.keys(paymentLimits), runtime = Object.keys(runtimeLimits);
   const selectedActivity = flags.activity ?? spot;
   const guardFlags = selectedActivity === spot ? executionFlags : strategyFlags;
-  const accepted = { payment: [...payment, ...runtime, 'owner-key'], execution: ['activity', ...guardFlags], feed: ['stale-seconds', 'feed-failures'] }[scope];
+  const accepted = { payment: [...payment, ...runtime], execution: ['activity', ...guardFlags], feed: ['stale-seconds', 'feed-failures'] }[scope];
   if (!accepted) throw new Error('Use guard set payment, execution or feed.');
   for (const flag of provided) if (!accepted.includes(flag)) throw new Error(`--${flag} does not apply to the ${scope} guard.`);
   if (!provided.length) throw new Error('Supply at least one guardrail. See --help.');
@@ -77,7 +75,7 @@ async function guard(agent, scope, flags, provided) {
       } else local[runtimeLimits[flag]] = positive(flags[flag], 1000000);
     }
     if (Object.keys(financial).length && Object.keys(local).length) throw new Error('Set on-chain limits and local runtime thresholds in separate commands.');
-    if (Object.keys(financial).length) return setLimits(agent.path, financial, flags['owner-key']);
+    if (Object.keys(financial).length) return setLimits(agent.path, financial);
     return setRuntime(agent.path, local);
   });
 }
@@ -103,13 +101,16 @@ async function earnings(agent, action, flags) {
     }));
     return { network: 'testnet', sessions, vaults };
   }
-  const item = items.find(sub => sub.vaultId === flags.from);
-  if (!item || !flags['recipient-key']) throw new Error('Use earnings claim --from a vault listed by earnings show --recipient-key PATH.');
-  const recipient = await readKey(resolve(flags['recipient-key']));
-  if (!items.some(sub => sub.vaultId === item.vaultId && sub.recipient === recipient.accountId)) throw new Error('RECIPIENT_CREDENTIAL_MISMATCH');
-  const client = new NearAgentStreamsClient({ vaultId: item.vaultId, rpcUrl: item.rpcUrl, accountId: recipient.accountId, privateKey: recipient.privateKey });
-  if (BigInt(await client.getClaim(recipient.accountId)) === 0n) return { reason: 'NOTHING_CLAIMABLE' };
-  return payout(agent, client, 'claim');
+  const candidates = items.filter(sub => sub.vaultId === flags.from);
+  if (!candidates.length) throw new Error('Use earnings claim --from VAULT with a vault listed by earnings show.');
+  const { accountId } = await connectedOwner({ required: true });
+  const item = candidates.find(sub => sub.recipient === accountId);
+  if (!item) throw new Error('RECIPIENT_WALLET_MISMATCH: connect the recipient wallet listed by earnings show.');
+  const { vaultId, rpcUrl } = item;
+  await requirePayoutReconciled(agent, vaultId, accountId);
+  const receipt = await claimVault({ vaultId, rpcUrl, recipientId: accountId });
+  if (!receipt) return { reason: 'NOTHING_CLAIMABLE' };
+  return { resolved: true, paid: true, method: 'claim', signing: 'browser-wallet', transactionHash: receipt.hash, explorerUrl: receipt.explorerUrl };
 }
 
 export async function runCopyCommand(command, p, v, workspace, agent, emit, provided) {
@@ -118,10 +119,10 @@ export async function runCopyCommand(command, p, v, workspace, agent, emit, prov
     case 'agent:create': return createAgent(workspace, arg);
     case 'agent:list': return listAgents(workspace);
     case 'agent:use': if (!arg) throw new Error('Supply an agent name.'); return selectAgent(workspace, arg);
-    case 'stream:top-up': return ownerVaultAction(agent, agent?.path ?? workspace, p[2], v['owner-key'], { topUp: true, noOpen: v['no-open'] });
+    case 'stream:top-up': return ownerVaultAction(agent, agent?.path ?? workspace, p[2], { topUp: true });
     case 'balance': return vaultBalance(agent?.path ?? workspace);
-    case 'withdraw': return ownerVaultAction(agent, agent?.path ?? workspace, p[1], v['owner-key'], { noOpen: v['no-open'] });
-    case 'agent:withdraw': return ownerVaultAction(agent, agent?.path ?? workspace, p[2], v['owner-key'], { noOpen: v['no-open'] });
+    case 'withdraw': return ownerVaultAction(agent, agent?.path ?? workspace, p[1]);
+    case 'agent:withdraw': return ownerVaultAction(agent, agent?.path ?? workspace, p[2]);
   }
   if (!agent) throw new Error('Run agentstreams agent create NAME or select an existing agent.');
   const state = await readAgentState(agent);
@@ -132,16 +133,14 @@ export async function runCopyCommand(command, p, v, workspace, agent, emit, prov
     }
     case 'agent:setup': {
       if (v.network && v.network !== 'testnet') throw new Error('Only native NEAR testnet is supported.');
-      if (v.deployment && v.deploy) throw new Error('Choose --deployment or --deploy.');
-      if (v.deployment) return initProject(agent.path, { deployment: v.deployment });
       const suffix = agent.id.slice(3, 11);
       const result = await setupTestnet(agent.path, {
-        ownerId: v['owner-id'], ownerKeyFile: v['owner-key'], recipientId: v.recipient,
+        ownerId: v['owner-id'], recipientId: v.recipient,
         vaultLabel: provided.includes('vault-name') ? v['vault-name'] : 'v' + suffix,
         agentLabel: provided.includes('agent-name') ? v['agent-name'] : 'a' + suffix,
-        rpcUrl: provided.includes('rpc') ? v.rpc : undefined, serviceUrl: v.service, deploy: v.deploy, resume: v.resume, noOpen: v['no-open'], setupCommand: 'agentstreams agent setup',
+        rpcUrl: provided.includes('rpc') ? v.rpc : undefined, serviceUrl: v.service, deploy: v.deploy, resume: v.resume,
       });
-      if (result.readyToDeploy === false) process.exitCode = 1;
+      if (result.readyToDeploy === false || (v.deploy && result.status === 'OWNER_SETUP_REQUIRED')) process.exitCode = 1;
       return result;
     }
     case 'agent:run': return runCopyAgent(agent, { once: v.once, rpc: v.rpc, emit });
@@ -181,15 +180,16 @@ export async function runCopyCommand(command, p, v, workspace, agent, emit, prov
     case 'task:portfolio': return { mode: 'paper', portfolio: state.paper ?? null };
     case 'task:run':
       if (arg === spot) {
-        if (v['action-json'] !== undefined || v['no-open']) throw new Error('Spot trading uses --from, --to and --amount-raw.');
+        if (v['action-json'] !== undefined) throw new Error('Spot trading uses --from, --to and --amount-raw.');
         return runSpotTask(agent, spotOrder({ from: v.from, to: v.to, amount: v['amount-raw'] }), v.execute);
       }
       if (!strategyActivities.has(arg)) throw new Error('Choose an activity from agentstreams task list.');
       if (!nativeWalletActivities.has(arg)) throw new Error(activityBlocker);
       if (v.from || v.to || v['amount-raw'] || typeof v['action-json'] !== 'string' || v['action-json'].length > 8192) throw new Error('Use task run ACTIVITY --action-json JSON [--execute].');
-      return runStrategyTask(agent, arg, JSON.parse(v['action-json']), { execute: v.execute, noOpen: v['no-open'] });
+      return runStrategyTask(agent, arg, JSON.parse(v['action-json']), { execute: v.execute });
     case 'publish:set':
-      return configurePublish(agent, { ...v, port: provided.includes('port') ? v.port : undefined, recipient: v.recipient ?? (await agentSetupState(agent)).ownerId });
+      return configurePublish(agent, { ...v, port: provided.includes('port') ? v.port : undefined,
+        recipient: v.recipient ?? (await agentSetupState(agent)).ownerId ?? (await connectedOwner())?.accountId });
     case 'publish:start':
     case 'publish:stop':
       return withAgentState(agent, current => {
@@ -220,8 +220,7 @@ export async function runCopyCommand(command, p, v, workspace, agent, emit, prov
     case 'copy:stop': return stopCopy(agent, 'stopped');
     case 'copy:mode': return changeMode(agent, arg);
     case 'copy:approve':
-      if (strategyActivities.has(state.pending?.[arg]?.action.activity)) return approveStrategy(agent, arg, { noOpen: v['no-open'] });
-      if (v['no-open']) throw new Error('--no-open applies to NEAR testnet activity wallet approval.');
+      if (strategyActivities.has(state.pending?.[arg]?.action.activity)) return approveStrategy(agent, arg);
       return decideAction(agent, arg, 'approved');
     case 'copy:reject': return decideAction(agent, arg, 'rejected');
     case 'copy:status': return { subscription: state.follow ?? null, tradePending: Boolean(state.tradePending) };

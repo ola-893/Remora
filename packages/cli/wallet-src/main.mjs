@@ -25,7 +25,7 @@ async function wallet() {
 try {
   session = await api('/api/session');
   connector = new NearConnector({ network: 'testnet', excludedWallets: ['near-cli'], features: { signMessage: true, signAndSendTransaction: true, signInWithoutAddKey: true, testnet: true } });
-  $('title').textContent = session.kind === 'connect' ? 'Connect your owner wallet' : session.plan.label;
+  $('title').textContent = session.kind === 'connect' ? 'Connect your wallet' : session.plan.label;
   $('network').textContent = 'NEAR testnet';
   $('description').textContent = session.kind === 'connect' ? 'Choose your wallet and approve a sign-in message. This does not grant spending access or send a transaction.' : 'Review this owner-only operation, then approve it in your wallet. Your private key stays in your wallet.';
   $('owner').textContent = session.plan?.ownerId ?? session.challenge.accountId ?? 'Choose a named .testnet account';
@@ -34,7 +34,7 @@ try {
     const details = session.plan.actions.map(action => action.type === 'DeployContract' ? { type: action.type, bytes: atob(action.params.codeBase64).length } : action);
     $('details').textContent = JSON.stringify(details, null, 2);
   } else $('details-box').hidden = true;
-  $('approve').textContent = session.kind === 'connect' ? 'Connect and verify owner' : 'Approve in wallet';
+  $('approve').textContent = session.kind === 'connect' ? 'Connect wallet' : 'Approve in wallet';
   $('approve').disabled = false;
   if (session.complete || session.submitted) { $('approve').disabled = true; message('This request is complete or has already been submitted. Return to the CLI to check its outcome.'); }
 } catch (error) { message(error.message, true); }
@@ -48,8 +48,8 @@ $('approve').onclick = async () => {
     if (session.kind === 'connect') {
       message('Approve the sign-in message in your wallet.');
       const challenge = session.challenge;
-      const signed = await selected.signMessage({ message: challenge.message, recipient: challenge.recipient, network: 'testnet', signerId: challenge.accountId, nonce: Uint8Array.from(atob(challenge.nonce), x => x.charCodeAt(0)) });
-      const result = await api('/api/connect', { ...signed, walletId: selected.manifest?.id });
+      const { accountId, publicKey, signature } = await selected.signMessage({ message: challenge.message, recipient: challenge.recipient, network: 'testnet', signerId: challenge.accountId, nonce: Uint8Array.from(atob(challenge.nonce), x => x.charCodeAt(0)) });
+      const result = await api('/api/connect', { accountId, publicKey, signature, walletId: selected.manifest?.id });
       message(`Connected ${result.accountId}. Return to your terminal.`);
     } else {
       await api('/api/submitting', {}); submitted = true;

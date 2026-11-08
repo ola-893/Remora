@@ -36,6 +36,11 @@ test('wallet session rejects foreign origins and forged callbacks, then accepts 
     const info = await (await fetch(origin + '/api/session', { headers })).json();
     const forged = { ...signed(info.challenge), accountId: 'owner.testnet', signature: Buffer.alloc(64).toString('base64') };
     assert.equal((await fetch(origin + '/api/connect', { method: 'POST', headers, body: JSON.stringify(forged) })).status, 400);
+    const extraField = await fetch(origin + '/api/connect', {
+      method: 'POST', headers, body: JSON.stringify({ ...signed(info.challenge), privateKey: 'fixture-secret' }),
+    });
+    assert.equal(extraField.status, 400);
+    assert.deepEqual(await extraField.json(), { error: 'INVALID_WALLET_CALLBACK' });
     const accepted = await fetch(origin + '/api/connect', { method: 'POST', headers, body: JSON.stringify(signed(info.challenge)) });
     assert.equal(accepted.status, 200); assert.equal((await session.done).accountId, 'owner.testnet');
     assert.equal((await fetch(origin + '/api/connect', { method: 'POST', headers, body: JSON.stringify(signed(info.challenge)) })).status, 409);
@@ -59,8 +64,9 @@ test('wallet callback is checked against RPC and cannot substitute an approval o
     assert.equal((await post('/api/transaction', { hash })).status, 404);
     assert.equal((await post('/api/submitting', {})).status, 200);
     assert.equal((await post('/api/submitting', {})).status, 409);
-    assert.equal((await post('/api/transaction', { hash: 'B'.repeat(44), value: true })).status, 400);
-    assert.equal((await post('/api/transaction', { hash, value: false })).status, 200);
+    assert.equal((await post('/api/transaction', { hash: 'B'.repeat(44) })).status, 400);
+    assert.equal((await post('/api/transaction', { hash, value: false })).status, 400);
+    assert.equal((await post('/api/transaction', { hash })).status, 200);
     const receipt = await session.done; assert.equal(receipt.value, true); assert.equal(receipt.hash, hash); assert.equal(storedHash, hash); assert.equal(submitted, 1);
   } finally { await session.close(); }
 });

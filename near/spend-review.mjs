@@ -6,6 +6,7 @@ import { readConfig, readKey } from "./lib/config.mjs";
 import { assessQuote, fetchPrices } from "./lib/policy.mjs";
 import { NearAgentStreamsClient } from "./sdk/index.mjs";
 import { startProvider } from "./provider.mjs";
+import { ownerTransaction } from "../packages/cli/src/owner-wallet.mjs";
 
 const { values } = parseArgs({
   options: {
@@ -19,7 +20,7 @@ const { values } = parseArgs({
 });
 if (values.help)
   console.log(
-    "Native spend review: node near/spend-review.mjs --sandbox | --config <deployment> [--anchor] [--json]\nReads vault policy and provider observations. --anchor records the durable review digest using the owner key. No payment transaction is simulated."
+    "Native spend review: node near/spend-review.mjs --sandbox | --config <deployment> [--anchor] [--json]\nReads vault policy and provider observations. Approve a testnet --anchor operation in the owner wallet."
   );
 else {
   let sandbox, service;
@@ -93,24 +94,24 @@ else {
     );
     let anchor = null;
     if (values.anchor) {
-      const credential = await readKey(
-        process.env.NEAR_OWNER_KEY_FILE || config.ownerKeyFile
-      );
-      if (credential.accountId !== config.ownerId)
-        throw new Error("Owner credential mismatch.");
-      const owner = new NearAgentStreamsClient({
-        vaultId: config.vaultId,
-        accountId: config.ownerId,
-        privateKey: credential.privateKey,
-        rpcUrl: config.rpcUrl,
-      });
       // Persist content before anchoring its digest. An uncertain submission is never retried.
       await writeFile(
         `${directory}/anchor-intent.json`,
         JSON.stringify({ vaultId: config.vaultId, sha256 }, null, 2)
       );
-      anchor = await owner.anchorDecision(sha256);
-      const verified = await owner.getDecision(anchor.value.sequence);
+      const { network, ownerId, vaultId, rpcUrl, ownerKeyFile } = config;
+      if (network === "testnet") {
+        anchor = await ownerTransaction({ ownerId, receiverId: vaultId, rpcUrl,
+          label: "Record the spend review digest on NEAR testnet",
+          actions: [{ type: "FunctionCall", params: { methodName: "anchor_decision", args: { root: sha256 }, gas: "100000000000000", deposit: "0" } }],
+          context: { kind: "anchor-decision", vaultId, root: sha256 },
+        });
+      } else {
+        const credential = await readKey(ownerKeyFile);
+        if (credential.accountId !== ownerId) throw new Error("Owner credential mismatch.");
+        anchor = await new NearAgentStreamsClient({ vaultId, accountId: ownerId, privateKey: credential.privateKey, rpcUrl }).anchorDecision(sha256);
+      }
+      const verified = await client.getDecision(anchor.value.sequence);
       if (verified?.root !== sha256)
         throw new Error("Anchored digest does not match the durable review.");
       await writeFile(

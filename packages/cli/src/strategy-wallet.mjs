@@ -172,7 +172,7 @@ const builders = {
 };
 
 export async function runWalletStrategy(activity, action, policy, {
-  execute, noOpen, operationId, authorize, ownerId, connect = connectedOwner, views = testnetViews, transact = ownerTransaction,
+  execute, operationId, authorize, ownerId, connect = connectedOwner, views = testnetViews, transact = ownerTransaction,
 } = {}) {
   const build = builders[activity];
   if (!build) throw new Error(activityBlocker);
@@ -185,7 +185,7 @@ export async function runWalletStrategy(activity, action, policy, {
   const method = plan.actions.at(-1).params.methodName;
   const receipt = await transact({ ownerId: wallet.accountId, receiverId: plan.receiverId, actions: plan.actions,
     label: `${activity} on NEAR testnet · ${method}`, rpcUrl: wallet.rpcUrl, context: { kind: 'activity', activity, action, operationId } }, {
-    noOpen, beforeSubmit: async () => {
+    beforeSubmit: async () => {
       if (Date.now() - Date.parse(plan.evidence.observedAt) > 60000) throw new Error('STRATEGY_PREVIEW_STALE: start a new wallet approval.');
       await authorize?.(plan.inputs);
     },

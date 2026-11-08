@@ -6,6 +6,7 @@ import { runDemo } from "./run.mjs";
 import { startProvider } from "./provider.mjs";
 import { readConfig, readKey } from "./lib/config.mjs";
 import { NearAgentStreamsClient, formatUSDC } from "./sdk/index.mjs";
+import { ownerTransaction } from "../packages/cli/src/owner-wallet.mjs";
 
 const { values } = parseArgs({
   options: {
@@ -45,19 +46,19 @@ if (values.help) {
       await writeFile(configPath, JSON.stringify(sandbox.config, null, 2));
     }
     if (values.recover) {
-      const config = await readConfig(configPath),
-        owner = await readKey(
-          process.env.NEAR_OWNER_KEY_FILE || config.ownerKeyFile
-        );
-      if (owner.accountId !== config.ownerId)
-        throw new Error("Owner key does not match vault owner.");
-      const client = new NearAgentStreamsClient({
-        vaultId: config.vaultId,
-        accountId: config.ownerId,
-        privateKey: owner.privateKey,
-        rpcUrl: config.rpcUrl,
-      });
-      const receipt = await client.recover(values.recover);
+      const { network, ownerId, vaultId, rpcUrl, ownerKeyFile } = await readConfig(configPath);
+      let receipt;
+      if (network === "testnet") {
+        receipt = await ownerTransaction({ ownerId, receiverId: vaultId, rpcUrl,
+          label: "Recover and close your payment stream",
+          actions: [{ type: "FunctionCall", params: { methodName: "recovery_close", args: { session_id: values.recover }, gas: "100000000000000", deposit: "0" } }],
+          context: { kind: "recovery-close", vaultId, sessionId: values.recover },
+        });
+      } else {
+        const owner = await readKey(ownerKeyFile);
+        if (owner.accountId !== ownerId) throw new Error("Owner key does not match vault owner.");
+        receipt = await new NearAgentStreamsClient({ vaultId, accountId: ownerId, privateKey: owner.privateKey, rpcUrl }).recover(values.recover);
+      }
       console.log(JSON.stringify(receipt, null, 2));
     } else {
       const run = await runDemo({

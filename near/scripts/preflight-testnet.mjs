@@ -1,15 +1,13 @@
-import "dotenv/config";
 import { parseArgs } from "node:util";
 import { readFile, mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { JsonRpcProvider } from "near-api-js";
-import { readKey } from "../lib/config.mjs";
 import { deploymentPlan, inspectTestnet } from "../lib/testnet-preflight.mjs";
+import { connectedOwner } from "../../packages/cli/src/owner-wallet.mjs";
 
 const { values } = parseArgs({
   options: {
     "owner-id": { type: "string" },
-    "owner-key": { type: "string" },
     recipient: { type: "string" },
     "vault-name": { type: "string", default: "agentstreams" },
     "agent-name": { type: "string", default: "research-agent" },
@@ -23,30 +21,19 @@ const { values } = parseArgs({
 
 if (values.help)
   console.log(
-    "Read-only NEAR testnet deployment preflight:\n  npm run preflight:near -- --owner-id owner.testnet --recipient provider.testnet --owner-key /absolute/path/owner.json\nOptional --output .local/near/preflight.json saves a sanitized report. Without account IDs it checks the RPC, Circle token and local WASM, reporting account checks as pending. Never signs, creates accounts or spends tokens; exit 0 only when all required checks pass."
+    "Connect with agentstream wallet connect --network testnet, then run npm run preflight:near -- --recipient provider.testnet. Optional --output PATH saves the read-only report."
   );
 else
   try {
+    const wallet = await connectedOwner({ ownerId: values["owner-id"] });
     const plan = deploymentPlan({
-      ownerId: values["owner-id"] || process.env.NEAR_OWNER_ID,
+      ownerId: wallet?.accountId || values["owner-id"],
       recipientId: values.recipient,
       vaultLabel: values["vault-name"],
       agentLabel: values["agent-name"],
       rpcUrl: values.rpc,
       serviceUrl: values.service,
     });
-    const path = values["owner-key"] || process.env.NEAR_OWNER_KEY_FILE;
-    let ownerPublicKey,
-      credentialError = false;
-    if (path) {
-      try {
-        const key = await readKey(path);
-        if (key.accountId !== plan.ownerId) throw new Error("Owner mismatch.");
-        ownerPublicKey = key.publicKey;
-      } catch {
-        credentialError = true;
-      }
-    }
     const report = await inspectTestnet(plan, {
       provider: new JsonRpcProvider({ url: plan.rpcUrl }),
       readWasm: () =>
@@ -55,8 +42,7 @@ else
             "near/contracts/target/wasm32-unknown-unknown/release/agentpay_vault.wasm"
           )
         ),
-      ownerPublicKey,
-      credentialError,
+      ownerPublicKey: wallet?.publicKey,
     });
     const json = JSON.stringify(report, null, 2) + "\n";
     if (values.output) {

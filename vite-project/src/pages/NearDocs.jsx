@@ -118,10 +118,9 @@ export default function NearDocs() {
         permissionless expiry settlement remain available.
       </p>
       <p>
-        The owner and vault deployment keys are administrative authorities. The
-        prototype does not claim protection against a compromised operator
-        machine. Keys stay in local files with restricted permissions and never
-        enter the browser.
+        Owner and publisher private keys stay in their wallets. The CLI checks
+        the signed connection and verifies transaction approvals on NEAR. It
+        generates and stores the restricted agent and policy keys locally.
       </p>
       <h2>Networks and evidence</h2>
       <p>

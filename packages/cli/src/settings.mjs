@@ -1,10 +1,9 @@
-import { createHash } from 'node:crypto';
 import { ownerTransaction, connectedOwner } from './owner-wallet.mjs';
-import { resolve, join } from 'node:path';
-import { mkdir, open, unlink } from 'node:fs/promises';
+import { join } from 'node:path';
+import { unlink } from 'node:fs/promises';
 import { liveProfile } from './config.mjs';
 import { atomicWrite, readOptional } from './files.mjs';
-import { readConfig, readKey } from '@ola-893/agentstreams-core/internal-config';
+import { readConfig } from '@ola-893/agentstreams-core/internal-config';
 import { runtimePolicy, serviceConfig } from '@ola-893/agentstreams-core/internal-runtime-policy';
 import { inspectNearProfile, NearAgentStreamsClient } from '@ola-893/agentstreams-core/near';
 import { inferenceConfig } from './inference.mjs';
@@ -72,33 +71,6 @@ function validateFinancialPolicy(policy, vault, config) {
     recipients.every(id => /^(?=.{2,64}$)[a-z0-9]+(?:[-_.][a-z0-9]+)*$/.test(id));
   if (!validAmounts || !validDuration || !validRecipients) throw new Error('INVALID_FINANCIAL_POLICY');
 }
-export async function setLimits(project, patch, ownerKeyFile) {
-  if (!ownerKeyFile) return setBrowserLimits(project, patch);
-  if (!Object.keys(patch).length) throw new Error('Specify at least one financial limit.');
-  const { profile, config } = await settings(project);
-  const { client: reader, stateDir } = await inspectNearProfile(profile.configPath, profile.stateRoot);
-  const owner = await readKey(resolve(ownerKeyFile));
-  if (owner.accountId !== config.ownerId) throw new Error('OWNER_CREDENTIAL_MISMATCH');
-  const client = new NearAgentStreamsClient({ vaultId: config.vaultId, accountId: owner.accountId, privateKey: owner.privateKey, rpcUrl: config.rpcUrl });
-  await mkdir(stateDir, { recursive: true, mode: 0o700 });
-  const lock = await open(join(stateDir, 'operation.lock'), 'wx', 0o600);
-  try {
-    if (await readOptional(join(stateDir, 'pending.json'))) throw new Error('RECONCILIATION_REQUIRED');
-    const vault = await reader.getVault();
-    if (vault.active_session) throw new Error('CLOSE_STREAM_BEFORE_POLICY_CHANGE');
-    const policy = { ...vault.policy, ...patch };
-    validateFinancialPolicy(policy, vault, config);
-    const pending = join(stateDir, 'policy-pending.json');
-    const journal = await open(pending, 'wx', 0o600);
-    try { await journal.writeFile(JSON.stringify({ policy, vaultId: config.vaultId, nonceBefore: vault.next_nonce, createdAt: new Date().toISOString() })); await journal.sync(); } finally { await journal.close(); }
-    const receipt = await client.execute('configure', { policy });
-    await atomicWrite(join(stateDir, `policy-${receipt.hash}.receipt.json`), JSON.stringify(receipt));
-    const actual = (await reader.getVault()).policy;
-    if (JSON.stringify(actual) !== JSON.stringify(policy)) throw new Error('POLICY_RECONCILIATION_REQUIRED');
-    await unlink(pending);
-    return { financialPolicy: actual, units: 'raw USDC', transactionHash: receipt.hash, explorerUrl: `https://testnet.nearblocks.io/txns/${receipt.hash}` };
-  } finally { await lock.close(); await unlink(join(stateDir, 'operation.lock')); }
-}
 export async function reconcileLimits(project) {
   const { profile } = await settings(project);
   const { client, stateDir } = await inspectNearProfile(profile.configPath, profile.stateRoot);
@@ -112,10 +84,13 @@ export async function reconcileLimits(project) {
   return { resolved: true, financialPolicy: actual, receiptRecovered: false };
 }
 
-async function setBrowserLimits(project, patch) {
+export async function setLimits(project, patch) {
   if (!Object.keys(patch).length) throw new Error('Specify at least one financial limit.');
-  const { config } = await settings(project);
+  const { profile, config } = await settings(project);
   await connectedOwner({ required: true, ownerId: config.ownerId });
+  const { summary } = await inspectNearProfile(profile.configPath, profile.stateRoot);
+  if (summary.policyUpdatePending) throw new Error('POLICY_RECONCILIATION_REQUIRED: run agentstream config reconcile.');
+  if (summary.pendingIntent || summary.executorBusyOrInterrupted) throw new Error('RECONCILIATION_REQUIRED: run agentstream reconcile.');
   const client = new NearAgentStreamsClient({ vaultId: config.vaultId, rpcUrl: config.rpcUrl });
   const vault = await client.getVault();
   if (vault.owner_id !== config.ownerId || vault.token_id !== config.tokenId) throw new Error('VAULT_IDENTITY_MISMATCH');
