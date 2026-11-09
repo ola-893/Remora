@@ -46,7 +46,7 @@ Use `wallet reconcile` for an uncertain browser operation and `agent setup --dep
 
 ## Leader inference
 
-A model can help a leader decide what to publish. The copy runner automatically adds an advisory review to eligible events when the follower has inference configured. Running `agentstream agent run --prompt` on either profile starts a separate model-driven task. [Default copy review prompt](COPY_REVIEW_PROMPT.md)
+A model can help a leader decide what to publish. Followers reuse those decisions with limited inference, using their configured model for advisory review of eligible events. The CLI applies the execution rules. Running `agentstream agent run --prompt` on either profile starts a separate model-driven task. [Default copy review prompt](COPY_REVIEW_PROMPT.md)
 
 ```sh
 agentstream inference set --agent leader --provider local \

@@ -1,5 +1,9 @@
 # Remora intro
 
+The current product promise is “Useful work by one agent can benefit other agents.” Followers reuse decisions with limited inference for advisory review and execute under their own controls. The final short edit introduces that promise. [Final edit and repository short cut](SHORT.md)
+
+## Archived extended cut
+
 A 28.8-second opener at 1920 × 1080 and 30 fps. It starts with the cost of having each agent both think and spend, then shows how a follower pays for a leader’s decision and executes within its own limits.
 
 | Time (s) | Beat | What appears |

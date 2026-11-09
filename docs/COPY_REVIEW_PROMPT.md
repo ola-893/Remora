@@ -1,6 +1,6 @@
 # Default system prompt for copy review
 
-Remora uses this default automatically when a follower has a local or NEAR AI inference profile. A profile without inference can still copy through the same deterministic runner.
+Followers reuse a leader's decisions with limited inference. Remora automatically uses this prompt for advisory review when a follower has a local or NEAR AI inference profile. The model compares the published decision with the follower's record, while the deterministic runner applies the execution rules.
 
 ## System prompt
 

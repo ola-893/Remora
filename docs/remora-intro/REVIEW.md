@@ -1,5 +1,7 @@
 # Remora intro review
 
+This review records the earlier 28.8-second cut. The final short edit leads with useful work by one agent benefiting other agents. Followers reuse decisions with limited inference for advisory review. [Current short edit](SHORT.md)
+
 The Explore scene uses two crops of the Remora frontend’s Hour Leader profile. The chart shows quoted paper swap output. The Copy ID crop includes the historical stream rate in USDC per second.
 
 The live portfolio rebalance rehearsal used separate execution accounts and a follower sized at 50% of the leader’s input. The owner blocked the first candidate about 12.5 seconds after it queued. The next candidate had a 30-second veto window and confirmed a swap after its deadline. [Rebalance evidence](../evidence/near/remora-veto-testnet-2026-11-09.json) · [CLI demo steps](../REBALANCE_DEMO.md)
