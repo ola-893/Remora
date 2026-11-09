@@ -10,7 +10,7 @@ Smart models are too expensive to run for every follower, and cheaper models can
 
 ## Solution
 
-One leader reasons once and publishes a signed move. Followers subscribe to that feed with a per-second USDC stream on NEAR. A follower can mirror eligible moves with a small model or without inference. It uses its own account and checks the move against limits the operator sets outside the model.
+One leader reasons once and publishes a signed move. Followers subscribe to that feed with a per-second USDC stream on NEAR. The copy runner mirrors eligible moves without calling a model. It uses the follower's own account and checks the move against limits set by the operator.
 
 The name comes from the remora fish that rides alongside a shark. The leader supplies the signal. The follower chooses what it can afford to follow.
 

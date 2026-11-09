@@ -44,7 +44,7 @@ Use `wallet reconcile` for an uncertain browser operation and `agent setup --dep
 
 ## Leader inference
 
-A model can help a leader decide what to publish. The follower runner evaluates the feed and execution rules without calling a model.
+A model can help a leader decide what to publish. The follower runner evaluates the feed and execution rules without calling a model, even if the follower profile has inference configured. Running `agentstream agent run --prompt` on that profile starts a separate inference run.
 
 ```sh
 agentstream inference set --agent leader --provider local \
