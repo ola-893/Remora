@@ -159,3 +159,5 @@ agentstream grant revoke --agent leader
 ```
 
 For an uncertain wallet or grant transaction, use `wallet reconcile` or `grant reconcile` in the terminal for that role before retrying. [Recovery details](EXECUTION_GRANTS.md#recover-funds)
+
+The local-model testnet rehearsal records the operator veto, an automatic follower swap, both model outputs and the subscription interruptions. [Rehearsal evidence](evidence/near/remora-veto-testnet-2026-11-09.json)

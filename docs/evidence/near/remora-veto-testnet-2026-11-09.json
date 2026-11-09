@@ -1,0 +1,142 @@
+{
+  "cliVersion": "0.11.0",
+  "source": "npm registry",
+  "network": "testnet",
+  "activity": "portfolio-rebalance",
+  "venue": "Rhea Exchange pool 0",
+  "clock": {
+    "startedAt": "2026-11-09T06:04:15Z",
+    "leaderScheduleFinishedAt": "2026-11-09T06:30:40Z",
+    "plannedSeconds": 1200,
+    "elapsedSeconds": 1585,
+    "scheduledRounds": 8
+  },
+  "leader": {
+    "localModel": "hf.co/unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_M",
+    "rounds": [
+      {
+        "round": 1,
+        "status": "wallet-confirmed",
+        "transactionHash": "5giZpvkdJog9bdDnPXm5VmZHwL7GmSyJheJZyWVPhsTY"
+      },
+      {
+        "round": 2,
+        "status": "wallet-confirmed",
+        "transactionHash": "D7UELT9tMnJxELqU492QZn7MhT8FhLwfZVRBAtpPFr7p"
+      },
+      {
+        "round": 3,
+        "status": "no settlement",
+        "reason": "INFERENCE_TIMEOUT"
+      },
+      {
+        "round": 4,
+        "status": "wallet-confirmed",
+        "transactionHash": "31Rg7Pm4FCo6q85urjDPbC89tQpEFF8oVRt5Cm6mXSH2"
+      },
+      {
+        "round": 5,
+        "status": "no settlement",
+        "reason": "fetch failed"
+      },
+      {
+        "round": 6,
+        "status": "wallet-confirmed",
+        "transactionHash": "A4HQmX48TWfCAGYKGR1rg4esQ7RBBvHqi17wwQGib7aq"
+      },
+      {
+        "round": 7,
+        "status": "wallet-confirmed",
+        "transactionHash": "HMzvkkH76iREfjCcNXuK7tSLC9xzE9TGmka6wfRKKEak"
+      },
+      {
+        "round": 8,
+        "status": "no settlement",
+        "reason": "INFERENCE_TIMEOUT"
+      }
+    ]
+  },
+  "follower": {
+    "localModel": "qwen2.5:1.5b",
+    "vetoSeconds": 30,
+    "copyBps": 5000,
+    "actions": [
+      {
+        "id": "c85b77105d85bd36fcb973aac03c5e3d2e81e0612b3ce6d5ee69b856f2ae9449",
+        "leaderTransactionHash": "5giZpvkdJog9bdDnPXm5VmZHwL7GmSyJheJZyWVPhsTY",
+        "queuedAt": "2026-11-09T06:05:09.286Z",
+        "blockUntil": "2026-11-09T06:05:39.285000Z",
+        "outcome": "blocked",
+        "review": {
+          "status": "UNAVAILABLE"
+        },
+        "outcomeAt": "2026-11-09T06:05:21.750Z"
+      },
+      {
+        "id": "4d685a2ee2c76145e2a30b9ffef16dcc43a3d0e718be3b68b460c5b32eb5687e",
+        "leaderTransactionHash": "D7UELT9tMnJxELqU492QZn7MhT8FhLwfZVRBAtpPFr7p",
+        "queuedAt": "2026-11-09T06:08:33.768Z",
+        "blockUntil": "2026-11-09T06:09:03.768000Z",
+        "outcome": "wallet-confirmed",
+        "review": {
+          "status": "NO_CONCERN",
+          "evidenceIds": [],
+          "note": "The follower record shows the action is within the expected input size compared to the leader's action, indicating a minor discrepancy that is likely due to rounding or formatting differences."
+        },
+        "outcomeAt": "2026-11-09T06:09:19.224Z",
+        "followerTransactionHash": "BrCAkEky6qoeHiXxfmqXhUfkSsFxtes57U7Dsgi7XCdS",
+        "signing": "grant"
+      },
+      {
+        "id": "862d39c44a5f49ad5a48ab58310c18915e8e0b1d259caebbe67f0e5ec1001b77",
+        "leaderTransactionHash": "HMzvkkH76iREfjCcNXuK7tSLC9xzE9TGmka6wfRKKEak",
+        "queuedAt": "2026-11-09T06:20:34.133Z",
+        "blockUntil": "2026-11-09T06:21:04.133000Z",
+        "outcome": "cancelled",
+        "review": {
+          "status": "NO_CONCERN",
+          "evidenceIds": [
+            "follower-record"
+          ],
+          "note": "The follower record shows a pending action amount that is less than the original leader action, which is expected as the follower will adjust to maintain balance."
+        }
+      }
+    ],
+    "confirmedSwapRpc": {
+      "transactionHash": "BrCAkEky6qoeHiXxfmqXhUfkSsFxtes57U7Dsgi7XCdS",
+      "signerId": "c3049295160b778198be3d1894666c15dff528b3b9ea45ae531616749d170bb5",
+      "receiverId": "ref-finance-101.testnet",
+      "method": "swap",
+      "status": "success"
+    }
+  },
+  "streams": [
+    {
+      "openHash": "825ZPiYdCpyFaHZmPjH1NDb8xpVGUFK8esM9QkquE7sP",
+      "closeHash": "26wf8R4oWzN8wTt424eBK88FXE54hTwMbwvbtuLaHCeJ",
+      "closeReason": "STREAM_IDLE_TIMEOUT",
+      "earnedRawUSDC": "399",
+      "refundedRawUSDC": "1101"
+    },
+    {
+      "openHash": "FWE5x26tWyR8KottWgJmy7jMhr5N6pA8Zqr9eMSDT8zp",
+      "closeHash": "AYhCzbrM6PyMPVD69WEyQ48fjc9RoHhGqGprqJfZjs9N",
+      "closeReason": "STREAM_IDLE_TIMEOUT",
+      "earnedRawUSDC": "254",
+      "refundedRawUSDC": "1246"
+    },
+    {
+      "openHash": "DVV4xgiG3vNS6isCcazbTFGXqFYA3mJB4axAwRSVikif",
+      "closeHash": "3ow1G4ikp9jWasL9BrSS5feYQPX2PpT8U4VJsjowvRDB",
+      "closeReason": "RUNNER_EXIT",
+      "earnedRawUSDC": "600",
+      "refundedRawUSDC": "0"
+    }
+  ],
+  "observations": [
+    "The first stream hit public RPC rate limits. The second stream hit transport failures on the replacement RPC. The idle guard closed both streams.",
+    "The operator reopened the stream using existing vault funds. The final offer used a 600-second duration and the follower polled every 15 seconds.",
+    "The late leader round delayed the eighth round past the scheduled end. The runner cancelled the last queued candidate during stream closure.",
+    "One model note attributed the smaller amount to rounding or formatting. The executor used the configured 50 percent copy size."
+  ]
+}
