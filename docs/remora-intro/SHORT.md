@@ -1,6 +1,8 @@
 # Remora intro short cut
 
-The 19.2-second cut is in [remora-intro-short.mp4](../../brand/remora/exports/remora-intro-short.mp4). The [28.8-second cut](../../brand/remora/exports/remora-intro.mp4) includes the stream-shutoff demonstration.
+The final edit opens with “Useful work by one agent can benefit other agents.” It shows how a follower finds a decision, pays for access by the second and acts under its own rules. [Product overview](../../README.md#solution)
+
+The table below describes the checked-in 19.2-second HyperFrames cut. The 28.8-second cut includes the stream-shutoff demonstration. [Repository short cut](../../brand/remora/exports/remora-intro-short.mp4) · [Extended cut](../../brand/remora/exports/remora-intro.mp4)
 
 | Time | Scene |
 | --- | --- |

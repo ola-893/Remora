@@ -1,28 +1,35 @@
 # Remora
 
-**Smart agents decide, cheap agents do, and the limits aren't up to the model.**
+**Useful work by one agent can benefit other agents.**
 
 [Explore agents](https://remora-agents.pages.dev/explore) · [Install the CLI](#install) · [Run the demo](docs/NEAR_DEMO.md)
 
 ## Problem
 
-Smart models are too expensive to run for every follower, and cheaper models can make costly mistakes when they control funds. When reasoning and spending authority live inside the same agent, every follower pays to think through the same decision and has to trust the model that acts on it.
+An agent can do useful work and reach a decision that would benefit other agents. Those agents need a way to reuse the decision in their own circumstances, with their own budgets and permissions.
 
 ## Solution
 
-One leader reasons once and publishes a signed move. Followers subscribe to that feed with a per-second USDC stream on NEAR. The copy runner uses the follower's own account and checks the move against limits set by the operator. A configured follower model adds an advisory note about the action. Inference is optional.
+Remora lets agents publish signed decisions and earn from their work. Followers subscribe through per-second USDC streams on NEAR. For supported activities, a follower can turn a published decision into an action on its own account, using the size and limits set by its operator.
 
-The name comes from the remora fish that rides alongside a shark. The leader supplies the signal. The follower chooses what it can afford to follow.
+### What transfers today
 
-## Why the pieces fit
+Remora transfers the **results of reasoning** as signed action records. A follower can reuse a leader's decision without running a model of its own. A configured follower model can add an advisory review while the CLI makes the execution checks. **Useful learning transfer**, where agents learn from one another's work, is the longer-term ambition.
 
-The stream is the subscription. It pays for access to the signed moves, and the feed checks the active stream on each protected request. A follower applies its own execution guards before acting, so access to a leader's decision never gives that leader spending authority over the follower. The NEAR vault enforces the subscription's payment policy. The CLI enforces trade rules such as assets, size, slippage and age. [Setup and enforcement boundaries](docs/NEAR.md)
+### Inspiration
+
+The remora fish rides alongside a shark and benefits from its movement. A follower agent can similarly benefit from work a leader has already done while retaining its own authority to act.
+
+## Payments and follower controls
+
+Streaming makes the exchange payable. The feed checks the active subscription on each protected request, and the NEAR vault enforces its payment policy. The CLI applies the follower's execution rules, including allowed assets, size, slippage and age. [Setup and enforcement boundaries](docs/NEAR.md#where-the-limits-run)
 
 ## Proof
 
 | Check | Recorded result |
 | --- | --- |
-| One leader, no model on the follower | Local Gemma published 14 paper fills from live signed NEAR Intents quotes. The follower copied all 14 on one real testnet USDC stream, with one top-up on the same session. [Run evidence](docs/evidence/copy-trading/hour-2026-11-07/evidence.json) · [Follower profile check](docs/evidence/copy-trading/hour-2026-11-07/follower-inference-check.json) |
+| Decisions reused without follower inference | Local Gemma published 14 paper fills from live signed NEAR Intents quotes. The follower copied all 14 on one real testnet USDC stream, with one top-up on the same session. [Run evidence](docs/evidence/copy-trading/hour-2026-11-07/evidence.json) · [Follower profile check](docs/evidence/copy-trading/hour-2026-11-07/follower-inference-check.json) |
+| Same decision, different sizing | In a live Rhea rebalance rehearsal on NEAR testnet, the owner vetoed one candidate. The follower settled a later swap at half the leader's size after its veto window. [Rehearsal evidence](docs/evidence/near/remora-veto-testnet-2026-11-09.json) |
 | Deterministic guards | The recorded run denied a stale preview. Automated tests also reject expired actions, excess notional and disallowed order size. [Recorded denial](docs/evidence/copy-trading/hour-2026-11-07/terminal.txt#L1555) · [Guard tests](packages/test/copy.test.mjs#L159) |
 | Closing the stream cuts off copying | The same signed session went from HTTP 200 to 403. The leader published again and the follower stayed at 14 fills. [Access check](docs/evidence/copy-trading/hour-2026-11-07/terminal.txt#L2635) · [Close receipt](https://testnet.nearblocks.io/txns/D6Du8Loc9UgjsWJy9nuyKNLNKa46gEfqp1wz57cVZAMf) |
 

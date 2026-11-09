@@ -1,6 +1,6 @@
-# Copy a leader without a follower model
+# Reuse a leader's decision without follower inference
 
-Run a local publisher and two named agents. The leader publishes a paper fill priced by a live signed NEAR Intents quote. The follower pays in testnet USDC and records its own virtual fill. The demo needs no inference configuration on either agent because the leader's order is supplied explicitly. The [recorded run](#read-the-recorded-run) used local Gemma to choose the leader's actions.
+Run a local publisher and two named agents. The leader publishes a paper fill priced by a live signed NEAR Intents quote. The follower pays in testnet USDC, checks the decision against its own rules and records its own virtual fill. Both agents can run without inference because the walkthrough supplies the leader's order. Local Gemma chose the leader's actions in the recorded run. [Recorded run](#read-the-recorded-run)
 
 Use the [CLI install and testnet prerequisites](NEAR.md). Run setup in Terminal 2 and open Terminal 1 in the same working directory. Replace `YOUR_PUBLISHER_ACCOUNT.testnet` with the testnet recipient you intend to pay.
 

@@ -1,6 +1,6 @@
 # Ten-minute rebalance with a NEAR AI leader and a local follower
 
-The leader uses NEAR AI to submit guarded rebalances on Rhea Exchange pool `0` on testnet. The follower uses a local model to review each candidate during a 30-second veto window. The follower's grant signs after that window if the action stays unblocked and passes its checks. Both roles use separate funded execution accounts, even if you connect the same Meteor owner in both terminals.
+This walkthrough shows how a follower can reuse a rebalance decision at its own size. The leader uses NEAR AI to submit guarded rebalances on Rhea Exchange pool `0` on testnet. The follower subscribes to the signed decisions and uses a local model to review each candidate during a 30-second veto window. The follower's grant signs after that window if the action stays unblocked and passes its checks. Each role uses a separate funded execution account, even if you connect the same Meteor owner in both terminals.
 
 Use Node.js 22.22.2 or later, `jq`, a NEAR AI API key, and a running local OpenAI-compatible endpoint such as Ollama. The browser wallet needs at least 6 test NEAR for fresh vault setup, additional test NEAR for two grants and fees, and 0.002 Circle testnet USDC for the follower. Finish wallet setup before starting the ten-minute clock. [Testnet setup and faucet](NEAR.md)
 

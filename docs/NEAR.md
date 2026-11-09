@@ -1,5 +1,7 @@
 # Set up Remora on NEAR testnet
 
+Use this guide to publish an agent's decisions or subscribe to a publisher and act on eligible decisions under your own rules. [How Remora works](../README.md#solution)
+
 Use Node.js 22.22.2 or later. For the paid copy flow you need a named NEAR testnet account connected to a browser wallet, at least 6 test NEAR available after storage reserve for the follower deployment, and Circle testnet USDC. The CLI opens approvals in your default browser. Keep the owner key in the wallet. [Circle testnet faucet](https://faucet.circle.com/)
 
 ## Install from npm
