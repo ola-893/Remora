@@ -50,11 +50,12 @@ export function inferenceConfig(input) {
     ...(maxOutputTokens !== undefined ? { maxOutputTokens } : {}), timeoutSeconds, maxSteps };
 }
 
-export function completionBody(config, messages, tools) {
+export function completionBody(config, messages, tools, responseFormat) {
   const thinking = config.thinking === undefined ? {} : config.provider === 'near-ai'
     ? { chat_template_kwargs: { [/^moonshotai\/kimi-/i.test(config.model) ? 'thinking' : 'enable_thinking']: config.thinking } }
     : { enable_thinking: config.thinking };
   return { model: config.model, messages, ...(tools.length ? { tools, tool_choice: 'auto' } : {}), stream: false, ...thinking,
+    ...(responseFormat ? { response_format: responseFormat } : {}),
     ...(config.reasoningEffort !== undefined ? { reasoning_effort: config.reasoningEffort } : {}),
     ...(config.maxOutputTokens !== undefined ? { max_tokens: config.maxOutputTokens } : {}) };
 }

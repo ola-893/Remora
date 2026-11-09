@@ -39,10 +39,16 @@ test('automatic copy review uses the named inference profile and can only annota
   const requests = [];
   const reply = { status: 'NO_CONCERN', evidenceIds: ['follower-record'], note: 'The follower candidate uses a smaller amount.' };
   let message = { content: JSON.stringify(reply) };
+  let rejectResponseFormat = false;
   const server = createServer(async (req, res) => {
     const chunks = [];
     for await (const chunk of req) chunks.push(chunk);
-    requests.push({ url: req.url, body: JSON.parse(Buffer.concat(chunks)) });
+    const body = JSON.parse(Buffer.concat(chunks));
+    requests.push({ url: req.url, body });
+    if (rejectResponseFormat && body.response_format) {
+      res.statusCode = 400;
+      return res.end('{}');
+    }
     res.end(JSON.stringify({ choices: [{ message }] }));
   }).listen(0, '127.0.0.1');
   await once(server, 'listening');
@@ -55,12 +61,22 @@ test('automatic copy review uses the named inference profile and can only annota
   assert.equal(requests[0].body.model, 'test-reviewer');
   assert.equal(requests[0].body.messages[0].content, copyReviewPrompt);
   assert.equal(requests[0].body.tools, undefined);
+  assert.equal(requests[0].body.response_format.type, 'json_schema');
+  assert.match(requests[0].body.messages[1].content, /"inputSizeComparedToLeader":"smaller"/);
   assert.doesNotMatch(requests[0].body.messages[1].content, /privateBalance|session/);
   let state = await readAgentState(agent);
   assert.deepEqual(state.pending[action.id].review, reply);
   assert.equal(state.pending[action.id].status, 'pending');
   assert.deepEqual(state.pending[action.id].preview.action, candidate);
   assert.equal(state.follow.mode, 'approve');
+
+  rejectResponseFormat = true;
+  reviewer.enqueue(job);
+  await reviewer.settled();
+  assert.equal(requests.length, 3);
+  assert.equal(requests[2].body.response_format, undefined);
+  assert.equal(events.at(-1).status, 'NO_CONCERN');
+  rejectResponseFormat = false;
 
   message = { content: JSON.stringify({ ...reply, evidenceIds: ['unknown-source'] }) };
   reviewer.enqueue(job);

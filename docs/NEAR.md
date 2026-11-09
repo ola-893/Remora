@@ -9,7 +9,7 @@ npm install -g @ola-893/agentstreams-cli
 agentstream --version
 ```
 
-Use version `0.10.0` for execution grants, limit orders and automatic follower review. [Ten-minute rebalance demo](REBALANCE_DEMO.md)
+Use version `0.10.1` for execution grants, limit orders and automatic follower review. [Ten-minute rebalance demo](REBALANCE_DEMO.md)
 
 ## Build from source
 
@@ -21,7 +21,7 @@ npm run install:all
 npm run pack:distribution
 npm install -g \
   .local/distribution/ola-893-agentstreams-core-0.8.0.tgz \
-  .local/distribution/ola-893-agentstreams-cli-0.10.0.tgz
+  .local/distribution/ola-893-agentstreams-cli-0.10.1.tgz
 agentstream --help
 ```
 

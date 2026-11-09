@@ -5,7 +5,7 @@ The leader uses NEAR AI to submit guarded rebalances on Rhea Exchange pool `0` o
 Use Node.js 22.22.2 or later, `jq`, a NEAR AI API key, and a running local OpenAI-compatible endpoint such as Ollama. The browser wallet needs at least 6 test NEAR for fresh vault setup, additional test NEAR for two grants and fees, and 0.002 Circle testnet USDC for the follower. Finish wallet setup before starting the ten-minute clock. [Testnet setup and faucet](NEAR.md)
 
 ```sh
-npm install -g @ola-893/agentstreams-cli@0.10.0
+npm install -g @ola-893/agentstreams-cli@0.10.1
 agentstream --version
 ```
 
@@ -114,8 +114,8 @@ Run five NEAR AI passes spaced two minutes apart. Each pass asks for one guarded
     if [ "$DELAY" -gt 0 ]; then sleep "$DELAY"; fi
     RESULT=$(agentstream agent run --agent leader --activity portfolio-rebalance --max-steps 8 --json \
       --prompt "Do exactly one testnet portfolio-rebalance using this action: $ACTION. Call strategy_guard, strategy_preview, then strategy_apply with that exact action once. Stop after the tool returns. If a guard refuses, report the refusal and stop.")
-    printf '%s\n' "$RESULT" | jq '{activity, result, inference: [.events[] | select(.type == "inference")]}'
-    printf '%s\n' "$RESULT" | jq -e '.results | length == 1 and (.[0].transactionHash != null) and (.[0].signing == "grant")' >/dev/null
+    printf '%s\n' "$RESULT" | jq '{activity, status: .result.status, transactionHash: .result.receipt.hash, signing: .result.receipt.signing, inference: [.events[] | select(.type == "inference")]}'
+    printf '%s\n' "$RESULT" | jq -e '.results | length == 1 and (.[0].status == "wallet-confirmed") and (.[0].receipt.hash != null) and (.[0].receipt.signing == "grant")' >/dev/null
   done
   DELAY=$((STARTED + 600 - $(date +%s)))
   if [ "$DELAY" -gt 0 ]; then sleep "$DELAY"; fi
