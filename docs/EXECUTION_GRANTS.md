@@ -4,7 +4,7 @@ Approve one funding transfer in Meteor. Remora generates a signing key for a sep
 
 ## Create and prepare a grant
 
-Use the [source build](NEAR.md#build-from-source), a named agent and a connected owner wallet. This example prepares a Rhea Exchange rebalance.
+Use [CLI 0.10.0 or later](NEAR.md#install-from-npm), a named agent and a connected owner wallet. This example prepares a Rhea Exchange rebalance.
 
 ```sh
 agentstream grant create --agent my-agent --transactions 7 --hours 1 \

@@ -9,7 +9,7 @@ npm install -g @ola-893/agentstreams-cli
 agentstream --version
 ```
 
-The published `0.9.0` supports the paper-copy demo. Build from source for execution grants, limit orders and the restricted inference provider selection.
+Use version `0.10.0` for execution grants, limit orders and automatic follower review. [Ten-minute rebalance demo](REBALANCE_DEMO.md)
 
 ## Build from source
 
@@ -21,11 +21,11 @@ npm run install:all
 npm run pack:distribution
 npm install -g \
   .local/distribution/ola-893-agentstreams-core-0.8.0.tgz \
-  .local/distribution/ola-893-agentstreams-cli-0.9.0.tgz
+  .local/distribution/ola-893-agentstreams-cli-0.10.0.tgz
 agentstream --help
 ```
 
-The source package and published package currently report the same version. The `grant prepare` help entry identifies the source build with grants. For repository checks use `npm test`, `npm run check:distribution` and `npm run build:web`.
+For repository checks use `npm test`, `npm run check:distribution` and `npm run build:web`.
 
 ## Wallet and subscription vault
 
@@ -44,9 +44,7 @@ Use `wallet reconcile` for an uncertain browser operation and `agent setup --dep
 
 ## Leader inference
 
-A model can help a leader decide what to publish. The follower runner evaluates the feed and execution rules without calling a model, even if the follower profile has inference configured. Running `agentstream agent run --prompt` on that profile starts a separate inference run.
-
-The proposed follower review prompt describes how an optional model could add context to pending actions while leaving execution authority with the CLI. [Default copy review prompt](COPY_REVIEW_PROMPT.md)
+A model can help a leader decide what to publish. The copy runner automatically adds an advisory review to eligible events when the follower has inference configured. Running `agentstream agent run --prompt` on either profile starts a separate model-driven task. [Default copy review prompt](COPY_REVIEW_PROMPT.md)
 
 ```sh
 agentstream inference set --agent leader --provider local \

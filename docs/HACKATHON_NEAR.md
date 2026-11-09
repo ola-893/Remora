@@ -6,7 +6,7 @@ Smart agents decide, cheap agents do, and the limits aren't up to the model.
 
 Smart models are too expensive to run for every follower, and cheaper models can make costly mistakes when they control funds. Today, the same agent is expected to reason and hold the authority to act on that reasoning.
 
-Remora separates those jobs. One leader publishes signed moves to a gated feed. Followers pay for access by the second through a NEAR USDC stream and mirror eligible moves on their own accounts without calling a model. The operator sets execution limits.
+Remora separates those jobs. One leader publishes signed moves to a gated feed. Followers pay for access by the second through a NEAR USDC stream and mirror eligible moves on their own accounts. An optional follower model reviews actions while the CLI enforces the operator's limits.
 
 The stream is the subscription. Its on-chain state controls access to the feed. The follower's deterministic guards decide which moves can run.
 
