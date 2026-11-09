@@ -1,11 +1,11 @@
 # Ten-minute rebalance with a NEAR AI leader and a local follower
 
-The leader uses NEAR AI to submit guarded rebalances on Rhea Exchange pool `0` on testnet. The follower uses a local model to review each copied candidate. You approve the candidate in the CLI and the follower's grant signs it. Both roles use separate funded execution accounts, even if you connect the same Meteor owner in both terminals.
+The leader uses NEAR AI to submit guarded rebalances on Rhea Exchange pool `0` on testnet. The follower uses a local model to review each candidate during a 30-second veto window. The follower's grant signs after that window if the action stays unblocked and passes its checks. Both roles use separate funded execution accounts, even if you connect the same Meteor owner in both terminals.
 
 Use Node.js 22.22.2 or later, `jq`, a NEAR AI API key, and a running local OpenAI-compatible endpoint such as Ollama. The browser wallet needs at least 6 test NEAR for fresh vault setup, additional test NEAR for two grants and fees, and 0.002 Circle testnet USDC for the follower. Finish wallet setup before starting the ten-minute clock. [Testnet setup and faucet](NEAR.md)
 
 ```sh
-npm install -g @ola-893/agentstreams-cli@0.10.1
+npm install -g @ola-893/agentstreams-cli@0.11.0
 agentstream --version
 ```
 
@@ -96,7 +96,9 @@ agentstream grant show
 
 agentstream copy "$PUBLISHER_ID" --url "$ORIGIN" --agent follower
 agentstream copy start "$PUBLISHER_ID" --url "$ORIGIN" --activity portfolio-rebalance --agent follower
-agentstream copy mode approve --agent follower
+agentstream copy mode veto --agent follower --veto-seconds 30
+agentstream agent run --agent follower > "$DEMO/follower.log" 2>&1 &
+FOLLOWER_PID=$!
 ```
 
 The 900-second offer reserves 0.0009 test USDC and leaves time to close after the ten-minute run. If setup took several minutes, run the short local completion again before starting the leader.
@@ -123,26 +125,27 @@ Run five NEAR AI passes spaced two minutes apart. Each pass asks for one guarded
 agentstream publish history --agent leader
 ```
 
-## Copy each round in Terminal 2
+## Watch the follower in Terminal 2
 
-After the leader prints a transaction hash, run these commands. The first command polls once and waits for the local review. Look for `type: copy-review` with its note, then choose the matching pending action. Approve promptly. The signed action expires after two minutes.
+The runner logs the candidate, its `blockUntil` deadline and the model's `copy-review` note. An unblocked candidate can execute after the deadline. The signed action expires after two minutes. To veto a candidate, copy its ID from `copy pending` and block it before the deadline.
 
 ```sh
-agentstream agent run --agent follower --once
+tail -n 45 "$DEMO/follower.log"
 agentstream copy pending --agent follower
 ACTION_ID='REPLACE_WITH_THE_PENDING_ACTION_ID'
-agentstream copy approve "$ACTION_ID" --agent follower
+agentstream copy block "$ACTION_ID" --agent follower
 agentstream copy history --agent follower
 ```
 
-Repeat for the next round. The follower applies the same target weights with half the leader's maximum input. The venue plan, quote and receipt are for the follower's own execution account. `copy approve` remains required. A matching grant signs the Rhea transaction without a new Meteor window. An unavailable local review is shown separately from execution status.
+The follower applies the same target weights with half the leader's maximum input. Its quote and receipt are for its own execution account. A matching grant signs the Rhea transaction after the deadline. Model review status is separate from execution status.
 
 ## Close and recover
 
 In Terminal 2, close the paid stream before stopping the publisher.
 
 ```sh
-agentstream copy stop --agent follower
+kill "$FOLLOWER_PID"
+# The default runner closes the stream on exit. Check the status and close it explicitly if still active.
 agentstream copy status --agent follower
 agentstream grant revoke --agent follower
 ```

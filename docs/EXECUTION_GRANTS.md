@@ -16,7 +16,7 @@ agentstream grant show
 
 `--balance-raw` is a target balance in the token's atomic units. Rebalance preparation targets the exchange balance. For other supported preparation activities it targets the execution wallet balance. The command can register storage, wrap test NEAR and deposit it into Rhea Exchange. Preparation transactions count toward the grant. For a concentrated-liquidity range, prepare the token and DCL storage before using `task deposit-range` with the same grant. Staking uses native test NEAR.
 
-Set the activity's execution guard before running `task run` or `agent run --prompt`. A native strategy copied in approval mode still needs `copy approve`. A matching grant signs the approved action without opening Meteor again. Spot trading uses the separate NEAR Intents execution path.
+Set the activity's execution guard before running `task run` or `agent run --prompt`. A native strategy copied in approval mode needs `copy approve`. With `copy mode veto`, the matching grant signs after the blocking deadline if the executor's checks still pass. Spot trading uses the separate NEAR Intents execution path.
 
 ## Recover funds
 

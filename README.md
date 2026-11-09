@@ -38,7 +38,7 @@ agentstream --version
 agentstream task list
 ```
 
-Release `0.10.1` includes execution grants, limit orders and automatic copy review with a configured local or NEAR AI model. The package and executable names retain their agentStreams identifiers. [npm package](https://www.npmjs.com/package/@ola-893/agentstreams-cli)
+Release `0.11.0` adds `copy mode veto`. The follower shows each candidate and its blocking deadline, then rechecks the guards before executing. Native strategies use a matching execution grant. [npm package](https://www.npmjs.com/package/@ola-893/agentstreams-cli)
 
 ## Guides
 

@@ -47,8 +47,8 @@ export default function NearDocs() {
         </li>
       </ol>
       <h2>Configure and run an agent</h2>
-      <pre><code>npm install -g @ola-893/agentstreams-cli@0.10.1</code></pre>
-      <p>A configured follower model adds advisory notes during copy runs. The CLI still enforces the guards and the selected approval mode. <a href="https://github.com/ola-893/agentStreams/blob/codex/near-hackathon/docs/REBALANCE_DEMO.md">Run the ten-minute NEAR AI and local model demo</a>.</p>
+      <pre><code>npm install -g @ola-893/agentstreams-cli@0.11.0</code></pre>
+      <p>A configured follower model adds advisory notes during copy runs. In veto mode, the CLI shows each candidate and lets the operator block it before the deadline. <a href="https://github.com/ola-893/agentStreams/blob/codex/near-hackathon/docs/REBALANCE_DEMO.md">Run the ten-minute NEAR AI and local model demo</a>.</p>
       <pre><code>{"agentstreams config limits --budget 0.10 --max-stream 0.01 --max-rate 0.0001 --max-duration 1000\nagentstreams config set --max-5xx 3 --idle-timeout 60 --max-requests 100 --reuse true\nagentstreams service set --url https://YOUR-API.example --request-path /research\nagentstreams inference set --provider local --base-url http://localhost:11434/v1 --model YOUR_MODEL\nagentstreams payments --enable\nagentstreams agent run --prompt \"Use the configured paid API to research payment streams.\""}</code></pre>
       <p>Configure a tool-capable local model or NEAR AI in the CLI. Use <code>agentstreams inference models --provider near-ai</code> to find an eligible model, then run <code>agentstreams inference set --provider near-ai --model MODEL --api-key</code> and enter the key at the hidden prompt. The paid API must implement the agentStreams NEAR quote, health, payment challenge and session protocol.</p>
       <h2>Verify the public NEAR testnet run</h2>

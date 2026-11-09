@@ -42,6 +42,7 @@ try {
   assert.equal((await exec(join(prefix, 'bin/agentstream'), ['--version'], { cwd: project })).stdout.trim(), manifest.find(m => m.name.endsWith('/agentstreams-cli')).version);
   assert.match(help, /config limits/);
   assert.match(help, /agent run/);
+  assert.match(help, /copy mode [^\n]*veto/);
   if (help.includes('wallet connect')) {
     assert.equal((await run(['wallet', 'show'])).connected, false);
     assert.equal((await run(['wallet', 'reconcile'])).resolved, true);
@@ -65,6 +66,7 @@ try {
   assert.equal((await run(['agent', 'list'])).agents.length, 2);
   assert.equal((await run(['agent', 'show', 'release-peer'])).id, second.id);
   assert.equal((await run(['agent', 'use', 'release-check'])).id, agent.id);
+  await assert.rejects(run(['copy', 'block', 'release-action']), /No copy subscription/);
   assert.equal((await run(['agent', 'setup', '--network', 'testnet'])).status, 'OWNER_SETUP_REQUIRED');
   assert.equal((await run(['install', 'mcp'])).mcpServers.agentstreams.args.at(-1), 'release-check');
   assert.equal((await run(['task', 'list'])).activities.filter(x => x.status === 'available').length, 6);

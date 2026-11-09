@@ -9,7 +9,7 @@ npm install -g @ola-893/agentstreams-cli
 agentstream --version
 ```
 
-Use version `0.10.1` for execution grants, limit orders and automatic follower review. [Ten-minute rebalance demo](REBALANCE_DEMO.md)
+Use version `0.11.0` for timed veto windows, execution grants and automatic follower review. [Ten-minute rebalance demo](REBALANCE_DEMO.md)
 
 ## Build from source
 
@@ -21,7 +21,7 @@ npm run install:all
 npm run pack:distribution
 npm install -g \
   .local/distribution/ola-893-agentstreams-core-0.8.0.tgz \
-  .local/distribution/ola-893-agentstreams-cli-0.10.1.tgz
+  .local/distribution/ola-893-agentstreams-cli-0.11.0.tgz
 agentstream --help
 ```
 
@@ -68,7 +68,9 @@ Choose one provider and replace `MODEL` with a tool-capable model ID. The local 
 | `yield-reallocation` | Supply or withdraw in Rhea Lending |
 | `limit-orders` | Place, cancel and claim Rhea DCL orders |
 
-Spot paper mode uses a virtual portfolio while the subscription moves real testnet USDC. Native NEAR strategies use follower approval mode. The owner signs with a browser wallet unless the strategy is covered by an active execution grant. [Execution grants and recovery](EXECUTION_GRANTS.md)
+Spot paper mode uses a virtual portfolio while the subscription moves real testnet USDC. Native NEAR strategies support explicit approval or a timed veto window. Veto mode requires an active grant for the follower and activity. [Execution grants and recovery](EXECUTION_GRANTS.md)
+
+With an active subscription, run `agentstream copy mode veto --veto-seconds 30` and keep `agentstream agent run` running. `copy pending` shows each candidate and its `blockUntil` deadline in Unix milliseconds. Use `agentstream copy block ACTION_ID` before the deadline. Once the window closes, the executor checks the current session, age, guard and quote again. A missing grant or changed candidate can prevent execution. Switching modes or closing the stream cancels candidates that are still waiting.
 
 ## Where the limits run
 
