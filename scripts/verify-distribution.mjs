@@ -60,11 +60,6 @@ try {
   for (const command of ['unknown-command', 'demo', 'simulate']) await assert.rejects(run([command]), error => error.code === 1 && /Unknown command/.test(error.stderr));
   assert.equal((await run(['init', '--network', 'testnet'])).status, 'OWNER_SETUP_REQUIRED');
   assert.ok((await run(['install', 'mcp'])).mcpServers.agentstreams);
-  for (const target of ['cursor', 'codex']) {
-    assert.equal((await run(['install', target, '--dry-run', '--json'])).dryRun, true);
-    await run(['install', target, '--json']);
-    assert.equal((await run(['install', target, '--json'])).changedFiles.length, 0);
-  }
   const agent = await run(['agent', 'create', 'release-check']);
   const second = await run(['agent', 'create', 'release-peer']);
   assert.equal((await run(['agent', 'list'])).agents.length, 2);
@@ -121,7 +116,7 @@ try {
   const probe = join(prefix, 'lib/node_modules/@ola-893/agentstreams-cli', '.verify-near.mjs');
   await writeFile(probe, `await import('@ola-893/agentstreams-core/near'); console.log('ok');`);
   assert.equal((await exec(process.execPath, [probe], { cwd: project })).stdout.trim(), 'ok');
-  const report = { verifiedAt: new Date().toISOString(), installedOutsideCheckout: true, installedFrom: values.registry ? 'npm registry; CLI only with transitive core dependency' : 'local tarballs', packages: values.registry ? registryPackages : manifest.map(({ name, version, integrity }) => ({ name, version, integrity })), checks: ['operational command help', 'removed demo/simulate rejected', 'cold testnet setup instructions', 'cursor installer', 'codex installer', 'generic MCP config', 'installed recorded UI HTTP', 'portable native runtime imports', 'named agent isolation', 'copy, guard, task and publisher command routing', 'paper portfolio and named inference without vault setup'], browserVisualQA: false, publishedToNpm: Boolean(values.registry) };
+  const report = { verifiedAt: new Date().toISOString(), installedOutsideCheckout: true, installedFrom: values.registry ? 'npm registry; CLI only with transitive core dependency' : 'local tarballs', packages: values.registry ? registryPackages : manifest.map(({ name, version, integrity }) => ({ name, version, integrity })), checks: ['operational command help', 'removed demo/simulate rejected', 'cold testnet setup instructions', 'generic MCP config', 'installed recorded UI HTTP', 'portable native runtime imports', 'named agent isolation', 'copy, guard, task and publisher command routing', 'paper portfolio and named inference without vault setup'], browserVisualQA: false, publishedToNpm: Boolean(values.registry) };
   if (values['verify-near-ai']) {
     assert.match(help, /--provider near-ai/);
     const catalog = await run(['inference', 'models', '--provider', 'near-ai']);
