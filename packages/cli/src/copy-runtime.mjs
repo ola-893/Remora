@@ -11,6 +11,7 @@ import { paperBalances, paperFill, paperQuote } from './paper-trading.mjs';
 import { credential, intentsAdapter, minimumOutput } from './copy-intents.mjs';
 import { nativeWalletActivities } from './strategy-actions.mjs';
 import { observeStrategy } from './strategy-runtime.mjs';
+import { copyReviewJob, copyReviewer } from './copy-review.mjs';
 import { appendFill, checkListingQuote, fetchFeed, feedPath, getListing, healthPath, originOf, quotePath, readJsonResponse, serveFeed, verifyPage } from './copy-feed.mjs';
 
 const addHistory = (state, item) => {
@@ -299,9 +300,10 @@ async function observeAction(agent, state, save, action, emit, client, approved 
   emit({ type: 'execution', actionId: action.id, ...await executeSwap(agent, state, save, adapter, order, { id: action.id, source: follow.listing.id }) });
 }
 
-export async function copyTick(agent, emit = () => {}) {
+async function copyTick(agent, emit, reviewer) {
   if ((await readAgentState(agent)).follow?.status !== 'active') return;
-  return withAgentState(agent, async (state, save) => {
+  const reviews = [];
+  const result = await withAgentState(agent, async (state, save) => {
     if (state.follow?.status !== 'active') return;
     const follow = state.follow;
     const guard = state.feedGuard ?? { staleSeconds: 45, failures: 3 };
@@ -342,7 +344,13 @@ export async function copyTick(agent, emit = () => {}) {
         if (seen[action.id]) continue;
         seen[action.id] = true;
         await save();
-        try { await observeAction(agent, state, save, action, emit, client); }
+        try {
+          await observeAction(agent, state, save, action, event => {
+            emit(event);
+            const job = copyReviewJob(action, event, follow.sessionId);
+            if (job) reviews.push(job);
+          }, client);
+        }
         catch (error) { addHistory(state, { type: 'action', actionId: action.id, status: 'error', reason: error.message }); emit({ type: 'action-error', actionId: action.id, reason: error.message }); }
       }
       follow.cursor = page.cursor;
@@ -353,12 +361,17 @@ export async function copyTick(agent, emit = () => {}) {
       return { cursor: page.cursor, received: page.actions.length };
     });
   });
+  for (const job of reviews) reviewer.enqueue(job);
+  return result;
 }
 
 export async function runCopyAgent(agent, { once, rpc, emit }) {
   if (once) {
     const events = [];
-    const result = (await copyTick(agent, item => events.push(item))) ?? { received: 0, status: 'idle' };
+    const collect = item => events.push(item);
+    const reviewer = copyReviewer(agent, collect);
+    const result = (await copyTick(agent, collect, reviewer)) ?? { received: 0, status: 'idle' };
+    await reviewer.settled();
     return { ...result, ...(events.length ? { events } : {}) };
   }
   const lockPath = join(agent.path, 'runner.lock');
@@ -367,6 +380,7 @@ export async function runCopyAgent(agent, { once, rpc, emit }) {
     throw error;
   });
   const controller = new AbortController();
+  const reviewer = copyReviewer(agent, emit, controller.signal);
   const stop = () => controller.abort();
   process.once('SIGINT', stop);
   process.once('SIGTERM', stop);
@@ -390,7 +404,7 @@ export async function runCopyAgent(agent, { once, rpc, emit }) {
         }
       } catch (error) { emit({ type: 'publisher-error', reason: error.message }); }
       try {
-        const result = await copyTick(agent, emit);
+        const result = await copyTick(agent, emit, reviewer);
         if (result?.status === 'paused') emit({ type: 'subscription', ...result });
       } catch (error) {
         emit({ type: 'runner-error', reason: error.message });
@@ -400,9 +414,11 @@ export async function runCopyAgent(agent, { once, rpc, emit }) {
       await sleep(seconds * 1000, undefined, { signal: controller.signal }).catch(error => { if (error.name !== 'AbortError') throw error; });
     } while (!controller.signal.aborted);
   } finally {
+    controller.abort();
     process.removeListener('SIGINT', stop);
     process.removeListener('SIGTERM', stop);
     try {
+      await reviewer.settled();
       await server?.close();
       if ((await readAgentState(agent)).follow?.status === 'active') {
         const { config } = await settings(agent.path);

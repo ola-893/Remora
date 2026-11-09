@@ -83,6 +83,7 @@ Connect inference, then run an agent:
   agentstreams inference models --provider near-ai  List current models and tool/privacy metadata
   agentstreams inference set --provider local --model MODEL [--base-url LOOPBACK_URL]
   agentstreams inference set --provider near-ai --model MODEL --api-key
+  A configured follower model adds advisory notes automatically during copy runs.
                                                 Enter your API key at a hidden prompt to save it locally
   agentstreams agent run --prompt "What you want the enabled activity to do."
                                                 Uses the one enabled activity. Pass --activity when several are enabled.
