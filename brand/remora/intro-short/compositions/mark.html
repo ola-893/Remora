@@ -5,20 +5,28 @@
       <img id="mark-logo" src="assets/remora-lockup-ink.svg" alt="Remora">
       <h1 id="mark-line" class="headline">Ride the signal.</h1>
       <p id="mark-detail">Paid agent feeds.<br>Execution under your rules.</p>
+      <div id="mark-install">
+        <p>Install the Remora CLI</p>
+        <code>npm install -g @ola-893/agentstreams-cli</code>
+      </div>
     </div>
   </section>
   <style>
-    #mark .mark-core{position:absolute;inset:238px 0 auto;display:flex;align-items:center;flex-direction:column}
-    #mark-logo{display:block;width:630px;height:auto}
-    #mark-line{margin:37px 0 32px;font-size:125px}
-    #mark-detail{margin:0;color:var(--ink);text-align:center;font-size:66px;line-height:1.11;letter-spacing:-.038em}
+    #mark .mark-core{position:absolute;inset:176px 0 auto;display:flex;align-items:center;flex-direction:column}
+    #mark-logo{display:block;width:540px;height:auto}
+    #mark-line{margin:22px 0 24px;font-size:116px}
+    #mark-detail{margin:0;color:var(--ink);text-align:center;font-size:62px;line-height:1.11;letter-spacing:-.038em}
+    #mark-install{margin-top:42px;text-align:center}
+    #mark-install p{margin:0 0 18px;font-size:52px;font-weight:700;letter-spacing:-.035em}
+    #mark-install code{display:block;padding:27px 42px;border-radius:16px;background:var(--deep);color:var(--aqua);font:400 56px/1.22 "Remora Mono",monospace;white-space:nowrap}
   </style>
   <script>
     {
       const tl=gsap.timeline({paused:true});
       tl.from("#mark-logo",{x:48,opacity:0,duration:.50,ease:"power4.out"},.15)
         .from("#mark-line",{y:16,opacity:0,duration:.42,ease:"power3.out"},.48)
-        .from("#mark-detail",{y:14,opacity:0,duration:.38,ease:"power3.out"},.85);
+        .from("#mark-detail",{y:14,opacity:0,duration:.38,ease:"power3.out"},.72)
+        .from("#mark-install",{y:18,opacity:0,duration:.38,ease:"power3.out"},.96);
       window.__timelines.mark=tl;
     }
   </script>
