@@ -10,6 +10,7 @@
         <code>npm install -g @ola-893/agentstreams-cli</code>
       </div>
     </div>
+    <p id="mark-network" class="mono">Built on NEAR · Testnet demo</p>
   </section>
   <style>
     #mark .mark-core{position:absolute;inset:176px 0 auto;display:flex;align-items:center;flex-direction:column}
@@ -19,6 +20,7 @@
     #mark-install{margin-top:42px;text-align:center}
     #mark-install p{margin:0 0 18px;font-size:52px;font-weight:700;letter-spacing:-.035em}
     #mark-install code{display:block;padding:27px 42px;border-radius:16px;background:var(--deep);color:var(--aqua);font:400 56px/1.22 "Remora Mono",monospace;white-space:nowrap}
+    #mark-network{position:absolute;bottom:94px;width:100%;margin:0;text-align:center;font-size:42px;letter-spacing:.025em}
   </style>
   <script>
     {
@@ -26,7 +28,8 @@
       tl.from("#mark-logo",{x:48,opacity:0,duration:.50,ease:"power4.out"},.15)
         .from("#mark-line",{y:16,opacity:0,duration:.42,ease:"power3.out"},.48)
         .from("#mark-detail",{y:14,opacity:0,duration:.38,ease:"power3.out"},.72)
-        .from("#mark-install",{y:18,opacity:0,duration:.38,ease:"power3.out"},.96);
+        .from("#mark-install",{y:18,opacity:0,duration:.38,ease:"power3.out"},.96)
+        .from("#mark-network",{opacity:0,duration:.32,ease:"power2.out"},1.08);
       window.__timelines.mark=tl;
     }
   </script>
