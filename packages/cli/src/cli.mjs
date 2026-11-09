@@ -38,8 +38,8 @@ const help = `Named agents and copy trading:
   agentstreams discover [--activity ACTIVITY] [--id PUBLISHER --url ORIGIN]
   agentstreams copy PUBLISHER [--url ORIGIN]      Preview a signed offer for free
   agentstreams copy start PUBLISHER [--url ORIGIN]
-  agentstreams copy mode observe|approve|auto
-  agentstreams copy pending | approve ACTION | reject ACTION
+  agentstreams copy mode observe|approve|auto|veto [--veto-seconds N]
+  agentstreams copy pending | approve ACTION | reject ACTION | block ACTION
   agentstreams copy pause | resume | stop | status | history
   agentstreams guard set payment --budget USDC --max-stream USDC --max-rate USDC_PER_SECOND --recipient SELLER.testnet
                                                 Approve on-chain limits in the browser wallet
@@ -116,7 +116,7 @@ export async function run(argv) {
   const strings = ['action-json', 'targets', 'max-inputs', 'copy-bps', 'hash', 'paper-balances', 'agent', 'activity', 'id', 'activities', 'rate', 'intents-agent-id', 'intents-key-env', 'intents-grant-env', 'from', 'to', 'amount-raw', 'nova-group', 'nova-account', 'nova-network', 'nova-key-env', 'performance-file', 'assets', 'input-asset', 'max-input-raw', 'copy-input-raw', 'max-age', 'max-slippage-bps', 'max-notional', 'stale-seconds', 'feed-failures', 'network', 'deployment', 'session', 'owner-id', 'recipient', 'amount', 'budget', 'max-stream', 'max-rate', 'max-duration', 'max-5xx', 'max-transport-errors', 'max-health-failures', 'idle-timeout', 'max-requests', 'reuse', 'poll-seconds', 'close-on-exit', 'url', 'health-path', 'quote-path', 'request-path', 'tiers', 'base-url', 'model', 'max-steps', 'prompt', 'tier', 'query', 'thinking', 'failure-cooldown', 'provider', 'reasoning-effort', 'max-output-tokens', 'repository', 'basic-rate', 'premium-rate', 'duration', 'run', 'timeout-seconds', 'transactions', 'hours', 'staking-pool', 'tokens', 'fund-near', 'token', 'balance-raw'];
   const booleans = ['api-key', 'cancel', 'resume', 'once', 'live', 'confidential', 'execute', 'json', 'help', 'version', 'enable', 'disable', 'dry-run', 'deploy', 'public-history'];
   const { values: v, positionals: p, tokens } = parseArgs({ args: argv, allowPositionals: true, strict: true, tokens: true, options: {
-    ...Object.fromEntries(strings.map(k => [k, { type: 'string' }])), ...Object.fromEntries(booleans.map(k => [k, { type: 'boolean' }])),
+    ...Object.fromEntries([...strings, 'veto-seconds'].map(k => [k, { type: 'string' }])), ...Object.fromEntries(booleans.map(k => [k, { type: 'boolean' }])),
     project: { type: 'string', default: '.' }, recording: { type: 'string', default: 'testnet' }, port: { type: 'string', default: '0' },
     'vault-name': { type: 'string', default: 'agentstreams' }, 'agent-name': { type: 'string', default: 'research-agent' }, rpc: { type: 'string', default: 'https://test.rpc.fastnear.com' }, service: { type: 'string', default: 'http://127.0.0.1:5321' },
   } });

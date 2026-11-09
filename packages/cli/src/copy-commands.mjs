@@ -22,13 +22,13 @@ export const copyFlags = {
   'publish:set': 'activities url port rate duration recipient nova-group nova-account nova-network nova-key-env performance-file public-history',
   'publish:start': '', 'publish:stop': '', 'publish:status': '', 'publish:history': '',
   'earnings:show': '', 'earnings:claim': 'from', discover: 'activity url id',
-  'copy:preview': 'url', 'copy:start': 'url activity', 'copy:mode': '', 'copy:pending': '', 'copy:approve': '', 'copy:reject': '',
+  'copy:preview': 'url', 'copy:start': 'url activity', 'copy:mode': 'veto-seconds', 'copy:pending': '', 'copy:approve': '', 'copy:reject': '', 'copy:block': '',
   'copy:pause': '', 'copy:resume': '', 'copy:stop': '', 'copy:status': '', 'copy:history': '',
   'guard:show': '', 'guard:set': 'activity targets max-inputs copy-bps budget max-stream max-rate max-duration recipient max-5xx max-transport-errors max-health-failures idle-timeout max-requests reuse poll-seconds close-on-exit failure-cooldown assets input-asset max-input-raw copy-input-raw max-age max-slippage-bps max-notional stale-seconds feed-failures',
   withdraw: '', 'agent:withdraw': '', 'stream:top-up': '', balance: '', status: '',
 };
 
-export const copyPositionals = new Set(['agent:withdraw', 'stream:top-up', 'agent:create', 'agent:use', 'agent:show', 'task:enable', 'task:disable', 'task:run', 'copy:start', 'copy:mode', 'copy:approve', 'copy:reject', 'guard:set']);
+export const copyPositionals = new Set(['agent:withdraw', 'stream:top-up', 'agent:create', 'agent:use', 'agent:show', 'task:enable', 'task:disable', 'task:run', 'copy:start', 'copy:mode', 'copy:approve', 'copy:reject', 'copy:block', 'guard:set']);
 const paymentLimits = { budget: 'budget', 'max-stream': 'max_deposit', 'max-rate': 'max_rate', 'max-duration': 'max_duration_seconds', recipient: 'recipients' };
 const runtimeLimits = { 'max-5xx': 'maxConsecutive5xx', 'max-transport-errors': 'maxConsecutiveTransportErrors', 'max-health-failures': 'maxConsecutiveHealthFailures', 'idle-timeout': 'idleTimeoutSeconds', 'max-requests': 'maxRequestsPerStream', 'poll-seconds': 'healthPollSeconds', 'failure-cooldown': 'failureCooldownSeconds', reuse: 'reuseStream', 'close-on-exit': 'closeOnExit' };
 const strategyFlags = ['targets', 'max-inputs', 'copy-bps', 'assets', 'max-age', 'max-slippage-bps'];
@@ -222,11 +222,12 @@ export async function runCopyCommand(command, p, v, workspace, agent, emit, prov
     case 'copy:resume': return startCopy(agent, { resume: true });
     case 'copy:pause': return stopCopy(agent, 'paused');
     case 'copy:stop': return stopCopy(agent, 'stopped');
-    case 'copy:mode': return changeMode(agent, arg);
+    case 'copy:mode': return changeMode(agent, arg, v['veto-seconds'] === undefined ? undefined : positive(v['veto-seconds'], 90));
     case 'copy:approve':
       if (strategyActivities.has(state.pending?.[arg]?.action.activity)) return approveStrategy(agent, arg);
       return decideAction(agent, arg, 'approved');
     case 'copy:reject': return decideAction(agent, arg, 'rejected');
+    case 'copy:block': return decideAction(agent, arg, 'blocked');
     case 'copy:status': return { subscription: state.follow ?? null, tradePending: Boolean(state.tradePending) };
     case 'copy:pending': return { actions: Object.values(state.pending ?? {}).filter(item => item.sessionId === state.follow?.sessionId && item.status === 'pending' && item.action.expiresAt > Date.now()) };
     case 'copy:history': return { history: state.history };

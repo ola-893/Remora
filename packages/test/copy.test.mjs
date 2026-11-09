@@ -6,16 +6,74 @@ import { mkdtemp, readFile, realpath, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { checkQuote, proposedOrder } from '../cli/src/copy-activity.mjs';
+import { checkQuote, copyVetoDeadline, copyVetoDue, proposedOrder } from '../cli/src/copy-activity.mjs';
 import { intentsAdapter, minimumOutput } from '../cli/src/copy-intents.mjs';
 import { runTradingAgent } from '../cli/src/trading-agent.mjs';
 import { runModelAgent } from '../cli/src/agent.mjs';
 import { describePaperFill, paperSeed } from '../cli/src/paper-trading.mjs';
 import { appendFill, appendStrategyAction, publicationHistory, publicListingHistory, verifyAction } from '../cli/src/copy-feed.mjs';
-import { createAgent, selectedAgent, withAgentState } from '../cli/src/agents.mjs';
+import { createAgent, readAgentState, selectedAgent, withAgentState } from '../cli/src/agents.mjs';
+import { approveStrategy } from '../cli/src/strategy-runtime.mjs';
 
 const exec = promisify(execFile);
 const bin = fileURLToPath(new URL('../cli/bin/agentstreams.mjs', import.meta.url));
+
+test('veto timing is bounded by both the signed expiry and the execution policy', () => {
+  const follow = { mode: 'veto', vetoSeconds: 30 };
+  const action = { at: 1000, expiresAt: 61000 };
+  assert.deepEqual(copyVetoDeadline(follow, action, { maxAge: 60 }, 2000), { blockUntil: 32000 });
+  assert.throws(() => copyVetoDeadline(follow, action, { maxAge: 60 }, 31000), /VETO_WINDOW_EXCEEDS/);
+  assert.throws(() => copyVetoDeadline(follow, action, { maxAge: 30 }, 2000), /VETO_WINDOW_EXCEEDS/);
+  const item = { status: 'pending', sessionId: 'copy', blockUntil: 32000 };
+  assert.equal(copyVetoDue(item, 'copy', 31999), false);
+  assert.equal(copyVetoDue(item, 'copy', 32000), true);
+  assert.equal(copyVetoDue(item, 'copy', 33000), true);
+  assert.equal(copyVetoDue(item, 'old', 33000), false);
+  assert.equal(copyVetoDue({ ...item, status: 'blocked' }, 'copy', 33000), false);
+});
+
+test('CLI veto blocks on time, preserves a deadline across repeated mode commands, and refuses manual early approval', async t => {
+  const workspace = await realpath(await mkdtemp(join(tmpdir(), 'remora-veto-')));
+  const previousHome = process.env.AGENTSTREAMS_HOME;
+  process.env.AGENTSTREAMS_HOME = join(workspace, 'profiles');
+  t.after(async () => {
+    if (previousHome === undefined) delete process.env.AGENTSTREAMS_HOME;
+    else process.env.AGENTSTREAMS_HOME = previousHome;
+    await rm(workspace, { recursive: true, force: true });
+  });
+  const run = async (...args) => JSON.parse((await exec(process.execPath, [bin, ...args, '--json'], { cwd: workspace })).stdout);
+  await run('agent', 'create', 'veto');
+  await run('task', 'enable', 'spot-trading', '--paper-balances', 'nep141:wrap.near=1000');
+  await run('guard', 'set', 'execution', '--assets', 'nep141:wrap.near,nep141:usdc.near', '--input-asset', 'nep141:wrap.near', '--max-input-raw', '100', '--copy-input-raw', '10');
+  const agent = await selectedAgent(workspace);
+  await withAgentState(agent, state => { state.follow = { mode: 'observe', status: 'active', sessionId: 'copy', listing: { activity: 'spot-trading' } }; });
+  await assert.rejects(run('copy', 'mode', 'veto', '--veto-seconds', '91'), /from 1 to 90/);
+  await assert.rejects(run('copy', 'mode', 'approve', '--veto-seconds', '20'), /requires copy mode veto/);
+  assert.equal((await run('copy', 'mode', 'veto', '--veto-seconds', '30')).vetoSeconds, 30);
+  const now = Date.now();
+  await withAgentState(agent, state => {
+    const action = { activity: 'spot-trading', at: now, expiresAt: now + 60000 };
+    state.pending = {
+      first: { status: 'pending', sessionId: 'copy', action, blockUntil: now + 30000 },
+      late: { status: 'pending', sessionId: 'copy', action, blockUntil: now - 1 },
+    };
+  });
+  await run('copy', 'mode', 'veto');
+  assert.equal((await run('copy', 'pending')).actions[0].blockUntil, now + 30000);
+  await assert.rejects(run('copy', 'approve', 'first'), /Use copy mode approve/);
+  await assert.rejects(run('copy', 'block', 'late'), /COPY_VETO_WINDOW_CLOSED/);
+  assert.equal((await run('copy', 'block', 'first')).status, 'blocked');
+  await run('copy', 'mode', 'observe');
+  assert.equal((await readAgentState(agent)).pending.late.status, 'cancelled');
+
+  await withAgentState(agent, state => {
+    state.follow = { mode: 'veto', status: 'active', sessionId: 'copy', listing: { activity: 'portfolio-rebalance' } };
+    const action = { activity: 'portfolio-rebalance', at: now, expiresAt: now + 60000 };
+    state.pending.native = { status: 'pending', sessionId: 'copy', action, blockUntil: Date.now() + 30000 };
+  });
+  await assert.rejects(approveStrategy(agent, 'native', { veto: true }), /not pending/);
+  assert.equal((await readAgentState(agent)).pending.native.status, 'pending');
+});
 
 test('native strategy fills retain their activity and settlement in the signed journal', async t => {
   const workspace = await mkdtemp(join(tmpdir(), 'remora-native-publication-'));

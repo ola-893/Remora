@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { mkdir, open, readdir, stat, unlink } from 'node:fs/promises';
 import { join } from 'node:path';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { KeyPair } from 'near-api-js';
 import { configHome, projectConfig, readProject, liveProfile } from './config.mjs';
 import { atomicWrite, readOptional, safeTarget } from './files.mjs';
@@ -72,11 +73,18 @@ export async function readAgentState(agent) {
   return text ? JSON.parse(text) : { version: 1, tasks: {}, history: [], subscribers: [], directory: {} };
 }
 
-export async function withAgentState(agent, update) {
+export async function withAgentState(agent, update, { waitMs = 0 } = {}) {
   const lockPath = join(agent.path, 'copy-state.lock');
+  const deadline = Date.now() + waitMs;
   let lock;
-  try { lock = await open(lockPath, 'wx', 0o600); }
-  catch (error) { if (error.code === 'EEXIST') throw new Error('AGENT_BUSY: another command is updating this agent. If it crashed, reconcile before removing its lock.'); throw error; }
+  while (!lock) {
+    try { lock = await open(lockPath, 'wx', 0o600); }
+    catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+      if (Date.now() >= deadline) throw new Error('AGENT_BUSY: another command is updating this agent. If it crashed, reconcile before removing its lock.');
+      await sleep(50);
+    }
+  }
   try {
     await lock.writeFile(`${process.pid}\n`);
     const state = await readAgentState(agent);

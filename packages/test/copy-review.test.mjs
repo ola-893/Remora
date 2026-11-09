@@ -23,7 +23,7 @@ test('automatic copy review uses the named inference profile and can only annota
   const action = { id: 'rebalance-action', activity: 'portfolio-rebalance', expiresAt: Date.now() + 120000,
     action: { poolId: 0, base: 'wrap.testnet', amount: '2000', weights: { 'wrap.testnet': 5000, 'rft.tokenfactory.testnet': 5000 } } };
   const candidate = { ...action.action, amount: '1000' };
-  const job = copyReviewJob(action, { type: 'strategy', status: 'pending', action: candidate,
+  const job = copyReviewJob(action, { type: 'strategy', status: 'pending', action: candidate, blockUntil: Date.now() + 30000,
     evidence: { source: 'rhea-exchange', amountIn: '1000', minimumAmountOut: '200', before: { privateBalance: '123' } } }, 'session');
   assert.equal(copyReviewJob(action, { type: 'strategy', status: 'skipped' }, 'session'), undefined);
   const events = [];
@@ -63,6 +63,7 @@ test('automatic copy review uses the named inference profile and can only annota
   assert.equal(requests[0].body.tools, undefined);
   assert.equal(requests[0].body.response_format.type, 'json_schema');
   assert.match(requests[0].body.messages[1].content, /"inputSizeComparedToLeader":"smaller"/);
+  assert.match(requests[0].body.messages[1].content, /"authorizationMode":"veto"/);
   assert.doesNotMatch(requests[0].body.messages[1].content, /privateBalance|session/);
   let state = await readAgentState(agent);
   assert.deepEqual(state.pending[action.id].review, reply);

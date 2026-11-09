@@ -6,11 +6,13 @@ import { assessQuote } from '@ola-893/agentstreams-core';
 import { gatewayFor } from './config.mjs';
 import { settings, setService } from './settings.mjs';
 import { agentSetupState, readAgentState, withAgentState } from './agents.mjs';
-import { checkQuote, operationKey, proposedOrder, rawAmount, spot } from './copy-activity.mjs';
+import { checkQuote, copyVetoDeadline, copyVetoDue, operationKey, proposedOrder, rawAmount, spot } from './copy-activity.mjs';
 import { paperBalances, paperFill, paperQuote } from './paper-trading.mjs';
 import { credential, intentsAdapter, minimumOutput } from './copy-intents.mjs';
 import { nativeWalletActivities } from './strategy-actions.mjs';
-import { observeStrategy } from './strategy-runtime.mjs';
+import { approveStrategy, observeStrategy } from './strategy-runtime.mjs';
+import { grantAccount } from './agent-grant.mjs';
+import { connectedOwner } from './owner-wallet.mjs';
 import { copyReviewJob, copyReviewer } from './copy-review.mjs';
 import { appendFill, checkListingQuote, fetchFeed, feedPath, getListing, healthPath, originOf, quotePath, readJsonResponse, serveFeed, verifyPage } from './copy-feed.mjs';
 
@@ -106,7 +108,7 @@ async function closeCopy(agent, state, save, status, reason, client) {
   follow.status = status;
   follow.closeHash = result.receipt?.hash ?? null;
   for (const item of Object.values(state.pending ?? {})) {
-    if (['pending', 'approved', 'awaiting-wallet'].includes(item.status)) item.status = 'cancelled';
+    if (['pending', 'approved', 'awaiting-wallet', 'authorizing'].includes(item.status)) item.status = 'cancelled';
   }
   addHistory(state, { type: 'subscription', status, reason, sessionId: follow.sessionId, transactionHash: follow.closeHash });
   return { ...follow, ...(result.receipt ? { receipt: result.receipt, explorerUrl: `https://testnet.nearblocks.io/txns/${result.receipt.hash}` } : {}) };
@@ -116,9 +118,10 @@ export async function stopCopy(agent, status, reason = 'OPERATOR_REQUEST') {
   return withAgentState(agent, (state, save) => closeCopy(agent, state, save, status, reason));
 }
 
-export async function changeMode(agent, mode) {
-  if (!['observe', 'approve', 'auto'].includes(mode)) throw new Error('Choose observe, approve or auto.');
-  return withAgentState(agent, state => {
+export async function changeMode(agent, mode, vetoSeconds) {
+  if (!['observe', 'approve', 'auto', 'veto'].includes(mode)) throw new Error('Choose observe, approve, auto or veto.');
+  if (vetoSeconds !== undefined && mode !== 'veto') throw new Error('--veto-seconds requires copy mode veto.');
+  return withAgentState(agent, async state => {
     const follow = current(state);
     if (follow.status !== 'active') throw new Error('Subscription is not active.');
     const activity = follow.listing.activity, task = state.tasks[activity];
@@ -126,11 +129,18 @@ export async function changeMode(agent, mode) {
       Boolean(nativeWalletActivities.has(activity) && task?.mode === 'wallet' && state.strategyPolicies?.[activity]);
     if (mode === 'auto' && activity !== spot) throw new Error('NEAR_WALLET_APPROVAL_REQUIRED: use copy mode approve.');
     if (mode !== 'observe' && !canExecute) throw new Error('Enable execution and set an activity execution guard first.');
-    if (mode !== 'approve') for (const item of Object.values(state.pending ?? {})) {
-      if (['pending', 'approved', 'awaiting-wallet'].includes(item.status)) item.status = 'cancelled';
+    if (mode === 'veto' && activity !== spot) {
+      const { accountId } = await connectedOwner({ required: true, ownerId: (await agentSetupState(agent)).ownerId });
+      if (!await grantAccount(accountId, agent.id, activity)) throw new Error('COPY_VETO_GRANT_REQUIRED: prepare an execution grant for this agent and activity.');
+    }
+    const window = vetoSeconds ?? (follow.mode === 'veto' ? follow.vetoSeconds : 30);
+    if (mode !== follow.mode || (mode === 'veto' && window !== follow.vetoSeconds)) for (const item of Object.values(state.pending ?? {})) {
+      if (['pending', 'approved', 'awaiting-wallet', 'authorizing'].includes(item.status)) item.status = 'cancelled';
     }
     follow.mode = mode;
-    return { mode, sessionId: follow.sessionId };
+    if (mode === 'veto') follow.vetoSeconds = window;
+    else delete follow.vetoSeconds;
+    return { mode, sessionId: follow.sessionId, ...(mode === 'veto' ? { vetoSeconds: window } : {}) };
   });
 }
 
@@ -140,11 +150,13 @@ export async function decideAction(agent, id, decision) {
     const item = state.pending?.[id];
     if (follow.status !== 'active' || !item || item.sessionId !== follow.sessionId || item.status !== 'pending') throw new Error('Action is not pending for the active subscription.');
     if (decision === 'approved' && follow.mode !== 'approve') throw new Error('Use copy mode approve before approving actions.');
+    if (decision === 'blocked' && follow.mode !== 'veto') throw new Error('Use copy mode veto before blocking actions.');
+    if (follow.mode === 'veto' && Date.now() >= item.blockUntil) throw new Error('COPY_VETO_WINDOW_CLOSED');
     if (Date.now() >= item.action.expiresAt) throw new Error('ACTION_EXPIRED');
     item.status = decision;
     addHistory(state, { type: 'decision', actionId: id, status: decision });
     return { actionId: id, status: decision };
-  });
+  }, { waitMs: decision === 'blocked' ? 12000 : 0 });
 }
 
 async function executeSwap(agent, state, save, adapter, order, record) {
@@ -274,15 +286,25 @@ async function observeAction(agent, state, save, action, emit, client, approved 
     return record({ status: 'skipped', reason, quote: summary, action });
   }
   if (follow.mode === 'observe') return record({ status: 'observed', quote: summary, order: result.order, action });
-  if (follow.mode === 'approve' && !approved) {
-    (state.pending ??= {})[action.id] = { status: 'pending', action, quote: summary, sessionId: follow.sessionId };
-    return record({ status: 'pending', quote: summary, order: result.order });
+  if (['approve', 'veto'].includes(follow.mode) && !approved) {
+    let deadline;
+    try { deadline = copyVetoDeadline(follow, action, policy); }
+    catch (error) { return record({ status: 'skipped', reason: error.message }); }
+    (state.pending ??= {})[action.id] = { status: 'pending', action, quote: summary, order: result.order, sessionId: follow.sessionId, ...deadline };
+    return record({ status: 'pending', quote: summary, order: result.order, ...deadline });
   }
-  if (!paper && (!config.live || state.tradePending)) return record({ status: 'skipped', reason: state.tradePending ? 'TRADE_RECONCILIATION_REQUIRED' : 'INTENTS_LIVE_DISABLED' });
+  if (!paper && (!config.live || state.tradePending)) {
+    if (approved) state.pending[action.id].status = 'skipped';
+    return record({ status: 'skipped', reason: state.tradePending ? 'TRADE_RECONCILIATION_REQUIRED' : 'INTENTS_LIVE_DISABLED' });
+  }
   const context = await client.status();
   if (context.vault.active_session !== follow.sessionId || !context.reusable || !Object.keys(await client.sessionHeaders()).length || proposedOrder(action, policy).reason) {
     if (approved) state.pending[action.id].status = 'skipped';
     return record({ status: 'skipped', reason: 'COPY_AUTHORITY_EXPIRED' });
+  }
+  if (follow.mode === 'veto' && JSON.stringify(result.order) !== JSON.stringify(state.pending[action.id].order)) {
+    state.pending[action.id].status = 'skipped';
+    return record({ status: 'skipped', reason: 'COPY_CANDIDATE_CHANGED' });
   }
   if (paper) {
     let filled;
@@ -303,6 +325,7 @@ async function observeAction(agent, state, save, action, emit, client, approved 
 async function copyTick(agent, emit, reviewer) {
   if ((await readAgentState(agent)).follow?.status !== 'active') return;
   const reviews = [];
+  const dueStrategies = [];
   const result = await withAgentState(agent, async (state, save) => {
     if (state.follow?.status !== 'active') return;
     const follow = state.follow;
@@ -358,10 +381,21 @@ async function copyTick(agent, emit, reviewer) {
       if (follow.mode === 'approve') for (const item of Object.values(state.pending ?? {})) {
         if (item.status === 'approved' && item.sessionId === follow.sessionId) await observeAction(agent, state, save, item.action, emit, client, true);
       }
+      if (follow.mode === 'veto') for (const item of Object.values(state.pending ?? {})) {
+        if (!copyVetoDue(item, follow.sessionId)) continue;
+        if (item.action.activity !== spot) dueStrategies.push(item.action.id);
+        else await observeAction(agent, state, save, item.action, emit, client, true);
+      }
       return { cursor: page.cursor, received: page.actions.length };
     });
   });
   for (const job of reviews) reviewer.enqueue(job);
+  for (const actionId of dueStrategies) {
+    try {
+      const result = await approveStrategy(agent, actionId, { veto: true });
+      emit({ type: 'execution', actionId, status: result.status, reason: result.reason, receipt: result.receipt });
+    } catch (error) { emit({ type: 'action-error', actionId, reason: error.message }); }
+  }
   return result;
 }
 

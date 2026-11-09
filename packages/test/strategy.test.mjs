@@ -227,3 +227,10 @@ test('wallet submission checks authority again and an expired authorization prev
   }), /COPY_AUTHORITY_EXPIRED/);
   assert.equal(broadcast, false);
 });
+
+test('a veto-mode strategy without a matching grant never prepares or opens a wallet transaction', async () => {
+  const guard = { targets: RNEAR, 'max-inputs': caps([NEAR_ASSET, 100]) };
+  await assert.rejects(plan('staking-moves', { pool: RNEAR, operation: 'unstake', amount: '50' }, guard, async () => {
+    assert.fail('Veto execution tried to read the venue without a grant');
+  }, { execute: true, requireGrant: true, transact: async () => assert.fail('Veto execution opened a wallet transaction') }), /COPY_VETO_GRANT_REQUIRED/);
+});

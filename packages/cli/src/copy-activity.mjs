@@ -12,6 +12,17 @@ export const activities = Object.freeze({
 });
 
 export const spot = 'spot-trading';
+
+export function copyVetoDeadline(follow, action, policy, now = Date.now()) {
+  if (follow.mode !== 'veto') return {};
+  const blockUntil = now + follow.vetoSeconds * 1000;
+  if (Math.min(action.expiresAt, action.at + policy.maxAge * 1000) <= blockUntil) throw new Error('COPY_VETO_WINDOW_EXCEEDS_ACTION_AGE');
+  return { blockUntil };
+}
+
+export function copyVetoDue(item, sessionId, now = Date.now()) {
+  return item?.sessionId === sessionId && item.status === 'pending' && Number.isSafeInteger(item.blockUntil) && now >= item.blockUntil;
+}
 export const assetId = value => typeof value === 'string' && /^[a-z0-9][a-z0-9:._-]{0,155}$/i.test(value);
 export const rawAmount = value => typeof value === 'string' && /^[1-9][0-9]{0,37}$/.test(value);
 

@@ -280,17 +280,18 @@ export async function prepareRangeDeposit(input, policy, {
 }
 
 export async function runWalletStrategy(activity, action, policy, {
-  execute, operationId, orderClientId, authorize, ownerId, agentId, expectedExecutionAccountId,
+  execute, operationId, orderClientId, authorize, ownerId, agentId, expectedExecutionAccountId, requireGrant = false,
   connect = connectedOwner, views = testnetViews, transact = signStrategyTransaction,
 } = {}) {
   const build = builders[activity];
   if (!build) throw new Error(activityBlocker);
   enforceStrategyPolicy(activity, action, policy, {});
   const wallet = await connect({ required: true, ownerId });
-  const rpc = await views(wallet.rpcUrl);
   const executionAccountId = await grantAccount(wallet.accountId, agentId, activity);
+  if (requireGrant && !executionAccountId) throw new Error('COPY_VETO_GRANT_REQUIRED');
   const accountId = executionAccountId ?? wallet.accountId;
   if (expectedExecutionAccountId && expectedExecutionAccountId !== accountId) throw new Error('STRATEGY_SIGNER_CHANGED: preview again.');
+  const rpc = await views(wallet.rpcUrl);
   let { confirms, ...plan } = await build(action, accountId, rpc, policy, orderClientId);
   enforceStrategyPolicy(activity, action, policy, plan.inputs);
   if (!execute) return { status: 'preview', mode: 'wallet', activity, action, network: 'testnet', ownerId: wallet.accountId, executionAccountId: accountId, ...plan, signedTransactions: 0 };

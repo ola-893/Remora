@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { setTimeout as sleep } from 'node:timers/promises';
-import { operationKey } from './copy-activity.mjs';
+import { copyVetoDeadline, copyVetoDue, operationKey } from './copy-activity.mjs';
 import { gatewayFor } from './config.mjs';
 import { agentSetupState, readAgentState, withAgentState } from './agents.mjs';
 import { appendStrategyAction } from './copy-feed.mjs';
@@ -33,7 +33,7 @@ async function saveResult(agent, id, result, copiedFrom) {
         const publication = await appendStrategyAction(agent, state, entry).catch(error => ({ error: error.message }));
         if (copiedFrom && state.pending?.[id]) state.pending[id].status = result.status;
         strategyHistory(state, { type: 'strategy', activity: result.activity, status: result.status, actionId: id,
-          transactionHash: result.receipt.hash, ...(copiedFrom ? { publisher: copiedFrom } : {}), publication });
+          transactionHash: result.receipt.hash, signing: result.receipt.signing, ...(copiedFrom ? { publisher: copiedFrom } : {}), publication });
         return { ...result, actionId: id, publication };
       });
     } catch (error) {
@@ -88,38 +88,51 @@ export async function observeStrategy(agent, state, entry, emit) {
   if (entry.execution !== 'wallet') return record('skipped', { reason: 'TESTNET_SETTLEMENT_REQUIRED' });
   try {
     checkAge(entry, state.strategyPolicies?.[activity]);
-    if (follow.mode !== 'approve') return record('observed', { action: entry.action, transactionHash: entry.settlementRef });
+    if (!['approve', 'veto'].includes(follow.mode)) return record('observed', { action: entry.action, transactionHash: entry.settlementRef });
     const policy = strategyPolicyFor(state, activity);
     const action = sizedStrategyAction(activity, entry.action, policy);
     const { ownerId } = await agentSetupState(agent);
-    const checked = await runWalletStrategy(activity, action, policy, { ownerId, agentId: agent.id,
+    const checked = await runWalletStrategy(activity, action, policy, { ownerId, agentId: agent.id, requireGrant: follow.mode === 'veto',
       orderClientId: orderClientId(agent, activity, action, id, entry.publisher) });
     const preview = { action, inputs: checked.inputs, evidence: checked.evidence, executionAccountId: checked.executionAccountId, transactionHash: entry.settlementRef };
-    (state.pending ??= {})[id] = { status: 'pending', action: entry, preview, sessionId: follow.sessionId };
-    return record('pending', preview);
+    const deadline = copyVetoDeadline(follow, entry, policy);
+    (state.pending ??= {})[id] = { status: 'pending', action: entry, preview, sessionId: follow.sessionId, ...deadline };
+    return record('pending', { ...preview, ...deadline });
   } catch (error) {
     return record('skipped', { reason: error.message });
   }
 }
 
-export async function approveStrategy(agent, id) {
+export async function approveStrategy(agent, id, { veto = false } = {}) {
+  const mode = veto ? 'veto' : 'approve';
+  const preparing = veto ? 'authorizing' : 'awaiting-wallet';
+  const lockOptions = veto ? { waitMs: 2000 } : undefined;
   const prepared = await withAgentState(agent, state => {
     const { follow } = state, item = state.pending?.[id];
-    if (follow?.status !== 'active' || follow.mode !== 'approve' || item?.status !== 'pending' ||
-        item.sessionId !== follow.sessionId || item.action.activity !== follow.listing.activity) {
+    if (follow?.status !== 'active' || follow.mode !== mode || item?.status !== 'pending' ||
+        item.sessionId !== follow.sessionId || item.action.activity !== follow.listing.activity || (veto && !copyVetoDue(item, follow.sessionId))) {
       throw new Error('Action is not pending for the active subscription.');
     }
-    const policy = strategyPolicyFor(state, item.action.activity);
-    checkAge(item.action, policy);
-    item.status = 'awaiting-wallet';
-    return { entry: item.action, sessionId: item.sessionId, policy, executionAccountId: item.preview?.executionAccountId };
-  });
-  const { entry, sessionId, policy, executionAccountId } = prepared;
+    try {
+      const policy = strategyPolicyFor(state, item.action.activity);
+      checkAge(item.action, policy);
+      const action = sizedStrategyAction(item.action.activity, item.action.action, policy);
+      if (veto && JSON.stringify(action) !== JSON.stringify(item.preview?.action)) throw new Error('COPY_CANDIDATE_CHANGED');
+      item.status = preparing;
+      return { entry: item.action, sessionId: item.sessionId, policy, action, preview: item.preview };
+    } catch (error) {
+      if (!veto) throw error;
+      item.status = 'skipped';
+      strategyHistory(state, { type: 'strategy', actionId: id, status: 'skipped', reason: error.message });
+      return { status: 'skipped', reason: error.message };
+    }
+  }, lockOptions);
+  if (prepared.status === 'skipped') return prepared;
+  const { entry, sessionId, policy, action, preview } = prepared;
   try {
-    const action = sizedStrategyAction(entry.activity, entry.action, policy);
     const { ownerId } = await agentSetupState(agent);
     const result = await runWalletStrategy(entry.activity, action, policy, { execute: true, operationId: id, ownerId, agentId: agent.id,
-      expectedExecutionAccountId: executionAccountId ?? ownerId,
+      expectedExecutionAccountId: preview?.executionAccountId ?? ownerId, requireGrant: veto,
       orderClientId: orderClientId(agent, entry.activity, action, id, entry.publisher),
       authorize: async inputs => {
         const client = await gatewayFor(agent.path);
@@ -127,10 +140,13 @@ export async function approveStrategy(agent, id) {
           await withAgentState(agent, async state => {
             const current = strategyPolicyFor(state, entry.activity);
             const active = state.follow;
-            if (active?.status !== 'active' || active.sessionId !== sessionId || active.mode !== 'approve' ||
-                state.pending?.[id]?.status !== 'awaiting-wallet') throw new Error('COPY_AUTHORITY_EXPIRED');
+            if (active?.status !== 'active' || active.sessionId !== sessionId || active.mode !== mode ||
+                state.pending?.[id]?.status !== preparing) throw new Error('COPY_AUTHORITY_EXPIRED');
             checkAge(entry, current);
             enforceStrategyPolicy(entry.activity, action, current, inputs);
+            if (veto && Object.entries(inputs).some(([asset, amount]) => BigInt(amount) > BigInt(preview?.inputs?.[asset] ?? '0'))) {
+              throw new Error('COPY_CANDIDATE_CHANGED');
+            }
             if (JSON.stringify(current) !== JSON.stringify(policy)) throw new Error('STRATEGY_POLICY_CHANGED');
             const context = await client.status();
             if (context.vault.active_session !== sessionId || !context.reusable || !Object.keys(await client.sessionHeaders()).length) {
@@ -138,7 +154,7 @@ export async function approveStrategy(agent, id) {
             }
             checkAge(entry, current);
             state.pending[id].status = 'submitting';
-          });
+          }, lockOptions);
         } finally { await client.dispose(); }
       },
     });
@@ -146,11 +162,11 @@ export async function approveStrategy(agent, id) {
   } catch (error) {
     await withAgentState(agent, state => {
       const item = state.pending?.[id];
-      if (item?.status === 'awaiting-wallet') item.status = 'skipped';
+      if (item?.status === preparing) item.status = 'skipped';
       else if (item?.status === 'submitting') item.status = error.confirmedFailure ? 'failed' : 'reconcile-wallet';
       strategyHistory(state, { type: 'strategy', activity: entry.activity, actionId: id,
         status: item?.status ?? 'error', reason: error.message });
-    }).catch(() => {});
+    }, lockOptions).catch(() => {});
     throw error;
   }
 }
