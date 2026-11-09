@@ -8,10 +8,10 @@
     </div>
     <div id="veto-record" class="stage-panel">
       <div class="veto-top small"><span>30-SECOND WINDOW</span><span>TESTNET RUN</span></div>
-      <div id="veto-a" class="veto-row"><span class="small">CANDIDATE 01</span><strong>Blocked</strong><span class="small">12.5s after queue</span></div>
-      <div id="veto-b" class="veto-row"><span class="small">CANDIDATE 02</span><strong>Swap confirmed</strong><span class="small">Grant-signed · After deadline</span></div>
+      <div id="veto-a" class="veto-row"><span class="small">CANDIDATE 01</span><strong>You vetoed it</strong><span class="small">12.5s after queue</span></div>
+      <div id="veto-b" class="veto-row"><span class="small">CANDIDATE 02</span><strong>No veto. Swap confirmed</strong><span class="small">Executed after the deadline</span></div>
     </div>
-    <p id="veto-foot" class="foot">Guards rechecked before execution</p>
+    <p id="veto-foot" class="foot">The CLI enforces execution limits.</p>
   </section>
   <style>
     #veto .split{width:650px}
@@ -20,7 +20,7 @@
     #veto-record .veto-top{display:flex;justify-content:space-between;padding:28px 36px;background:#143149;color:var(--soft)}
     #veto-record .veto-row{display:grid;grid-template-columns:1fr;gap:12px;padding:29px 36px 33px;border-top:2px solid var(--line)}
     #veto-record .veto-row span{color:var(--soft)}
-    #veto-record strong{font-size:55px;line-height:1;letter-spacing:-.052em}
+    #veto-record strong{font-size:52px;line-height:1.04;letter-spacing:-.052em}
     #veto-a strong{color:var(--coral)}
     #veto-b strong{color:var(--mint)}
   </style>
@@ -34,7 +34,7 @@
         .from("#veto-sub",{opacity:0,y:18,duration:.4,ease:"power2.out"},.99)
         .from("#veto-a",{opacity:0,y:15,duration:.38,ease:"power3.out"},1.18)
         .from("#veto-b",{opacity:0,y:15,duration:.43,ease:"power3.out"},1.88)
-        .from("#veto-foot",{opacity:0,duration:.34,ease:"power2.out"},2.50);
+        .from("#veto-foot",{opacity:0,duration:.34,ease:"power2.out"},1.85);
       window.__timelines.veto=tl;
     }
   </script>

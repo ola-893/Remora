@@ -5,13 +5,13 @@
     <h1 id="copy-title" class="headline">Copy the <b class="accent">move.</b></h1>
     <div id="copy-record" class="stage-panel">
       <div id="copy-record-head" class="record-head small">
-        <span>PORTFOLIO REBALANCE</span><span>RHEA EXCHANGE · TESTNET</span>
+        <span>PORTFOLIO REBALANCE</span><span>RHEA EXCHANGE · SEPARATE TESTNET ACCOUNTS</span>
       </div>
       <div id="copy-lead" class="record-row"><span>Signed leader action</span><strong>0.001 <small>wNEAR</small></strong></div>
       <div id="copy-follow" class="record-row"><span>Follower size <em>50%</em></span><strong>0.0005 <small>wNEAR</small></strong></div>
-      <div id="copy-meter" class="record-meter small"><span>STREAM ACTIVE</span><span>0.000001 USDC / SECOND</span></div>
+      <div id="copy-meter" class="record-meter small"><span>Pay per second to read the feed.</span><span>0.000001 USDC / SECOND</span></div>
     </div>
-    <p id="copy-foot" class="foot">Actual testnet inputs · Separate execution accounts</p>
+    <p id="copy-foot" class="foot">The NEAR vault enforces payment limits.</p>
   </section>
   <style>
     #copy-title{position:absolute;top:233px;left:170px;font-size:121px}
@@ -22,7 +22,7 @@
     #copy-record .record-row strong{font-size:53px;letter-spacing:-.035em}
     #copy-record .record-row small{font-size:29px;font-weight:400;color:var(--soft)}
     #copy-record .record-row em{font:400 30px "Remora Mono",monospace;font-style:normal;margin-left:27px;color:var(--aqua)}
-    #copy-record .record-meter{color:var(--mint)}
+    #copy-record .record-meter{color:var(--mint);font:700 34px/1.22 "Remora Sans",sans-serif}
   </style>
   <script>
     {
@@ -33,7 +33,7 @@
         .from("#copy-lead",{y:15,opacity:0,duration:.33,ease:"power2.out"},1.02)
         .from("#copy-follow",{y:15,opacity:0,duration:.36,ease:"power2.out"},1.40)
         .from("#copy-meter",{opacity:0,duration:.35,ease:"power2.out"},1.94)
-        .from("#copy-foot",{opacity:0,duration:.38,ease:"power2.out"},2.22);
+        .from("#copy-foot",{opacity:0,duration:.34,ease:"power2.out"},1.93);
       window.__timelines.copy=tl;
     }
   </script>

@@ -1,9 +1,11 @@
 # Remora intro review
 
-The opener follows the supplied Pump film's five beats. Remora's aqua and navy palette replaces the reference palette. The existing cybernetic pair leads the opening, and the brand lockup closes the film. The soundtrack comes from the supplied reference MP4.
+The Explore scene uses two crops of the Remora frontend’s Hour Leader profile. The chart shows quoted paper swap output. The Copy ID crop includes the historical stream rate in USDC per second.
 
-The Explore panel is a capture of the Hour Leader archive from the Remora frontend. The copy and veto panels summarize the real rebalance rehearsal in large type. The film labels the Explore archive as paper trading and the rebalance results as testnet. The blocked candidate and the grant-signed swap come from separate actions in that rehearsal. [Rebalance evidence](../evidence/near/remora-veto-testnet-2026-11-09.json)
+The live portfolio rebalance rehearsal used separate execution accounts and a follower sized at 50% of the leader’s input. The owner blocked the first candidate about 12.5 seconds after it queued. The next candidate had a 30-second veto window and confirmed a swap after its deadline. [Rebalance evidence](../evidence/near/remora-veto-testnet-2026-11-09.json) · [CLI demo steps](../REBALANCE_DEMO.md)
 
-HyperFrames passed lint, layout, contrast and runtime checks. All four cuts passed the seam gate. The phone-size review led to shorter supporting lines and a larger sizing label. The Explore capture keeps the original interface density, with a separate caption identifying the record.
+The kill-switch scene excerpts a separate paper-trading run backed by a real NEAR testnet subscription. The feed returned HTTP 200 before closure and HTTP 403 afterward with the same signed session. The scene condenses the terminal output to the successful stop and the two status codes. The full transcript includes an earlier attempt that returned `AGENT_BUSY`. [Terminal transcript](../evidence/copy-trading/hour-2026-11-07/terminal.txt#L2635)
 
-The rendered H.264 MP4 is 19.2 seconds, with 576 frames at 1920 × 1080 and 30 fps. The AAC soundtrack spans the full edit and measures −15.3 LUFS integrated and −2.0 dB true peak. Audio verification used measurements. The exported frames were visually reviewed.
+The soundtrack extends the music from the supplied Pump reference by repeating a middle phrase, with short fades at the edit points.
+
+HyperFrames passed lint, runtime, layout, craft, contrast and audio checks. All six cuts passed the seam gate. The exported H.264 video has 864 frames at 1920 × 1080 and 30 fps. The AAC track spans all 28.8 seconds and measures −15.2 LUFS integrated with a −1.5 dB true peak. Exported frames were visually reviewed and the audio was measured.

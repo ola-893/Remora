@@ -1,0 +1,37 @@
+<template>
+  <section id="stop" class="frame" data-composition-id="stop" data-width="1920" data-height="1080">
+    <div class="edge"></div>
+    <div id="stop-tag" class="eyebrow">04 / Stream kill switch</div>
+    <h1 id="stop-title" class="headline">Close the stream.<br><b class="accent">Cut off the feed.</b></h1>
+    <div id="stop-terminal" class="stage-panel">
+      <div id="stop-before" class="stop-row"><code>GET /copy/actions</code><strong>HTTP 200</strong></div>
+      <div id="stop-command" class="stop-row command"><code>$ agentstream copy stop --agent hour-copier</code></div>
+      <div id="stop-after" class="stop-row denied"><code>GET /copy/actions</code><strong>HTTP 403</strong></div>
+    </div>
+    <p id="stop-foot" class="foot">Recorded CLI run · Same signed session · Paper trades</p>
+  </section>
+  <style>
+    #stop-title{position:absolute;top:221px;left:170px;font-size:103px}
+    #stop-terminal{position:absolute;top:473px;left:170px;right:170px;border-radius:14px;overflow:hidden}
+    #stop-terminal .stop-row{min-height:113px;padding:20px 43px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--line)}
+    #stop-terminal .stop-row:last-child{border:0}
+    #stop-terminal code,#stop-terminal strong{font:400 42px "Remora Mono",monospace}
+    #stop-terminal strong{color:var(--mint)}
+    #stop-terminal .command{background:#143149;color:var(--white)}
+    #stop-terminal .denied strong{color:var(--coral)}
+    #stop-foot{bottom:118px}
+  </style>
+  <script>
+    {
+      const tl=gsap.timeline({paused:true});
+      tl.from("#stop-tag",{opacity:0,duration:.26,ease:"power2.out"},.08)
+        .from("#stop-title",{x:42,opacity:.4,duration:.46,ease:"power4.out"},0)
+        .from("#stop-terminal",{clipPath:"inset(0 100% 0 0)",duration:.51,ease:"power3.out"},.40)
+        .from("#stop-before",{opacity:0,y:13,duration:.30,ease:"power2.out"},.69)
+        .from("#stop-command",{opacity:0,x:28,duration:.39,ease:"power4.out"},1.35)
+        .from("#stop-after",{opacity:0,y:16,duration:.44,ease:"power3.out"},2.15)
+        .from("#stop-foot",{opacity:0,duration:.33,ease:"power2.out"},1.80);
+      window.__timelines.stop=tl;
+    }
+  </script>
+</template>

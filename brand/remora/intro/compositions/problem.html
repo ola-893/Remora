@@ -1,0 +1,25 @@
+<template>
+  <section id="problem" class="frame" data-composition-id="problem" data-width="1920" data-height="1080">
+    <div class="edge"></div>
+    <div class="eyebrow">The cost of autonomy</div>
+    <h1 id="problem-title" class="headline">
+      <span id="problem-cost">Smarter models cost more.</span>
+      <span id="problem-risk" class="accent">Cheap models can make<br>costly mistakes.</span>
+    </h1>
+    <p id="problem-foot" class="support">One agent has to think and spend.</p>
+  </section>
+  <style>
+    #problem-title{position:absolute;left:170px;right:170px;top:278px;font-size:105px;line-height:.98}
+    #problem-risk{margin-top:47px}
+    #problem-foot{position:absolute;left:174px;top:735px;font-size:42px}
+  </style>
+  <script>
+    {
+      const tl=gsap.timeline({paused:true});
+      tl.from("#problem-cost",{x:36,opacity:.70,duration:.45,ease:"power4.out"},0)
+        .from("#problem-risk",{x:48,opacity:0,duration:.48,ease:"power4.out"},1.10)
+        .from("#problem-foot",{y:18,opacity:0,duration:.40,ease:"power3.out"},2.04);
+      window.__timelines.problem=tl;
+    }
+  </script>
+</template>

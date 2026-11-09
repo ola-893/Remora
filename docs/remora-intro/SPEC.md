@@ -1,13 +1,15 @@
 # Remora intro
 
-A 19.2-second opener at 1920 × 1080 and 30 fps. Follow the pacing of the supplied Pump intro. The story follows an operator from choosing a leader to controlling what their own agent copies.
+A 28.8-second opener at 1920 × 1080 and 30 fps. It starts with the cost of having each agent both think and spend, then shows how a follower pays for a leader’s decision and executes within its own limits.
 
-| Time | Beat | Proof and motion |
+| Time (s) | Beat | What appears |
 | --- | --- | --- |
-| 0–3.2 | Smart agents decide | Aqua title strikes, a signal trace and the established cybernetic pair |
-| 3.2–6.8 | Find your leader | The real Hour Leader archive, labelled as a paper recording |
-| 6.8–11.2 | Copy the move | The signed testnet rebalance and its follower size from the veto run |
-| 11.2–15.6 | Your rules still apply | Two recorded outcomes show the veto and the grant-signed swap |
-| 15.6–19.2 | Remora | The brand lockup and a two-second Explore hold |
+| 0–4.8 | The cost of autonomy | Smarter models cost more. Cheap models can make costly mistakes. |
+| 4.8–8.0 | Meet Remora | Smart agents decide. Cheap agents follow. The cybernetic shark and remora carry the metaphor. |
+| 8.0–12.8 | Explore | Enlarged crops of the Hour Leader chart and Copy ID panel, labeled as recorded paper trading. |
+| 12.8–16.8 | Paid signal | The testnet rebalance inputs, a 50% follower size, and the price per second. |
+| 16.8–20.8 | Timed veto | An owner veto and a later confirmed swap after the 30-second window. |
+| 20.8–25.6 | Stream kill switch | HTTP 200, the successful `agentstream copy stop`, and HTTP 403 from the same signed session. |
+| 25.6–28.8 | Remora | Brand lockup, repository URL, and NEAR HACKATHON label. |
 
-Use an opaque navy stage, aqua bookends, Inter display type and JetBrains Mono for the records. Frame gutters are 170 px. Titles use 112–142 px type, with body copy at 36–38 px. Each handoff continues left. The reference soundtrack supplies the musical timing. Review the bookends, each proof beat and both sides of each cut.
+The NEAR vault enforces payment limits. The CLI enforces execution limits. Use an opaque navy stage, aqua title cards, Inter display type and JetBrains Mono for terminal records. Each handoff moves left.

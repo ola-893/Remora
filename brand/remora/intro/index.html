@@ -35,13 +35,15 @@
   </style>
 </head>
 <body>
-  <main id="root" data-composition-id="main" data-start="0" data-duration="19.2" data-width="1920" data-height="1080">
-    <div id="el-hook" class="clip scene" data-composition-id="hook" data-composition-src="compositions/hook.html" data-start="0" data-duration="3.2" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
-    <div id="el-explore" class="clip scene" data-composition-id="explore" data-composition-src="compositions/explore.html" data-start="3.2" data-duration="3.6" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
-    <div id="el-copy" class="clip scene" data-composition-id="copy" data-composition-src="compositions/copy.html" data-start="6.8" data-duration="4.4" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
-    <div id="el-veto" class="clip scene" data-composition-id="veto" data-composition-src="compositions/veto.html" data-start="11.2" data-duration="4.4" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
-    <div id="el-mark" class="clip scene" data-composition-id="mark" data-composition-src="compositions/mark.html" data-start="15.6" data-duration="3.6" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
-    <audio id="remora-score" class="clip" src="assets/reference-score.m4a" data-start="0" data-duration="19.2" data-track-index="3" data-volume="0.94"></audio>
+  <main id="root" data-composition-id="main" data-start="0" data-duration="28.8" data-width="1920" data-height="1080">
+    <div id="el-problem" class="clip scene" data-composition-id="problem" data-composition-src="compositions/problem.html" data-start="0" data-duration="4.8" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
+    <div id="el-hook" class="clip scene" data-composition-id="hook" data-composition-src="compositions/hook.html" data-start="4.8" data-duration="3.2" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
+    <div id="el-explore" class="clip scene" data-composition-id="explore" data-composition-src="compositions/explore.html" data-start="8" data-duration="4.8" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
+    <div id="el-copy" class="clip scene" data-composition-id="copy" data-composition-src="compositions/copy.html" data-start="12.8" data-duration="4" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
+    <div id="el-veto" class="clip scene" data-composition-id="veto" data-composition-src="compositions/veto.html" data-start="16.8" data-duration="4" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
+    <div id="el-stop" class="clip scene" data-composition-id="stop" data-composition-src="compositions/stop.html" data-start="20.8" data-duration="4.8" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
+    <div id="el-mark" class="clip scene" data-composition-id="mark" data-composition-src="compositions/mark.html" data-start="25.6" data-duration="3.2" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
+    <audio id="remora-score" class="clip" src="assets/intro-score.m4a" data-start="0" data-duration="28.8" data-track-index="3" data-volume="0.94"></audio>
   </main>
   <script>
     window.__timelines = window.__timelines || {};
@@ -49,28 +51,38 @@
     window.__timelines["main"] = tl;
       // <seams:auto> — generated from ledger.json and adapted to use clip-safe opacity.
       // Regenerate: node <motion-doctrine>/scripts/seam-stamp.mjs --ledger ledger.json --write index.html, then replace autoAlpha with opacity.
-      gsap.set("#el-hook", { opacity: 1, xPercent: 0, yPercent: 0, scale: 1, filter: "blur(0px)", transformOrigin: "50% 50%" });
-      gsap.set(["#el-explore","#el-copy","#el-veto","#el-mark"], { opacity: 0, xPercent: 0, yPercent: 0, scale: 1, filter: "blur(0px)", transformOrigin: "50% 50%" });
+      gsap.set("#el-problem", { opacity: 1, xPercent: 0, yPercent: 0, scale: 1, filter: "blur(0px)", transformOrigin: "50% 50%" });
+      gsap.set(["#el-hook","#el-explore","#el-copy","#el-veto","#el-stop","#el-mark"], { opacity: 0, xPercent: 0, yPercent: 0, scale: 1, filter: "blur(0px)", transformOrigin: "50% 50%" });
 
-      // SEAM — hook-to-explore : cut-the-curve LEFT (cut @3.2)
-      tl.to("#el-hook", { xPercent: -12, opacity: 0, duration: 0.34, ease: "power3.in" }, 2.86);
-      tl.set("#el-hook", { opacity: 0 }, 3.2);
-      tl.fromTo("#el-explore", { xPercent: 10, opacity: 0.35 }, { xPercent: 0, opacity: 1, duration: 0.42, ease: "power4.out", immediateRender: false }, 3.2);
+      // SEAM — problem-to-hook : cut-the-curve LEFT (cut @4.8)
+      tl.to("#el-problem", { xPercent: -12, opacity: 0, duration: 0.34, ease: "power3.in" }, 4.46);
+      tl.set("#el-problem", { opacity: 0 }, 4.8);
+      tl.fromTo("#el-hook", { xPercent: 10, opacity: 0.35 }, { xPercent: 0, opacity: 1, duration: 0.42, ease: "power4.out", immediateRender: false }, 4.8);
 
-      // SEAM — explore-to-copy : cut-the-curve LEFT (cut @6.8)
-      tl.to("#el-explore", { xPercent: -12, opacity: 0, duration: 0.34, ease: "power3.in" }, 6.46);
-      tl.set("#el-explore", { opacity: 0 }, 6.8);
-      tl.fromTo("#el-copy", { xPercent: 10, opacity: 0.35 }, { xPercent: 0, opacity: 1, duration: 0.42, ease: "power4.out", immediateRender: false }, 6.8);
+      // SEAM — hook-to-explore : cut-the-curve LEFT (cut @8)
+      tl.to("#el-hook", { xPercent: -12, opacity: 0, duration: 0.34, ease: "power3.in" }, 7.66);
+      tl.set("#el-hook", { opacity: 0 }, 8);
+      tl.fromTo("#el-explore", { xPercent: 10, opacity: 0.35 }, { xPercent: 0, opacity: 1, duration: 0.42, ease: "power4.out", immediateRender: false }, 8);
 
-      // SEAM — copy-to-veto : cut-the-curve LEFT (cut @11.2)
-      tl.to("#el-copy", { xPercent: -12, opacity: 0, duration: 0.34, ease: "power3.in" }, 10.86);
-      tl.set("#el-copy", { opacity: 0 }, 11.2);
-      tl.fromTo("#el-veto", { xPercent: 10, opacity: 0.35 }, { xPercent: 0, opacity: 1, duration: 0.42, ease: "power4.out", immediateRender: false }, 11.2);
+      // SEAM — explore-to-copy : cut-the-curve LEFT (cut @12.8)
+      tl.to("#el-explore", { xPercent: -12, opacity: 0, duration: 0.34, ease: "power3.in" }, 12.46);
+      tl.set("#el-explore", { opacity: 0 }, 12.8);
+      tl.fromTo("#el-copy", { xPercent: 10, opacity: 0.35 }, { xPercent: 0, opacity: 1, duration: 0.42, ease: "power4.out", immediateRender: false }, 12.8);
 
-      // SEAM — veto-to-mark : cut-the-curve LEFT (cut @15.6)
-      tl.to("#el-veto", { xPercent: -12, opacity: 0, duration: 0.34, ease: "power3.in" }, 15.26);
-      tl.set("#el-veto", { opacity: 0 }, 15.6);
-      tl.fromTo("#el-mark", { xPercent: 10, opacity: 0.35 }, { xPercent: 0, opacity: 1, duration: 0.42, ease: "power4.out", immediateRender: false }, 15.6);
+      // SEAM — copy-to-veto : cut-the-curve LEFT (cut @16.8)
+      tl.to("#el-copy", { xPercent: -12, opacity: 0, duration: 0.34, ease: "power3.in" }, 16.46);
+      tl.set("#el-copy", { opacity: 0 }, 16.8);
+      tl.fromTo("#el-veto", { xPercent: 10, opacity: 0.35 }, { xPercent: 0, opacity: 1, duration: 0.42, ease: "power4.out", immediateRender: false }, 16.8);
+
+      // SEAM — veto-to-stop : cut-the-curve LEFT (cut @20.8)
+      tl.to("#el-veto", { xPercent: -12, opacity: 0, duration: 0.34, ease: "power3.in" }, 20.46);
+      tl.set("#el-veto", { opacity: 0 }, 20.8);
+      tl.fromTo("#el-stop", { xPercent: 10, opacity: 0.35 }, { xPercent: 0, opacity: 1, duration: 0.42, ease: "power4.out", immediateRender: false }, 20.8);
+
+      // SEAM — stop-to-mark : cut-the-curve LEFT (cut @25.6)
+      tl.to("#el-stop", { xPercent: -12, opacity: 0, duration: 0.34, ease: "power3.in" }, 25.26);
+      tl.set("#el-stop", { opacity: 0 }, 25.6);
+      tl.fromTo("#el-mark", { xPercent: 10, opacity: 0.35 }, { xPercent: 0, opacity: 1, duration: 0.42, ease: "power4.out", immediateRender: false }, 25.6);
 
       // </seams:auto>
   </script>

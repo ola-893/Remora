@@ -2,28 +2,27 @@
   <section id="explore" class="frame" data-composition-id="explore" data-width="1920" data-height="1080">
     <div class="edge"></div>
     <div id="explore-tag" class="eyebrow">01 / Explore</div>
-    <div class="split">
-      <h1 class="headline"><span id="explore-first">Find your</span><span id="explore-second" class="accent">leader.</span></h1>
-      <p id="explore-sub" class="support">Review the history before you copy.</p>
-    </div>
+    <h1 id="explore-title" class="headline">Find your <b class="accent">leader.</b></h1>
     <figure id="explore-shot">
-      <img src="assets/explore.png" alt="Remora's recorded Hour Leader profile and chart">
-      <figcaption class="small">Hour Leader · Recorded paper trading</figcaption>
+      <img id="explore-chart" src="assets/explore-chart.png" alt="Quoted swap output in the recorded Hour Leader profile">
+      <img id="explore-copy" src="assets/explore-copy.png" alt="Remora's Copy this agent panel">
+      <figcaption id="explore-caption" class="small">Hour Leader · Recorded paper trading</figcaption>
     </figure>
   </section>
   <style>
-    #explore-shot{position:absolute;left:781px;top:224px;width:969px;margin:0}
-    #explore-shot img{display:block;width:969px;height:638px;object-fit:cover;object-position:center top;border:2px solid var(--line);border-radius:15px}
-    #explore-shot figcaption{margin-top:23px;color:var(--soft)}
+    #explore-title{position:absolute;top:225px;left:170px;font-size:120px}
+    #explore-shot{position:absolute;top:380px;left:170px;right:170px;display:grid;grid-template-columns:970px 570px;gap:40px;margin:0;align-items:start}
+    #explore-shot img{display:block;width:100%;height:auto;border-radius:14px}
+    #explore-shot figcaption{grid-column:1/-1;color:var(--soft);margin-top:-14px}
   </style>
   <script>
     {
       const tl=gsap.timeline({paused:true});
-      tl.from("#explore-tag",{opacity:0,duration:.28,ease:"power2.out"},.11)
-        .from("#explore-first",{y:30,opacity:0,duration:.42,ease:"power4.out"},.15)
-        .from("#explore-second",{y:30,opacity:0,duration:.42,ease:"power4.out"},.37)
-        .from("#explore-shot",{x:68,opacity:0,duration:.60,ease:"power3.out"},.49)
-        .from("#explore-sub",{opacity:0,y:16,duration:.38,ease:"power2.out"},1.16);
+      tl.from("#explore-tag",{opacity:0,duration:.29,ease:"power2.out"},.11)
+        .from("#explore-title",{x:36,opacity:.44,duration:.43,ease:"power4.out"},0)
+        .from("#explore-chart",{x:68,opacity:0,duration:.59,ease:"power3.out"},.39)
+        .from("#explore-copy",{x:55,opacity:0,duration:.52,ease:"power3.out"},.80)
+        .from("#explore-caption",{opacity:0,duration:.32,ease:"power2.out"},1.22);
       window.__timelines.explore=tl;
     }
   </script>

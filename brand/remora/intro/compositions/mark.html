@@ -4,16 +4,15 @@
     <div class="mark-core">
       <img id="mark-logo" src="assets/remora-lockup-ink.svg" alt="Remora">
       <p id="mark-line" data-var-text="tagline">Ride the signal.</p>
-      <span id="mark-cta">Explore agents <span aria-hidden="true">↗</span></span>
+      <span id="mark-cta">github.com/ola-893/agentStreams</span>
     </div>
-    <div id="mark-foot" class="mono">BUILT ON NEAR · TESTNET DEMO</div>
+    <div id="mark-foot" class="mono">NEAR HACKATHON · TESTNET DEMO</div>
   </section>
   <style>
     #mark .mark-core{position:absolute;inset:245px 0 auto;display:flex;align-items:center;flex-direction:column}
     #mark-logo{display:block;width:590px;height:auto}
     #mark-line{margin:23px 0 39px;font-size:45px;letter-spacing:-.045em}
-    #mark-cta{display:block;color:var(--white);background:var(--ink);padding:18px 28px;border-radius:8px;font-size:34px;font-weight:700}
-    #mark-cta span{margin-left:12px}
+    #mark-cta{display:block;color:var(--ink);font:400 37px "Remora Mono",monospace}
     #mark-foot{position:absolute;bottom:100px;width:100%;text-align:center}
   </style>
   <script>
@@ -21,8 +20,8 @@
       const tl=gsap.timeline({paused:true});
       tl.from("#mark-logo",{x:48,opacity:0,duration:.50,ease:"power4.out"},.18)
         .from("#mark-line",{y:16,opacity:0,duration:.37,ease:"power3.out"},.69)
-        .from("#mark-cta",{clipPath:"inset(0 100% 0 0)",duration:.38,ease:"power3.out"},1.03)
-        .from("#mark-foot",{opacity:0,duration:.37,ease:"power2.out"},1.35);
+        .from("#mark-cta",{clipPath:"inset(0 100% 0 0)",duration:.38,ease:"power3.out"},.80)
+        .from("#mark-foot",{opacity:0,duration:.37,ease:"power2.out"},.90);
       window.__timelines.mark=tl;
     }
   </script>
