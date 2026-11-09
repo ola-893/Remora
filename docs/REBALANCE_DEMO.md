@@ -103,6 +103,20 @@ FOLLOWER_PID=$!
 
 The 900-second offer reserves 0.0009 test USDC and leaves time to close after the ten-minute run. If setup took several minutes, run the short local completion again before starting the leader.
 
+## Show where each limit is enforced
+
+Use the payment and execution sections of the guard output as two separate demo beats. Run this in Terminal 2.
+
+```sh
+agentstream guard show --agent follower | jq '{
+  payment: .payment,
+  rebalanceExecution: .strategyExecution["portfolio-rebalance"]
+}'
+```
+
+1. **Subscription payments on NEAR.** Show the receipt from the wallet-approved `guard set payment` command and the policy read back from the vault. When opening a stream, the vault contract checks the budget, maximum deposit, rate, duration, and approved recipient. Open the recorded `RATE_LIMIT` receipt to show the contract rejecting a correctly signed over-rate stream request even when it was submitted directly to the vault. [Testnet contract rejection receipts](evidence/near/repository-showcase-verification.json#L22)
+2. **Trade execution in the CLI.** Show the follower’s allowed assets, maximum input, copy size, quote age, and slippage settings. The CLI checks the proposed trade before submission. The short intro’s over-limit card comes from the rebalance regression test, which lowered the input cap and got `STRATEGY_INPUT_LIMIT`. The owner veto and confirmed swap come from the separate live rehearsal. [CLI guard test](../packages/test/strategy.test.mjs#L128) · [Live rehearsal](evidence/near/remora-veto-testnet-2026-11-09.json)
+
 ## Start the clock in Terminal 1
 
 Run five NEAR AI passes spaced two minutes apart. Each pass asks for one guarded swap of at most 0.002 test wNEAR. The shell stops on a missing or unconfirmed result so you can investigate before submitting again. The final wait brings the session to ten minutes if each pass finishes within its slot.
