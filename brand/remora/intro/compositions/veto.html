@@ -1,0 +1,41 @@
+<template>
+  <section id="veto" class="frame" data-composition-id="veto" data-width="1920" data-height="1080">
+    <div class="edge"></div>
+    <div id="veto-tag" class="eyebrow">03 / Timed veto</div>
+    <div class="split">
+      <h1 class="headline"><span id="veto-first">Your rules</span><span id="veto-second" class="accent">still apply.</span></h1>
+      <p id="veto-sub" class="support">Block a move before the window closes.</p>
+    </div>
+    <div id="veto-record" class="stage-panel">
+      <div class="veto-top small"><span>30-SECOND WINDOW</span><span>TESTNET RUN</span></div>
+      <div id="veto-a" class="veto-row"><span class="small">CANDIDATE 01</span><strong>Blocked</strong><span class="small">12.5s after queue</span></div>
+      <div id="veto-b" class="veto-row"><span class="small">CANDIDATE 02</span><strong>Swap confirmed</strong><span class="small">Grant-signed · After deadline</span></div>
+    </div>
+    <p id="veto-foot" class="foot">Guards rechecked before execution</p>
+  </section>
+  <style>
+    #veto .split{width:650px}
+    #veto .headline{font-size:112px}
+    #veto-record{position:absolute;left:853px;right:170px;top:246px;border-radius:14px;overflow:hidden}
+    #veto-record .veto-top{display:flex;justify-content:space-between;padding:28px 36px;background:#143149;color:var(--soft)}
+    #veto-record .veto-row{display:grid;grid-template-columns:1fr;gap:12px;padding:29px 36px 33px;border-top:2px solid var(--line)}
+    #veto-record .veto-row span{color:var(--soft)}
+    #veto-record strong{font-size:55px;line-height:1;letter-spacing:-.052em}
+    #veto-a strong{color:var(--coral)}
+    #veto-b strong{color:var(--mint)}
+  </style>
+  <script>
+    {
+      const tl=gsap.timeline({paused:true});
+      tl.from("#veto-tag",{opacity:0,duration:.27,ease:"power2.out"},.12)
+        .from("#veto-first",{x:30,opacity:0,duration:.42,ease:"power4.out"},.15)
+        .from("#veto-second",{x:30,opacity:0,duration:.42,ease:"power4.out"},.39)
+        .from("#veto-record",{x:66,opacity:0,duration:.52,ease:"power3.out"},.55)
+        .from("#veto-sub",{opacity:0,y:18,duration:.4,ease:"power2.out"},.99)
+        .from("#veto-a",{opacity:0,y:15,duration:.38,ease:"power3.out"},1.18)
+        .from("#veto-b",{opacity:0,y:15,duration:.43,ease:"power3.out"},1.88)
+        .from("#veto-foot",{opacity:0,duration:.34,ease:"power2.out"},2.50);
+      window.__timelines.veto=tl;
+    }
+  </script>
+</template>

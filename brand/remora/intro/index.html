@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <title>Remora · Ride the signal</title>
+  <script src="assets/gsap.min.js"></script>
+  <style>
+    @font-face{font-family:Remora Sans;src:url("assets/fonts/Inter-400.woff2");font-weight:400}
+    @font-face{font-family:Remora Sans;src:url("assets/fonts/Inter-700.woff2");font-weight:700}
+    @font-face{font-family:Remora Mono;src:url("assets/fonts/JetBrainsMono-400.woff2");font-weight:400}
+    :root{--deep:#051020;--panel:#0d2239;--aqua:#67f5ff;--mint:#2be0c7;--white:#f4f9f7;--soft:#aac2d6;--ink:#0b1d23;--coral:#ffac90;--line:#34536c}
+    *{box-sizing:border-box}
+    html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:var(--deep)}
+    #root{position:relative;width:100%;height:100%;overflow:hidden;background:var(--deep)}
+    .scene,.frame{position:absolute;inset:0}
+    .frame{overflow:hidden;background:var(--deep);color:var(--white);font:400 38px "Remora Sans",sans-serif}
+    .bright{background:var(--aqua);color:var(--ink)}
+    .edge{position:absolute;top:118px;left:170px;right:170px;height:2px;background:var(--line)}
+    .bright .edge{background:#2f8c94}
+    .eyebrow,.foot,.mono{font:400 28px/1.22 "Remora Mono",monospace;letter-spacing:.09em}
+    .eyebrow{position:absolute;top:156px;left:170px;color:var(--aqua);text-transform:uppercase}
+    .bright .eyebrow{color:var(--ink)}
+    .foot{position:absolute;bottom:80px;left:170px;color:var(--soft)}
+    .bright .foot{color:var(--ink)}
+    .headline{font-size:122px;font-weight:700;line-height:.94;letter-spacing:-.075em;margin:0}
+    .headline span{display:block}
+    .accent{color:var(--aqua)}
+    .support{font-size:38px;line-height:1.27;color:var(--soft);margin:0}
+    .bright .support{color:var(--ink)}
+    .split{position:absolute;top:250px;left:170px;width:590px}
+    .split .support{margin-top:38px;max-width:530px}
+    .stage-panel{border:2px solid var(--line);background:var(--panel)}
+    .small{font:400 28px/1.25 "Remora Mono",monospace}
+  </style>
+</head>
+<body>
+  <main id="root" data-composition-id="main" data-start="0" data-duration="19.2" data-width="1920" data-height="1080">
+    <div id="el-hook" class="clip scene" data-composition-id="hook" data-composition-src="compositions/hook.html" data-start="0" data-duration="3.2" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
+    <div id="el-explore" class="clip scene" data-composition-id="explore" data-composition-src="compositions/explore.html" data-start="3.2" data-duration="3.6" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
+    <div id="el-copy" class="clip scene" data-composition-id="copy" data-composition-src="compositions/copy.html" data-start="6.8" data-duration="4.4" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
+    <div id="el-veto" class="clip scene" data-composition-id="veto" data-composition-src="compositions/veto.html" data-start="11.2" data-duration="4.4" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
+    <div id="el-mark" class="clip scene" data-composition-id="mark" data-composition-src="compositions/mark.html" data-start="15.6" data-duration="3.6" data-track-index="0" data-track-kind="graphics" data-width="1920" data-height="1080" data-layout-allow-overflow></div>
+    <audio id="remora-score" class="clip" src="assets/reference-score.m4a" data-start="0" data-duration="19.2" data-track-index="3" data-volume="0.94"></audio>
+  </main>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({paused:true});
+    window.__timelines["main"] = tl;
+      // <seams:auto> — generated from ledger.json and adapted to use clip-safe opacity.
+      // Regenerate: node <motion-doctrine>/scripts/seam-stamp.mjs --ledger ledger.json --write index.html, then replace autoAlpha with opacity.
+      gsap.set("#el-hook", { opacity: 1, xPercent: 0, yPercent: 0, scale: 1, filter: "blur(0px)", transformOrigin: "50% 50%" });
+      gsap.set(["#el-explore","#el-copy","#el-veto","#el-mark"], { opacity: 0, xPercent: 0, yPercent: 0, scale: 1, filter: "blur(0px)", transformOrigin: "50% 50%" });
+
+      // SEAM — hook-to-explore : cut-the-curve LEFT (cut @3.2)
+      tl.to("#el-hook", { xPercent: -12, opacity: 0, duration: 0.34, ease: "power3.in" }, 2.86);
+      tl.set("#el-hook", { opacity: 0 }, 3.2);
+      tl.fromTo("#el-explore", { xPercent: 10, opacity: 0.35 }, { xPercent: 0, opacity: 1, duration: 0.42, ease: "power4.out", immediateRender: false }, 3.2);
+
+      // SEAM — explore-to-copy : cut-the-curve LEFT (cut @6.8)
+      tl.to("#el-explore", { xPercent: -12, opacity: 0, duration: 0.34, ease: "power3.in" }, 6.46);
+      tl.set("#el-explore", { opacity: 0 }, 6.8);
+      tl.fromTo("#el-copy", { xPercent: 10, opacity: 0.35 }, { xPercent: 0, opacity: 1, duration: 0.42, ease: "power4.out", immediateRender: false }, 6.8);
+
+      // SEAM — copy-to-veto : cut-the-curve LEFT (cut @11.2)
+      tl.to("#el-copy", { xPercent: -12, opacity: 0, duration: 0.34, ease: "power3.in" }, 10.86);
+      tl.set("#el-copy", { opacity: 0 }, 11.2);
+      tl.fromTo("#el-veto", { xPercent: 10, opacity: 0.35 }, { xPercent: 0, opacity: 1, duration: 0.42, ease: "power4.out", immediateRender: false }, 11.2);
+
+      // SEAM — veto-to-mark : cut-the-curve LEFT (cut @15.6)
+      tl.to("#el-veto", { xPercent: -12, opacity: 0, duration: 0.34, ease: "power3.in" }, 15.26);
+      tl.set("#el-veto", { opacity: 0 }, 15.6);
+      tl.fromTo("#el-mark", { xPercent: 10, opacity: 0.35 }, { xPercent: 0, opacity: 1, duration: 0.42, ease: "power4.out", immediateRender: false }, 15.6);
+
+      // </seams:auto>
+  </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<template>
+  <section id="copy" class="frame" data-composition-id="copy" data-width="1920" data-height="1080">
+    <div class="edge"></div>
+    <div id="copy-tag" class="eyebrow">02 / Paid signal</div>
+    <h1 id="copy-title" class="headline">Copy the <b class="accent">move.</b></h1>
+    <div id="copy-record" class="stage-panel">
+      <div id="copy-record-head" class="record-head small">
+        <span>PORTFOLIO REBALANCE</span><span>RHEA EXCHANGE · TESTNET</span>
+      </div>
+      <div id="copy-lead" class="record-row"><span>Signed leader action</span><strong>0.001 <small>wNEAR</small></strong></div>
+      <div id="copy-follow" class="record-row"><span>Follower size <em>50%</em></span><strong>0.0005 <small>wNEAR</small></strong></div>
+      <div id="copy-meter" class="record-meter small"><span>STREAM ACTIVE</span><span>0.000001 USDC / SECOND</span></div>
+    </div>
+    <p id="copy-foot" class="foot">Actual testnet inputs · Separate execution accounts</p>
+  </section>
+  <style>
+    #copy-title{position:absolute;top:233px;left:170px;font-size:121px}
+    #copy-record{position:absolute;left:170px;top:428px;width:1580px;border-radius:14px;overflow:hidden}
+    #copy-record .record-head,#copy-record .record-row,#copy-record .record-meter{display:flex;justify-content:space-between;align-items:center;padding:22px 43px;min-height:78px}
+    #copy-record .record-head{background:#143149;color:var(--soft)}
+    #copy-record .record-row{min-height:113px;border-bottom:2px solid var(--line)}
+    #copy-record .record-row strong{font-size:53px;letter-spacing:-.035em}
+    #copy-record .record-row small{font-size:29px;font-weight:400;color:var(--soft)}
+    #copy-record .record-row em{font:400 30px "Remora Mono",monospace;font-style:normal;margin-left:27px;color:var(--aqua)}
+    #copy-record .record-meter{color:var(--mint)}
+  </style>
+  <script>
+    {
+      const tl=gsap.timeline({paused:true});
+      tl.from("#copy-tag",{opacity:0,duration:.30,ease:"power2.out"},.10)
+        .from("#copy-title",{x:58,opacity:0,duration:.48,ease:"power4.out"},.12)
+        .from("#copy-record",{clipPath:"inset(0 100% 0 0)",duration:.62,ease:"power3.out"},.61)
+        .from("#copy-lead",{y:15,opacity:0,duration:.33,ease:"power2.out"},1.02)
+        .from("#copy-follow",{y:15,opacity:0,duration:.36,ease:"power2.out"},1.40)
+        .from("#copy-meter",{opacity:0,duration:.35,ease:"power2.out"},1.94)
+        .from("#copy-foot",{opacity:0,duration:.38,ease:"power2.out"},2.22);
+      window.__timelines.copy=tl;
+    }
+  </script>
+</template>

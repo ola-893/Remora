@@ -3,7 +3,9 @@
 !/exports/remora-hero.webm
 !/exports/remora-hero-poster.png
 !/exports/remora-loader.webm
+!/exports/remora-intro.mp4
 **/.hyperframes/
 **/.thumbnails/
+**/.waveform-cache/
 **/renders/
 **/node_modules/

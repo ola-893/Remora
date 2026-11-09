@@ -1,0 +1,9 @@
+{
+  "fps": 30,
+  "seams": [
+    {"id":"hook-to-explore","cut":3.2,"technique":"cut-the-curve LEFT","exit":{"selector":"#el-hook","axis":"x","dir":-1},"entry":{"selector":"#el-explore","axis":"x","dir":-1}},
+    {"id":"explore-to-copy","cut":6.8,"technique":"cut-the-curve LEFT","exit":{"selector":"#el-explore","axis":"x","dir":-1},"entry":{"selector":"#el-copy","axis":"x","dir":-1}},
+    {"id":"copy-to-veto","cut":11.2,"technique":"cut-the-curve LEFT","exit":{"selector":"#el-copy","axis":"x","dir":-1},"entry":{"selector":"#el-veto","axis":"x","dir":-1}},
+    {"id":"veto-to-mark","cut":15.6,"technique":"cut-the-curve LEFT","exit":{"selector":"#el-veto","axis":"x","dir":-1},"entry":{"selector":"#el-mark","axis":"x","dir":-1}}
+  ]
+}

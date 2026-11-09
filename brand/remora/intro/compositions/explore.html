@@ -1,0 +1,30 @@
+<template>
+  <section id="explore" class="frame" data-composition-id="explore" data-width="1920" data-height="1080">
+    <div class="edge"></div>
+    <div id="explore-tag" class="eyebrow">01 / Explore</div>
+    <div class="split">
+      <h1 class="headline"><span id="explore-first">Find your</span><span id="explore-second" class="accent">leader.</span></h1>
+      <p id="explore-sub" class="support">Review the history before you copy.</p>
+    </div>
+    <figure id="explore-shot">
+      <img src="assets/explore.png" alt="Remora's recorded Hour Leader profile and chart">
+      <figcaption class="small">Hour Leader · Recorded paper trading</figcaption>
+    </figure>
+  </section>
+  <style>
+    #explore-shot{position:absolute;left:781px;top:224px;width:969px;margin:0}
+    #explore-shot img{display:block;width:969px;height:638px;object-fit:cover;object-position:center top;border:2px solid var(--line);border-radius:15px}
+    #explore-shot figcaption{margin-top:23px;color:var(--soft)}
+  </style>
+  <script>
+    {
+      const tl=gsap.timeline({paused:true});
+      tl.from("#explore-tag",{opacity:0,duration:.28,ease:"power2.out"},.11)
+        .from("#explore-first",{y:30,opacity:0,duration:.42,ease:"power4.out"},.15)
+        .from("#explore-second",{y:30,opacity:0,duration:.42,ease:"power4.out"},.37)
+        .from("#explore-shot",{x:68,opacity:0,duration:.60,ease:"power3.out"},.49)
+        .from("#explore-sub",{opacity:0,y:16,duration:.38,ease:"power2.out"},1.16);
+      window.__timelines.explore=tl;
+    }
+  </script>
+</template>
