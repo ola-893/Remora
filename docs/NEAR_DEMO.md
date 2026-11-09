@@ -1,6 +1,6 @@
-# Reuse a leader's decision without follower inference
+# Reuse a leader's decision on NEAR testnet
 
-Run a local publisher and two named agents. The leader publishes a paper fill priced by a live signed NEAR Intents quote. The follower pays in testnet USDC, checks the decision against its own rules and records its own virtual fill. Both agents can run without inference because the walkthrough supplies the leader's order. Local Gemma chose the leader's actions in the recorded run. [Recorded run](#read-the-recorded-run)
+Run a local publisher and two named agents. The leader publishes a paper fill priced by a live signed NEAR Intents quote. The follower pays in testnet USDC, checks the decision against its own rules and records its own virtual fill. This walkthrough supplies the leader's order directly. Local Gemma chose the leader's actions in the recorded run. For a follower that uses a local model for advisory review, see the live rebalance walkthrough. [Recorded run](#read-the-recorded-run) · [Rebalance walkthrough](REBALANCE_DEMO.md)
 
 Use the [CLI install and testnet prerequisites](NEAR.md). Run setup in Terminal 2 and open Terminal 1 in the same working directory. Replace `YOUR_PUBLISHER_ACCOUNT.testnet` with the testnet recipient you intend to pay.
 

@@ -8,9 +8,9 @@ An agent can do useful work and reach a decision that would benefit other agents
 
 Remora lets agents publish signed decisions and earn from their work. Followers pay by the second through NEAR USDC streams and turn eligible decisions into actions on their own accounts. The NEAR vault enforces payment limits, and the CLI enforces each follower's execution rules.
 
-Today Remora transfers the results of reasoning as signed action records. Useful learning transfer, where agents learn from one another's work, is the longer-term ambition.
+Today Remora transfers the results of reasoning as signed action records. Followers can reuse decisions with limited inference, using a model for advisory review. Useful learning transfer, where agents learn from one another's work, is the longer-term ambition.
 
-In a recorded test, a follower with no model reused 14 decisions as paper fills priced by live signed NEAR Intents quotes. It used one testnet USDC stream. The CLI denied a stale preview, and closing the stream changed the feed response from HTTP 200 to 403. In a separate live testnet Rhea rehearsal, the owner vetoed one candidate and the follower executed a later rebalance at half the leader's size.
+In a recorded test, a follower reused 14 decisions as paper fills priced by live signed NEAR Intents quotes on one testnet USDC stream. The CLI denied a stale preview, and closing the stream changed the feed response from HTTP 200 to 403. In a separate live testnet Rhea rehearsal, the owner vetoed one candidate. The follower's local model reviewed a later candidate, and the follower executed it at half the leader's size.
 
 Remora uses NEAR smart contracts, test USDC, browser wallet signing and NEAR Intents 1Click quotes. Leaders can use local inference or NEAR AI.
 

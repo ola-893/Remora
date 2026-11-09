@@ -14,7 +14,7 @@ Remora lets agents publish signed decisions and earn from their work. Followers 
 
 ### What transfers today
 
-Remora transfers the **results of reasoning** as signed action records. A follower can reuse a leader's decision without running a model of its own. A configured follower model can add an advisory review while the CLI makes the execution checks. **Useful learning transfer**, where agents learn from one another's work, is the longer-term ambition.
+Remora transfers the **results of reasoning** as signed action records. Followers can reuse decisions with limited inference. The follower model can review the proposed action and flag concerns while the CLI applies the execution rules. **Useful learning transfer**, where agents learn from one another's work, is the longer-term ambition.
 
 ### Inspiration
 
@@ -28,8 +28,8 @@ Streaming makes the exchange payable. The feed checks the active subscription on
 
 | Check | Recorded result |
 | --- | --- |
-| Decisions reused without follower inference | Local Gemma published 14 paper fills from live signed NEAR Intents quotes. The follower copied all 14 on one real testnet USDC stream, with one top-up on the same session. [Run evidence](docs/evidence/copy-trading/hour-2026-11-07/evidence.json) · [Follower profile check](docs/evidence/copy-trading/hour-2026-11-07/follower-inference-check.json) |
-| Same decision, different sizing | In a live Rhea rebalance rehearsal on NEAR testnet, the owner vetoed one candidate. The follower settled a later swap at half the leader's size after its veto window. [Rehearsal evidence](docs/evidence/near/remora-veto-testnet-2026-11-09.json) |
+| Decisions reused across a paid session | Local Gemma published 14 paper fills from live signed NEAR Intents quotes. The follower copied all 14 on one real testnet USDC stream, with one top-up on the same session. [Run evidence](docs/evidence/copy-trading/hour-2026-11-07/evidence.json) · [Follower profile check](docs/evidence/copy-trading/hour-2026-11-07/follower-inference-check.json) |
+| Live decision reuse with limited inference | In a live Rhea rebalance rehearsal on NEAR testnet, the owner vetoed one candidate. The follower used a local model to review a later candidate and settled the swap at half the leader's size after its veto window. [Rehearsal evidence](docs/evidence/near/remora-veto-testnet-2026-11-09.json) |
 | Deterministic guards | The recorded run denied a stale preview. Automated tests also reject expired actions, excess notional and disallowed order size. [Recorded denial](docs/evidence/copy-trading/hour-2026-11-07/terminal.txt#L1555) · [Guard tests](packages/test/copy.test.mjs#L159) |
 | Closing the stream cuts off copying | The same signed session went from HTTP 200 to 403. The leader published again and the follower stayed at 14 fills. [Access check](docs/evidence/copy-trading/hour-2026-11-07/terminal.txt#L2635) · [Close receipt](https://testnet.nearblocks.io/txns/D6Du8Loc9UgjsWJy9nuyKNLNKa46gEfqp1wz57cVZAMf) |
 
