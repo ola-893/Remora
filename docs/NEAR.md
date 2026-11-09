@@ -46,6 +46,8 @@ Use `wallet reconcile` for an uncertain browser operation and `agent setup --dep
 
 A model can help a leader decide what to publish. The follower runner evaluates the feed and execution rules without calling a model, even if the follower profile has inference configured. Running `agentstream agent run --prompt` on that profile starts a separate inference run.
 
+The proposed follower review prompt describes how an optional model could add context to pending actions while leaving execution authority with the CLI. [Default copy review prompt](COPY_REVIEW_PROMPT.md)
+
 ```sh
 agentstream inference set --agent leader --provider local \
   --base-url http://127.0.0.1:11434/v1 --model MODEL
