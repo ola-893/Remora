@@ -1,0 +1,41 @@
+<template>
+  <section id="controls" class="frame" data-composition-id="controls" data-width="1920" data-height="1080">
+    <div class="edge"></div>
+    <div id="controls-tag" class="eyebrow">03 / Follower controls</div>
+    <div id="controls-intro">
+      <h1 id="controls-title" class="headline"><span>Your rules</span><span class="accent">still apply.</span></h1>
+      <p id="controls-sub" class="support">The CLI checks your limits before a swap.</p>
+    </div>
+    <div id="controls-results" class="stage-panel">
+      <div id="policy-result" class="result"><strong>Policy blocked</strong><span>Over size limit · CLI guard test</span></div>
+      <div id="veto-result" class="result"><strong>Owner vetoed</strong><span>Before deadline · Live testnet</span></div>
+      <div id="swap-result" class="result"><strong>Swap confirmed</strong><span>Passed checks · Live testnet</span></div>
+    </div>
+  </section>
+  <style>
+    #controls-intro{position:absolute;left:150px;top:315px;width:650px}
+    #controls-sub{margin-top:42px;width:520px}
+    #controls-results{position:absolute;left:853px;right:150px;top:229px}
+    #controls-results .result{display:grid;gap:13px;padding:34px 44px}
+    #controls-results .result+.result{border-top:2px solid var(--line)}
+    #controls-results strong{font-size:60px;line-height:1.04;letter-spacing:-.05em}
+    #controls-results span{color:var(--soft);font-size:44px}
+    #policy-result{background:#15273e}
+    #policy-result strong{color:var(--coral)}
+    #veto-result strong{color:var(--white)}
+    #swap-result strong{color:var(--mint)}
+  </style>
+  <script>
+    {
+      const tl=gsap.timeline({paused:true});
+      tl.from("#controls-tag",{opacity:0,duration:.27,ease:"power2.out"},.10)
+        .from("#controls-title",{x:40,opacity:0,duration:.45,ease:"power4.out"},.11)
+        .from("#controls-sub",{opacity:0,y:18,duration:.36,ease:"power3.out"},.41)
+        .from("#controls-results",{x:66,opacity:0,duration:.52,ease:"power3.out"},.47)
+        .from("#policy-result",{opacity:0,y:15,duration:.36,ease:"power3.out"},.60)
+        .from("#veto-result",{opacity:0,y:15,duration:.36,ease:"power3.out"},.94)
+        .from("#swap-result",{opacity:0,y:15,duration:.40,ease:"power3.out"},1.28);
+      window.__timelines.controls=tl;
+    }
+  </script>
+</template>

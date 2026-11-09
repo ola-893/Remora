@@ -1,0 +1,48 @@
+<template>
+  <section id="copy" class="frame" data-composition-id="copy" data-width="1920" data-height="1080">
+    <div class="edge"></div>
+    <div id="copy-tag" class="eyebrow">02 / Copy the move</div>
+    <h1 id="copy-title" class="headline">
+      <span id="copy-earn" class="accent">Leader earns.</span>
+      <span id="copy-pay">Followers pay by the second.</span>
+    </h1>
+    <div id="copy-rate" class="stage-panel">
+      <span class="mono">ONCHAIN FEED RATE</span>
+      <strong>0.000001</strong>
+      <span>Test USDC / second</span>
+    </div>
+    <div id="copy-sizes" class="stage-panel">
+      <div class="mono copy-sizes-title">LIVE PORTFOLIO REBALANCE</div>
+      <div id="copy-lead" class="copy-size"><span>Leader</span><strong>0.001 <small>wNEAR</small></strong></div>
+      <div id="copy-follow" class="copy-size"><span>Follower <em>50%</em></span><strong>0.0005 <small>wNEAR</small></strong></div>
+    </div>
+  </section>
+  <style>
+    #copy-title{position:absolute;top:230px;left:150px;font-size:98px}
+    #copy-earn{margin-bottom:12px}
+    #copy-rate,#copy-sizes{position:absolute;top:532px;height:382px}
+    #copy-rate{left:150px;width:668px;padding:37px 46px;background:#0c293b;border-color:#367585;display:flex;flex-direction:column;justify-content:center;gap:10px}
+    #copy-rate .mono{color:var(--soft)}
+    #copy-rate strong{font:700 100px/.98 "Remora Sans",sans-serif;letter-spacing:-.063em;color:var(--mint);font-variant-numeric:tabular-nums}
+    #copy-rate span:last-child{font-size:45px;color:var(--white)}
+    #copy-sizes{left:854px;right:150px;display:grid;grid-template-rows:84px 1fr 1fr}
+    #copy-sizes .copy-sizes-title{padding:21px 36px;background:#143149;color:var(--soft);letter-spacing:.035em}
+    #copy-sizes .copy-size{display:flex;justify-content:space-between;align-items:center;padding:0 36px;border-top:2px solid var(--line)}
+    .copy-size strong{font-size:58px;letter-spacing:-.035em}
+    .copy-size small{font-size:42px;font-weight:400;color:var(--soft)}
+    .copy-size em{color:var(--aqua);font-style:normal;margin-left:10px}
+  </style>
+  <script>
+    {
+      const tl=gsap.timeline({paused:true});
+      tl.from("#copy-tag",{opacity:0,duration:.26,ease:"power2.out"},.10)
+        .from("#copy-earn",{x:56,opacity:0,duration:.44,ease:"power4.out"},.08)
+        .from("#copy-pay",{x:56,opacity:0,duration:.44,ease:"power4.out"},.31)
+        .from("#copy-rate",{clipPath:"inset(0 100% 0 0)",duration:.56,ease:"power3.out"},.55)
+        .from("#copy-sizes",{x:54,opacity:0,duration:.53,ease:"power3.out"},.70)
+        .from("#copy-lead",{y:13,opacity:0,duration:.33,ease:"power2.out"},1.03)
+        .from("#copy-follow",{y:13,opacity:0,duration:.36,ease:"power2.out"},1.34);
+      window.__timelines.copy=tl;
+    }
+  </script>
+</template>

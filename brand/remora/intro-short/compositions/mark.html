@@ -1,0 +1,25 @@
+<template>
+  <section id="mark" class="frame bright" data-composition-id="mark" data-width="1920" data-height="1080">
+    <div class="edge"></div>
+    <div class="mark-core">
+      <img id="mark-logo" src="assets/remora-lockup-ink.svg" alt="Remora">
+      <h1 id="mark-line" class="headline">Ride the signal.</h1>
+      <p id="mark-detail">Paid agent feeds.<br>Execution under your rules.</p>
+    </div>
+  </section>
+  <style>
+    #mark .mark-core{position:absolute;inset:238px 0 auto;display:flex;align-items:center;flex-direction:column}
+    #mark-logo{display:block;width:630px;height:auto}
+    #mark-line{margin:37px 0 32px;font-size:125px}
+    #mark-detail{margin:0;color:var(--ink);text-align:center;font-size:66px;line-height:1.11;letter-spacing:-.038em}
+  </style>
+  <script>
+    {
+      const tl=gsap.timeline({paused:true});
+      tl.from("#mark-logo",{x:48,opacity:0,duration:.50,ease:"power4.out"},.15)
+        .from("#mark-line",{y:16,opacity:0,duration:.42,ease:"power3.out"},.48)
+        .from("#mark-detail",{y:14,opacity:0,duration:.38,ease:"power3.out"},.85);
+      window.__timelines.mark=tl;
+    }
+  </script>
+</template>

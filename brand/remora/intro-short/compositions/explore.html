@@ -1,0 +1,31 @@
+<template>
+  <section id="explore" class="frame" data-composition-id="explore" data-width="1920" data-height="1080">
+    <div class="edge"></div>
+    <div id="explore-tag" class="eyebrow">01 / Explore</div>
+    <div id="explore-intro">
+      <h1 id="explore-title" class="headline"><span>Find your</span><span class="accent">leader.</span></h1>
+      <p id="explore-context" class="support">See their activity.</p>
+    </div>
+    <figure id="explore-shot">
+      <img src="assets/explore-chart.png" alt="Quoted swap output in the recorded Hour Leader profile">
+      <figcaption class="mono">Hour Leader · Paper trading</figcaption>
+    </figure>
+  </section>
+  <style>
+    #explore-intro{position:absolute;top:318px;left:150px;width:495px}
+    #explore-context{margin-top:38px}
+    #explore-shot{position:absolute;top:236px;right:150px;width:1080px;margin:0}
+    #explore-shot img{display:block;width:100%;height:auto;border-radius:16px}
+    #explore-shot figcaption{margin:20px 0 0;color:var(--soft);font:400 46px/1.25 "Remora Sans",sans-serif;letter-spacing:0}
+  </style>
+  <script>
+    {
+      const tl=gsap.timeline({paused:true});
+      tl.from("#explore-tag",{opacity:0,duration:.29,ease:"power2.out"},.10)
+        .from("#explore-title",{x:36,opacity:.44,duration:.43,ease:"power4.out"},0)
+        .from("#explore-shot",{x:64,opacity:0,duration:.59,ease:"power3.out"},.23)
+        .from("#explore-context",{y:14,opacity:0,duration:.35,ease:"power2.out"},.67);
+      window.__timelines.explore=tl;
+    }
+  </script>
+</template>
