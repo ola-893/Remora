@@ -350,16 +350,26 @@ function PerformanceChart({ agent, activity }) {
 
 function Evidence({ agent, activity }) {
   const history = agent.history ?? [];
+  const approved = agent.evidence ?? [];
+  const labels = { swap: 'Swap confirmed', stake: 'Stake confirmed', unstake: 'Unstake confirmed', withdraw: 'Withdrawal confirmed', add: 'Liquidity added', remove: 'Liquidity removed', rebalance: 'Rebalance confirmed', supply: 'Supply confirmed', place: 'Order placed', cancel: 'Order cancelled', claim: 'Order proceeds claimed' };
   return <section className="rm-panel rm-evidence">
     <div className="rm-section-head"><div><p className="rm-kicker">Provenance</p><h2>Execution history</h2></div><span className="rm-muted">{history.length} entries</span></div>
     <p>{activity?.focus ?? 'The publisher’s signed activity is needed to show the evidence.'}</p>
+    {!!approved.length && <div className="rm-receipts">{[...approved].reverse().map(row => <details key={row.id}>
+      <summary><span className="rm-event-icon"><Fingerprint size={17} /></span><strong>{labels[row.operation]}</strong><time>{row.date} UTC</time><ChevronDown size={17} /></summary>
+      <div><p>Publisher-approved evidence · {row.execution === 'paper' ? 'paper execution' : 'confirmed execution'} · delayed until at least 24 hours after the day ended.</p>
+        {row.metrics.filter(metric => metric.key === 'quoteDifferenceBps' || metric.key === 'orderFilledBps').map(metric => <p key={metric.key}>{metric.key === 'quoteDifferenceBps' ? 'Settled output versus quoted output' : 'Order filled at confirmation'}: {num.format(Number(metric.value) / 100)}%</p>)}
+        {row.receipt && <a className="rm-inline" href={explorerUrl(row.receipt)} target="_blank" rel="noreferrer">Inspect approved transaction <ExternalLink size={14} /></a>}
+        <p>Publisher-signed confirmation data. Activity and execution quality do not establish investment return.</p>
+      </div>
+    </details>)}</div>}
     {history.length ? <div className="rm-receipts">{[...history].reverse().map((event, index) => <details key={event.at + '-' + index}>
       <summary><span className="rm-event-icon"><Activity size={17} /></span><strong>{event.label ?? events[event.kind]}</strong><time dateTime={event.at}>{dateTime.format(new Date(event.at))} UTC</time><ChevronDown size={17} /></summary>
       <div>{agent.state !== 'recorded' ? `${event.count} actions in this daily summary. Publication is delayed by at least 24 hours.` : 'Paper execution. This fill did not settle onchain.'}
         {event.quoteAt && <p>Quote observed {dateTime.format(new Date(event.quoteAt))} UTC.</p>}
         {event.receipt && <a className="rm-inline" href={explorerUrl(event.receipt)} target="_blank" rel="noreferrer">Open transaction <ExternalLink size={14} /></a>}
       </div>
-    </details>)}</div> : <div className="rm-empty rm-empty-inline"><Fingerprint size={22} /><p>No public execution entries yet.</p></div>}
+    </details>)}</div> : !approved.length && <div className="rm-empty rm-empty-inline"><Fingerprint size={22} /><p>No public execution entries yet.</p></div>}
     {agent.source && <div className="rm-proof-links"><a className="rm-inline" href={agent.source} target="_blank" rel="noreferrer">Read the recorded run <ExternalLink size={14} /></a><p>The payment stream was on NEAR testnet. The swaps in this recording were paper fills.</p><div>{agent.payments.map(payment => <a key={payment.hash} href={explorerUrl(payment.hash)} target="_blank" rel="noreferrer">{payment.label} <ArrowUpRight size={14} /></a>)}</div></div>}
   </section>;
 }
@@ -382,6 +392,7 @@ function CopyOffer({ agent }) {
     <div className="rm-rate"><strong>{usdcPerSecond(agent.rate)}</strong><span>USDC / second</span></div>
     <p className="rm-muted">{agent.state === 'recorded' ? 'Historical stream rate' : agent.rate ? 'Rate from the latest signed offer' : 'Rate unavailable'}</p>
     {agent.state !== 'recorded' && <p className="rm-muted">{agent.visibility === 'paper' ? 'Virtual portfolio execution.' : agent.visibility === 'confidential-requested' ? 'Confidential execution requested. Verify settlement privacy before relying on it.' : 'Execution settles on a public blockchain and can be observed independently.'}</p>}
+    {agent.signalWindowSeconds && <p className="rm-muted">Subscribers receive proposals before execution. Private first-look window: {agent.signalWindowSeconds} seconds.</p>}
     {running ? <>
       <div className="rm-preview-cmd"><span>Preview this offer in your terminal</span><code>{previewCommand(agent)}</code><CopyButton value={previewCommand(agent)} label="Copy preview command" beforeCopy={recheck} /></div>
       <details className="rm-start-cmd"><summary>Start copying in your CLI</summary>

@@ -1,3 +1,4 @@
+import { recordPerformance } from './public-reporting.mjs';
 import { open, unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
@@ -198,6 +199,7 @@ async function finishSwap(agent, state, save, result) {
         execution: 'agent-connect', settlementRef: fill.tx_hash ?? fill.destination_tx_hash ?? result.correlationId, ...(trade.source ? { copiedFrom: trade.source } : {}) };
       await save();
     }
+    recordPerformance(state, { id: trade.id, activity: spot, execution: 'agent-connect', receipt: { hash: trade.settled.settlementRef }, at: trade.settled.at });
     const publication = trade.signalId ? await finishSignalInState(agent, state, trade.signalId, 'settled', { settlementRef: trade.settled.settlementRef })
       : await appendFill(agent, state, trade.settled);
     addHistory(state, { type: 'trade', status: result.status, actionId: trade.id, correlationId: result.correlationId, publication });
@@ -214,6 +216,7 @@ async function recordPaper(agent, state, order, quote, id, copiedFrom, signalId)
   const balances = paperBalances(state.paper, order, quote);
   const fill = paperFill(order, quote, id, copiedFrom);
   const publication = signalId ? await finishSignalInState(agent, state, signalId, 'settled', { settlementRef: fill.settlementRef }) : await appendFill(agent, state, fill);
+  recordPerformance(state, { id, activity: spot, execution: 'paper', at: fill.at });
   state.paper.balances = balances;
   const evidence = { ...fill, quote: quote.signedResponse };
   state.paper.fills = [...state.paper.fills.slice(-99), evidence];

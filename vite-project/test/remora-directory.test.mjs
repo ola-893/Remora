@@ -163,3 +163,20 @@ test('batch requests respect the 50-key limit and stop on a server-wide rate lim
   assert.equal(calls, 1);
   assert.ok(throttled.every(item => item.status === 'rejected' && item.reason.retryAfterMs === 45000));
 });
+
+test('public evidence requires per-action approval policy, a full-day delay and safe metric fields', async () => {
+  const origin = 'https://publisher.example';
+  const evidence = [{ id: 'a'.repeat(64), date: '2026-11-05', activity: 'staking-moves', execution: 'wallet', operation: 'stake',
+    metrics: [{ key: 'stake', value: '1', unit: 'private text' }, { key: 'inventedReturn', value: '9999' }],
+    action: { amount: 'private-amount' }, account: 'private-account', receipt: 'B'.repeat(44) }];
+  const base = { ...offer(origin), evidence, signals: { version: 1, windowSeconds: 30 } };
+  assert.deepEqual((await verifyListing(signed(base), { id, origin })).evidence, []);
+  const policy = { delaySeconds: 86400, granularity: 'day', approval: 'per-action' };
+  const verified = await verifyListing(signed({ ...base, evidencePolicy: policy }), { id, origin });
+  assert.equal(verified.evidence[0].receipt, 'B'.repeat(44));
+  assert.deepEqual(verified.evidence[0].metrics, [{ key: 'stake', value: '1' }]);
+  assert.doesNotMatch(JSON.stringify(verified.evidence), /private-|inventedReturn/);
+  assert.equal(verified.signalWindowSeconds, 30);
+  const fresh = { ...evidence[0], date: new Date().toISOString().slice(0, 10) };
+  assert.deepEqual((await verifyListing(signed({ ...base, evidencePolicy: policy, evidence: [fresh] }), { id, origin })).evidence, []);
+});

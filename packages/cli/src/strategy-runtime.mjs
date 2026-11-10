@@ -1,3 +1,4 @@
+import { recordPerformance } from './public-reporting.mjs';
 import { randomUUID } from 'node:crypto';
 import { setTimeout as sleep } from 'node:timers/promises';
 import { copyVetoDeadline, copyVetoDue, operationKey } from './copy-activity.mjs';
@@ -32,9 +33,10 @@ async function saveResult(agent, id, result, copiedFrom, signal) {
     try {
       return await withAgentState(agent, async state => {
         const at = Date.now();
+        recordPerformance(state, { id, ...result, execution: 'wallet', at });
         const entry = { id, activity: result.activity, action: result.action, execution: 'wallet', at, expiresAt: at + 120000,
           settlementRef: result.receipt.hash, ...(copiedFrom ? { copiedFrom } : {}) };
-        const publication = signal ? { signalId: id, phase: 'settled', deliveryConfirmed: !deliveryError, ...(deliveryError ? { deliveryError } : {}) }
+        const publication = signal ? { journalHash: state.journal?.find(p => p.signalId === id && p.phase === 'settled')?.hash, signalId: id, phase: 'settled', deliveryConfirmed: !deliveryError, ...(deliveryError ? { deliveryError } : {}) }
           : await appendStrategyAction(agent, state, entry).catch(error => ({ error: error.message }));
         if (copiedFrom && state.pending?.[id]) state.pending[id].status = result.status;
         strategyHistory(state, { type: 'strategy', activity: result.activity, status: result.status, actionId: id,

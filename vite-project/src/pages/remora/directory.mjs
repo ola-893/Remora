@@ -76,8 +76,29 @@ export async function verifyListing(envelope, entry) {
     ? b.performance.points.slice(0, 90).filter(p => p && /^\d{4}-\d{2}-\d{2}$/.test(p.date) && Date.parse(p.date + 'T23:59:59.999Z') <= Date.now() - 86400000 && Number.isFinite(p.pnl) && Math.abs(p.pnl) <= Number.MAX_SAFE_INTEGER)
       .sort((a, b) => a.date.localeCompare(b.date)).map(({ date, pnl }) => ({ date, pnl }))
     : [];
+  const approvedPolicy = b.evidencePolicy?.delaySeconds >= 86400 && b.evidencePolicy?.granularity === 'day' && b.evidencePolicy?.approval === 'per-action';
+  const allowedMetrics = {
+    'spot-trading': ['swap'], 'staking-moves': ['stake', 'unstake', 'withdraw'], 'liquidity-ranges': ['add', 'remove'],
+    'portfolio-rebalance': ['rebalance', 'quoteDifferenceBps'], 'yield-reallocation': ['supply', 'withdraw'],
+    'limit-orders': ['place', 'cancel', 'claim', 'orderFilledBps'],
+  }[b.activity];
+  const evidence = approvedPolicy && Array.isArray(b.evidence) ? b.evidence.slice(-50).flatMap(row => {
+    if (!row || !/^[a-f0-9]{64}$/.test(row.id ?? '') || row.activity !== b.activity || !/^\d{4}-\d{2}-\d{2}$/.test(row.date ?? '') ||
+        !Number.isFinite(Date.parse(row.date)) || Date.parse(row.date + 'T00:00:00Z') + 172800000 > Date.now() ||
+        !['wallet', 'paper', 'agent-connect'].includes(row.execution) || !allowedMetrics.includes(row.operation) || !Array.isArray(row.metrics)) return [];
+    const metrics = row.metrics.slice(0, 3).flatMap(metric => {
+      if (!allowedMetrics.includes(metric?.key) || !/^-?[0-9]{1,9}$/.test(metric.value ?? '')) return [];
+      const special = metric.key === 'quoteDifferenceBps' || metric.key === 'orderFilledBps';
+      const value = Number(metric.value);
+      if (special ? value < (metric.key === 'quoteDifferenceBps' ? -10000 : 0) || value > 10000 : value !== 1) return [];
+      return [{ key: metric.key, value: metric.value }];
+    });
+    return [{ id: row.id, date: row.date, operation: row.operation, execution: row.execution, metrics,
+      ...(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(row.receipt ?? '') && row.execution !== 'paper' ? { receipt: row.receipt } : {}) }];
+  }) : [];
   return { ...entry, name: b.name, activity: b.activity, execution: b.execution, network: b.network,
-    recipient: b.recipient, rate: b.rate, duration: b.duration, journal: b.journal, history, points,
+    recipient: b.recipient, rate: b.rate, duration: b.duration, journal: b.journal, history, points, evidence,
+    signalWindowSeconds: b.signals?.version === 1 && Number.isInteger(b.signals.windowSeconds) && b.signals.windowSeconds >= 15 && b.signals.windowSeconds <= 60 ? b.signals.windowSeconds : null,
     visibility: b.execution === 'paper' ? 'paper' : b.visibility === 'confidential-requested' ? 'confidential-requested' : 'public-chain' };
 }
 

@@ -1,3 +1,4 @@
+import { publicEvidence } from './public-reporting.mjs';
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto';
 import { createServer } from 'node:http';
 import { mkdir, readFile, readdir } from 'node:fs/promises';
@@ -127,6 +128,8 @@ function listing(agent, state) {
     journal: p.nova ? 'nova' : 'local-encrypted',
     execution: activityMode(state, p.activity ?? spot) ?? 'unconfigured',
     visibility: executionVisibility(state, p.activity ?? spot),
+    evidence: publicEvidence(state, p.activity ?? spot),
+    evidencePolicy: { delaySeconds: 86400, granularity: 'day', approval: 'per-action', provenance: 'publisher-signed-confirmations' },
     signals: { version: 1, windowSeconds: p.signalWindowSeconds ?? 30, cancellation: 'before-release' },
     ...(p.delivery === 'outlayer' ? { delivery: 'outlayer', deliveryKey: state.outlayerDeliveryKey } : {}),
     ...(p.publicHistory ? { history: publicListingHistory(state, p.activity ?? spot), historyPolicy: { delaySeconds: 86400, granularity: 'day', receipts: false } } : {}),
