@@ -255,3 +255,28 @@ test('spot quote and settlement are bound to size, price and agent identity', as
   await assert.rejects(adapter.settle({ ...settled, agent_id: 'other' }, boundOrder), /IDENTITY_MISMATCH/);
   await assert.rejects(adapter.settle(settled, { ...boundOrder, amount: '30' }), /SETTLEMENT_MISMATCH/);
 });
+
+test('an owner veto is accepted while network work holds state and is honored before submission', async t => {
+  const { decideAction } = await import('../cli/src/copy-runtime.mjs');
+  const { honorVeto, hasVeto } = await import('../cli/src/copy-veto.mjs');
+  const workspace = await mkdtemp(join(tmpdir(), 'remora-veto-busy-'));
+  const previous = process.env.AGENTSTREAMS_HOME;
+  process.env.AGENTSTREAMS_HOME = join(workspace, 'profiles');
+  t.after(async () => { if (previous === undefined) delete process.env.AGENTSTREAMS_HOME; else process.env.AGENTSTREAMS_HOME = previous; await rm(workspace, { recursive: true, force: true }); });
+  await createAgent(workspace, 'veto-busy'); const agent = await selectedAgent(workspace);
+  const item = { status: 'pending', sessionId: 'session', blockUntil: Date.now()+60000, action: { id: 'action', expiresAt: Date.now()+120000 } };
+  await withAgentState(agent, state => { state.follow = { status: 'active', mode: 'veto', sessionId: 'session' }; state.pending = { action: item }; });
+  let release, locked;
+  const acquired = new Promise(resolve => { locked = resolve; });
+  const blockedNetwork = new Promise(resolve => { release = resolve; });
+  const holding = withAgentState(agent, async state => {
+    locked(); await blockedNetwork;
+    assert.equal(await honorVeto(agent, state.pending.action), true);
+  });
+  await acquired;
+  try { assert.deepEqual(await decideAction(agent, 'action', 'blocked'), { actionId: 'action', status: 'blocked' }); }
+  finally { release(); }
+  await holding;
+  assert.equal((await readAgentState(agent)).pending.action.status, 'blocked');
+  assert.equal(await hasVeto(agent, { ...item, sessionId: 'different-session' }), false);
+});

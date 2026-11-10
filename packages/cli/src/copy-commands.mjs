@@ -1,3 +1,4 @@
+import { hasVeto } from './copy-veto.mjs';
 import { approveEvidence, evidenceRecords, revokeEvidence } from './public-reporting.mjs';
 import { claimVault, ownerVaultAction } from './owner-actions.mjs';
 import { readAgentState, withAgentState, agentSetupState, createAgent, listAgents, selectAgent } from './agents.mjs';
@@ -271,7 +272,11 @@ export async function runCopyCommand(command, p, v, workspace, agent, emit, prov
     case 'copy:reject': return decideAction(agent, arg, 'rejected');
     case 'copy:block': return decideAction(agent, arg, 'blocked');
     case 'copy:status': return { subscription: state.follow ?? null, tradePending: Boolean(state.tradePending) };
-    case 'copy:pending': return { actions: Object.values(state.pending ?? {}).filter(item => item.sessionId === state.follow?.sessionId && item.status === 'pending' && item.action.expiresAt > Date.now()) };
+    case 'copy:pending': {
+      const actions = [];
+      for (const item of Object.values(state.pending ?? {})) if (item.sessionId === state.follow?.sessionId && item.status === 'pending' && item.action.expiresAt > Date.now() && !await hasVeto(agent, item)) actions.push(item);
+      return { actions };
+    }
     case 'copy:history': return { history: state.history };
     case 'guard:set': return guard(agent, arg, v, provided);
     case 'guard:show': {

@@ -1,3 +1,4 @@
+import { blockCopyAction, honorVeto } from './copy-veto.mjs';
 import { recordPerformance } from './public-reporting.mjs';
 import { open, unlink } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -159,6 +160,7 @@ export async function changeMode(agent, mode, vetoSeconds) {
 }
 
 export async function decideAction(agent, id, decision) {
+  if (decision === 'blocked') return blockCopyAction(agent, id);
   return withAgentState(agent, state => {
     const follow = current(state);
     const item = state.pending?.[id];
@@ -314,7 +316,7 @@ export async function reconcileCopy(agent) {
 }
 
 async function observeAction(agent, state, save, action, emit, client, approved = false) {
-  if (action.activity !== spot) return observeStrategy(agent, state, action, emit);
+  if (action.activity !== spot) return observeStrategy(agent, state, action, emit, save);
   const follow = current(state), policy = state.executionPolicy;
   const result = proposedOrder(action, policy);
   const record = data => {
@@ -352,6 +354,7 @@ async function observeAction(agent, state, save, action, emit, client, approved 
     catch (error) { return record({ status: 'skipped', reason: error.message }); }
     (state.pending ??= {})[action.id] = { status: 'pending', action, quote: summary, order: result.order, sessionId: follow.sessionId,
       ...(action.signalId && follow.mode === 'auto' ? { blockUntil: Date.now() } : {}), ...deadline };
+    await save();
     return record({ status: 'pending', quote: summary, order: result.order, ...deadline });
   }
   if (!paper && (!config.live || state.tradePending)) {
@@ -375,6 +378,7 @@ async function observeAction(agent, state, save, action, emit, client, approved 
       return record({ status: 'skipped', reason: error.message });
     }
   }
+  if (follow.mode === 'veto' && await honorVeto(agent, state.pending[action.id])) return record({ status: 'blocked', reason: 'OWNER_VETO' });
   if (paper) {
     let filled;
     try { filled = await recordPaper(agent, state, result.order, quote, action.id, follow.listing.id); }

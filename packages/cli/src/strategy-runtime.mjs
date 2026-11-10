@@ -1,3 +1,4 @@
+import { honorVeto } from './copy-veto.mjs';
 import { recordPerformance } from './public-reporting.mjs';
 import { randomUUID } from 'node:crypto';
 import { setTimeout as sleep } from 'node:timers/promises';
@@ -108,7 +109,7 @@ function checkAge(entry, policy, now = Date.now()) {
   if (entry.at > now + 5000 || now >= entry.expiresAt || (policy && now - entry.at > policy.maxAge * 1000)) throw new Error('ACTION_EXPIRED');
 }
 
-export async function observeStrategy(agent, state, entry, emit) {
+export async function observeStrategy(agent, state, entry, emit, save) {
   const { follow } = state, { activity, id } = entry;
   const record = (status, data = {}) => {
     const event = { type: 'strategy', activity, actionId: id, publisher: entry.publisher, status, ...data };
@@ -128,6 +129,7 @@ export async function observeStrategy(agent, state, entry, emit) {
     const preview = { action, inputs: checked.inputs, evidence: checked.evidence, executionAccountId: checked.executionAccountId, transactionHash: entry.settlementRef };
     const deadline = copyVetoDeadline(follow, entry, policy);
     (state.pending ??= {})[id] = { status: 'pending', action: entry, preview, sessionId: follow.sessionId, ...deadline };
+    await save?.();
     return record('pending', { ...preview, ...deadline });
   } catch (error) {
     return record('skipped', { reason: error.message });
@@ -195,6 +197,7 @@ export async function approveStrategy(agent, id, { veto = false } = {}) {
             }
             if (entry.signalId && !await checkSignalBeforeExecution(entry, active, client)) throw new Error('SIGNAL_NOT_RELEASED');
             checkAge(entry, current);
+            if (veto && await honorVeto(agent, state.pending[id])) throw new Error('OWNER_VETO');
             state.pending[id].status = 'submitting';
           }, lockOptions);
         } finally { await client.dispose(); }
