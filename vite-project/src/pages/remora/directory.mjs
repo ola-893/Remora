@@ -1,3 +1,5 @@
+import outlayerNetwork from '../../../../near/lib/outlayer-network.json' with { type: 'json' };
+
 export const activities = {
   'spot-trading': { name: 'Spot trading', action: 'Swap fills', focus: 'Inspect fills, execution mode, and reported P&L. A swap receipt alone does not establish return.' },
   'staking-moves': { name: 'Staking moves', action: 'Staking actions', focus: 'Inspect staking, unstaking, and withdrawals through the pool receipt. Action counts do not measure staking yield.' },
@@ -7,7 +9,6 @@ export const activities = {
   'limit-orders': { name: 'Limit orders', action: 'Order actions', focus: 'Inspect placement, cancellation, and claim receipts. Placement alone does not establish a fill or return.' },
 };
 export const publisherId = /^ap_[a-f0-9]{64}$/;
-const hashPattern = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 const base58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 const encoder = new TextEncoder();
 
@@ -22,10 +23,11 @@ export function feedOrigin(input, allowLoopback = false) {
 
 export function directoryEntries(input, allowLoopback = false) {
   if (!Array.isArray(input)) return [];
-  return [...new Map(input.slice(0, 100).flatMap(item => {
+  return [...new Map(input.slice(0, 1000).flatMap(item => {
     try {
       if (typeof item?.id !== 'string' || !publisherId.test(item.id)) return [];
-      return [[item.id, { id: item.id, origin: feedOrigin(item.origin, allowLoopback) }]];
+      return [[item.id, { id: item.id, origin: feedOrigin(item.origin, allowLoopback),
+        ...(typeof item.registryActive === 'boolean' ? { registryActive: item.registryActive } : {}) }]];
     } catch { return []; }
   })).values()];
 }
@@ -63,17 +65,20 @@ export async function verifyListing(envelope, entry) {
   const sig = Uint8Array.from(atob(envelope.signature), char => char.charCodeAt(0));
   const payload = encoder.encode(canonical({ domain: 'agentpay.listing.v1', body: b }));
   if (id !== entry.id || !await crypto.subtle.verify('Ed25519', key, sig, payload)) throw new Error('Offer signature did not verify.');
-  const history = Array.isArray(b.history) ? b.history.slice(-50).flatMap(item => {
+  const summaryPolicy = b.historyPolicy?.delaySeconds >= 86400 && b.historyPolicy?.granularity === 'day' && b.historyPolicy?.receipts === false;
+  const history = summaryPolicy && Array.isArray(b.history) ? b.history.slice(-50).flatMap(item => {
     const kinds = b.activity === 'spot-trading' ? ['paper-fill', 'intent-fill'] : ['wallet-action'];
-    if (!item || typeof item.at !== 'string' || !Number.isFinite(Date.parse(item.at)) || !kinds.includes(item.kind)) return [];
-    return [{ at: item.at, kind: item.kind, ...(item.kind === 'wallet-action' && hashPattern.test(item.receipt ?? '') ? { receipt: item.receipt } : {}) }];
+    if (!item || !/^\d{4}-\d{2}-\d{2}T00:00:00.000Z$/.test(item.at) || !Number.isFinite(Date.parse(item.at)) ||
+        Date.parse(item.at) > Date.now() - 86400000 || !kinds.includes(item.kind) || !Number.isSafeInteger(item.count) || item.count < 1 || item.count > 1000000) return [];
+    return [{ at: item.at, kind: item.kind, count: item.count }];
   }).sort((a, b) => Date.parse(a.at) - Date.parse(b.at)) : [];
   const points = b.performance?.provenance === 'publisher-reported' && Array.isArray(b.performance.points)
-    ? b.performance.points.slice(0, 90).filter(p => p && /^\d{4}-\d{2}-\d{2}$/.test(p.date) && Number.isFinite(Date.parse(p.date)) && Number.isFinite(p.pnl) && Math.abs(p.pnl) <= Number.MAX_SAFE_INTEGER)
+    ? b.performance.points.slice(0, 90).filter(p => p && /^\d{4}-\d{2}-\d{2}$/.test(p.date) && Date.parse(p.date + 'T23:59:59.999Z') <= Date.now() - 86400000 && Number.isFinite(p.pnl) && Math.abs(p.pnl) <= Number.MAX_SAFE_INTEGER)
       .sort((a, b) => a.date.localeCompare(b.date)).map(({ date, pnl }) => ({ date, pnl }))
     : [];
   return { ...entry, name: b.name, activity: b.activity, execution: b.execution, network: b.network,
-    recipient: b.recipient, rate: b.rate, duration: b.duration, journal: b.journal, history, points };
+    recipient: b.recipient, rate: b.rate, duration: b.duration, journal: b.journal, history, points,
+    visibility: b.execution === 'paper' ? 'paper' : b.visibility === 'confidential-requested' ? 'confidential-requested' : 'public-chain' };
 }
 
 async function json(url, signal) {
@@ -94,8 +99,42 @@ async function json(url, signal) {
   return JSON.parse(await new Blob(chunks).text());
 }
 
+export async function registryEntries(config, signal = AbortSignal.timeout(10000)) {
+  if (!config?.contractId) return [];
+  const rpc = new URL(config.rpcUrl);
+  if (config.network !== 'testnet' || rpc.protocol !== 'https:' || !/^(?=.{2,64}$)[a-z0-9]+(?:[-_.][a-z0-9]+)*$/.test(config.contractId)) throw new Error('Invalid NEAR registry configuration.');
+  const publishers = [];
+  let from_index = '0';
+  do {
+    const response = await fetch(rpc.href, { method: 'POST', signal, credentials: 'omit', redirect: 'error', cache: 'no-store', headers: { 'content-type': 'application/json' }, body: JSON.stringify({
+      jsonrpc: '2.0', id: 'remora-directory', method: 'query', params: {
+        request_type: 'call_function', finality: 'final', account_id: config.contractId, method_name: 'list_publishers',
+        args_base64: btoa(JSON.stringify({ from_index, limit: 100 })),
+      },
+    }) });
+    if (!response.ok) throw new Error('NEAR registry unavailable.');
+    const body = await response.json();
+    if (body.error || !Array.isArray(body.result?.result) || body.result.result.length > 131072) throw new Error('Invalid NEAR registry response.');
+    const page = JSON.parse(new TextDecoder().decode(Uint8Array.from(body.result.result)));
+    const now = Date.now() / 1000;
+    if (!Array.isArray(page.publishers) || page.publishers.length > 100 || page.heartbeat_ttl_seconds !== 120 ||
+        !/^\d+$/.test(page.observed_at) || Math.abs(now - Number(page.observed_at)) > 120 ||
+        page.next_index !== null && (!/^\d+$/.test(page.next_index) || BigInt(page.next_index) <= BigInt(from_index))) throw new Error('Invalid NEAR registry page.');
+    publishers.push(...page.publishers.map(item => ({ id: item.id, origin: item.origin,
+      registryActive: item.active === true && /^\d+$/.test(item.last_seen) &&
+        Number(item.last_seen) <= now + 5 && now - Number(item.last_seen) <= page.heartbeat_ttl_seconds })));
+    from_index = page.next_index;
+  } while (from_index !== null && publishers.length < 1000);
+  return directoryEntries(publishers);
+}
+
 export async function probePublisher(entry, signal = AbortSignal.timeout(6000)) {
-  const read = path => json(entry.origin + path, signal);
+  const read = path => {
+    if (entry.origin !== outlayerNetwork.origin) return json(entry.origin + path, signal);
+    const url = new URL('/public/storage/get', outlayerNetwork.origin);
+    url.search = new URLSearchParams({ project: outlayerNetwork.project, key: (path === '/copy/health' ? 'health:' : 'listing:') + entry.id, format: 'raw' }).toString();
+    return json(url.href, signal);
+  };
   const [envelope, health] = await Promise.all([
     read('/.well-known/agentstreams.json').catch(error => {
       if (error.message === 'Feed returned HTTP 404') return read('/.well-known/agentpay.json');
@@ -107,7 +146,7 @@ export async function probePublisher(entry, signal = AbortSignal.timeout(6000)) 
   const checkedAt = Date.now();
   const healthy = health?.ok === true && Number.isSafeInteger(health.observed_at) && Math.abs(checkedAt - health.observed_at * 1000) <= 30000;
   const modes = listing.activity === 'spot-trading' ? ['paper', 'agent-connect'] : ['wallet'];
-  return { ...listing, checkedAt, state: healthy && modes.includes(listing.execution) ? 'running' : healthy ? 'unconfigured' : 'unavailable' };
+  return { ...listing, checkedAt, state: healthy && entry.registryActive !== false && modes.includes(listing.execution) ? 'running' : healthy && entry.registryActive !== false ? 'unconfigured' : 'unavailable' };
 }
 
 export function usdcPerSecond(raw) {

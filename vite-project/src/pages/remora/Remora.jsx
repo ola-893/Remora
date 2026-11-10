@@ -6,7 +6,7 @@ import mark from '../../../../brand/remora/assets/remora-mark.svg';
 import loader from '../../../../brand/remora/assets/remora-loader.svg';
 import art from '../../../../brand/remora/hero/assets/cybernetic-pair.png';
 import recorded from './recorded.json';
-import { activities, directoryEntries, explorerUrl, feedOrigin, previewCommand, probePublisher, publisherId, startCommand, usdcPerSecond } from './directory.mjs';
+import { activities, directoryEntries, explorerUrl, feedOrigin, previewCommand, probePublisher, publisherId, registryEntries, startCommand, usdcPerSecond } from './directory.mjs';
 import './remora.css';
 
 const archive = { ...recorded, state: 'recorded' };
@@ -37,15 +37,34 @@ function useDirectory() {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch('/agents.json', { cache: 'no-store', signal: controller.signal }).then(response => {
-      if (!response.ok) throw new Error('Directory unavailable');
-      return response.json();
-    }).then(list => setConfigured(directoryEntries(list, allowLoopback))).catch(() => {
-      if (!controller.signal.aborted) setCatalogError(true);
-    }).finally(() => {
-      if (!controller.signal.aborted) setCatalogReady(true);
-    });
-    return () => controller.abort();
+    let timer;
+    async function refreshDirectory() {
+      try {
+        const read = async path => {
+          const response = await fetch(path, { cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(10000)]) });
+          if (!response.ok) throw new Error('Directory unavailable');
+          return response.json();
+        };
+        const [config, legacy] = await Promise.all([read('/registry.json'), read('/agents.json')]);
+        const registered = await registryEntries(config, AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]));
+        if (!controller.signal.aborted) {
+          setConfigured(directoryEntries([...legacy, ...registered], allowLoopback));
+          setCatalogError(false);
+        }
+      } catch {
+        if (!controller.signal.aborted) {
+          setCatalogError(true);
+          setConfigured(previous => previous.map(item => ({ ...item, registryActive: false })));
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setCatalogReady(true);
+          timer = setTimeout(refreshDirectory, 15000);
+        }
+      }
+    }
+    void refreshDirectory();
+    return () => { controller.abort(); clearTimeout(timer); };
   }, []);
 
   useEffect(() => {
@@ -75,6 +94,7 @@ function useDirectory() {
 
   const agents = [...directoryEntries([...local, ...configured], allowLoopback).map(entry => {
     const offer = offers[entry.id];
+    if (entry.registryActive === false && offer?.origin === entry.origin) return { ...offer, state: 'unavailable' };
     return offer?.origin === entry.origin ? offer : { ...entry, state: 'checking' };
   }), archive];
 
@@ -271,9 +291,10 @@ function PerformanceChart({ agent, activity }) {
   }, []);
   const replay = agent.state === 'recorded';
   const reported = !!agent.points?.length;
+  let actionCount = 0;
   const source = replay ? agent.history.map(event => ({ at: Date.parse(event.at), value: event.value })) :
     reported ? agent.points.map(point => ({ at: Date.parse(point.date), value: point.pnl })) :
-    (agent.history ?? []).map((event, index) => ({ at: Date.parse(event.at), value: index + 1 }));
+    (agent.history ?? []).map(event => ({ at: Date.parse(event.at), value: actionCount += event.count ?? 1 }));
   const last = source.at(-1)?.at;
   const visible = source.filter(point => windowSize === 'all' || point.at >= last - Number(windowSize) * (replay ? 60000 : 86400000));
   const unit = replay ? 'wNEAR / USDC' : reported ? 'publisher units' : 'actions';
@@ -322,7 +343,7 @@ function Evidence({ agent, activity }) {
     <p>{activity?.focus ?? 'The publisher’s signed activity is needed to show the evidence.'}</p>
     {history.length ? <div className="rm-receipts">{[...history].reverse().map((event, index) => <details key={event.at + '-' + index}>
       <summary><span className="rm-event-icon"><Activity size={17} /></span><strong>{event.label ?? events[event.kind]}</strong><time dateTime={event.at}>{dateTime.format(new Date(event.at))} UTC</time><ChevronDown size={17} /></summary>
-      <div>{event.kind === 'paper-fill' ? 'Paper execution. This fill did not settle onchain.' : event.kind === 'wallet-action' ? 'The publisher included this NEAR receipt in its signed offer.' : 'The publisher reported a settled NEAR Intents fill. The listing contains no transaction reference for this fill.'}
+      <div>{agent.state !== 'recorded' ? `${event.count} actions in this daily summary. Publication is delayed by at least 24 hours.` : 'Paper execution. This fill did not settle onchain.'}
         {event.quoteAt && <p>Quote observed {dateTime.format(new Date(event.quoteAt))} UTC.</p>}
         {event.receipt && <a className="rm-inline" href={explorerUrl(event.receipt)} target="_blank" rel="noreferrer">Open transaction <ExternalLink size={14} /></a>}
       </div>
@@ -348,6 +369,7 @@ function CopyOffer({ agent }) {
     </div>
     <div className="rm-rate"><strong>{usdcPerSecond(agent.rate)}</strong><span>USDC / second</span></div>
     <p className="rm-muted">{agent.state === 'recorded' ? 'Historical stream rate' : agent.rate ? 'Rate from the latest signed offer' : 'Rate unavailable'}</p>
+    {agent.state !== 'recorded' && <p className="rm-muted">{agent.visibility === 'paper' ? 'Virtual portfolio execution.' : agent.visibility === 'confidential-requested' ? 'Confidential execution requested. Verify settlement privacy before relying on it.' : 'Execution settles on a public blockchain and can be observed independently.'}</p>}
     {running ? <>
       <div className="rm-preview-cmd"><span>Preview this offer in your terminal</span><code>{previewCommand(agent)}</code><CopyButton value={previewCommand(agent)} label="Copy preview command" beforeCopy={recheck} /></div>
       <details className="rm-start-cmd"><summary>Start copying in your CLI</summary>
