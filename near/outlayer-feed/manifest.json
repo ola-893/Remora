@@ -1,0 +1,6 @@
+{
+  "display": { "name": "Remora subscription feed" },
+  "operations": ["delivery-key", "publish", "append", "actions"],
+  "capabilities": { "network": ["test.rpc.fastnear.com"] },
+  "callers": { "direct": "deny", "contract": "deny" }
+}

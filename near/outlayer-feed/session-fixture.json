@@ -1,0 +1,41 @@
+{
+  "header": "eyJvcmlnaW4iOiJodHRwczovL3Rlc3RuZXQtYXBpLm91dGxheWVyLmFpIiwidmF1bHRfaWQiOiJmaXh0dXJlLXZhdWx0LnRlc3RuZXQiLCJhZ2VudF9pZCI6ImZpeHR1cmUtYWdlbnQudGVzdG5ldCIsInNlc3Npb25faWQiOiJmaXh0dXJlLXNlc3Npb24iLCJxdW90ZV9oYXNoIjoiYzFiNzVhNDBkYmJmODc4Y2FmNmM5NTU1NzI3OTk5YWY5MzNjNGI5NmUyZTlhZjYwYWFmYmYzOWNmYWIzMGY4OCIsImV4cGlyZXNfYXQiOm51bGwsInNpZ25hdHVyZSI6InVoMXAwQWF3ay9DdHc5dEpHVk9sbDB2L1Iyd1E0bkcxaGM4QlZtamxjNnUrWUNlUXAyZVd0aDVKOERudkluaGJTRFpJUG0rOTg0V29SSnloSmJxK0F3PT0ifQ",
+  "session": {
+    "origin": "https://testnet-api.outlayer.ai",
+    "vault_id": "fixture-vault.testnet",
+    "agent_id": "fixture-agent.testnet",
+    "session_id": "fixture-session",
+    "quote_hash": "c1b75a40dbbf878caf6c9555727999af933c4b96e2e9af60aafbf39cfab30f88",
+    "expires_at": null,
+    "signature": "uh1p0Aawk/Ctw9tJGVOll0v/R2wQ4nG1hc8BVmjlc6u+YCeQp2eWth5J8DnvInhbSDZIPm+984WoRJyhJbq+Aw=="
+  },
+  "listing": {
+    "id": "ap_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "origin": "https://testnet-api.outlayer.ai",
+    "recipient": "fixture-publisher.testnet",
+    "activity": "portfolio-rebalance",
+    "rate": "1",
+    "duration": 0
+  },
+  "vault": {
+    "agent_id": "fixture-agent.testnet",
+    "agent_key": "ed25519:Bd2RSRMWXuKizcCvd2Nb2gPKV3j15vhbxkkTGkSuadtP",
+    "active_session": "fixture-session",
+    "token_id": "3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af",
+    "now": "1794240010"
+  },
+  "stream": {
+    "session_id": "fixture-session",
+    "recipient_id": "fixture-publisher.testnet",
+    "quote_hash": "c1b75a40dbbf878caf6c9555727999af933c4b96e2e9af60aafbf39cfab30f88",
+    "rate": "1",
+    "duration_seconds": 0,
+    "started_at": "1794240000",
+    "closed_at": null,
+    "deposit": "100"
+  },
+  "account": {
+    "code_hash": "EsZBrpZ4Jpbi4Bdeu4Qens78i1X8zVCWE6mMuqhTBoKM"
+  },
+  "timestamp": 1794240010
+}

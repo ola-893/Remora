@@ -16,6 +16,7 @@ Thumbs.db
 vite-project/dist/
 vite-project/.vite/
 near/contracts/target/
+near/outlayer-feed/target/
 packages/core/runtime/
 packages/cli/ui/
 packages/cli/artifacts/
