@@ -32,6 +32,7 @@ Streaming makes the exchange payable. The feed checks the active subscription on
 | Live decision reuse with limited inference | In a live Rhea rebalance rehearsal on NEAR testnet, the owner vetoed one candidate. The follower used a local model to review a later candidate and settled the swap at half the leader's size after its veto window. [Rehearsal evidence](docs/evidence/near/remora-veto-testnet-2026-11-09.json) |
 | Deterministic guards | The recorded run denied a stale preview. Automated tests also reject expired actions, excess notional and disallowed order size. [Recorded denial](docs/evidence/copy-trading/hour-2026-11-07/terminal.txt#L1555) · [Guard tests](packages/test/copy.test.mjs#L159) |
 | Closing the stream cuts off copying | The same signed session went from HTTP 200 to 403. The leader published again and the follower stayed at 14 fills. [Access check](docs/evidence/copy-trading/hour-2026-11-07/terminal.txt#L2635) · [Close receipt](https://testnet.nearblocks.io/txns/D6Du8Loc9UgjsWJy9nuyKNLNKa46gEfqp1wz57cVZAMf) |
+| NEAR discovery and protected remote delivery | A registered publisher appeared automatically in production Explore and became unavailable after stopping. OutLayer delivered a signed paper action with an active real stream, rejected a public encrypted-record read, and returned 403 after closure. [Delivery evidence](docs/evidence/near/remora-near-delivery-2026-11-10.json) |
 
 Paper fills change virtual balances. The USDC stream settled on NEAR testnet. In a separate live test, one Meteor signature funded an isolated account that signed its own Rhea rebalance and returned the assets on revoke. [Execution grant receipts](docs/evidence/near/remora-execution-grant.json)
 
@@ -45,7 +46,7 @@ agentstream --version
 agentstream task list
 ```
 
-Release `0.11.0` adds `copy mode veto`. The follower shows each candidate and its blocking deadline, then rechecks the guards before executing. Native strategies use a matching execution grant. [npm package](https://www.npmjs.com/package/@ola-893/agentstreams-cli)
+Release `0.12.0` adds NEAR registry discovery and OutLayer-protected remote feeds. `copy mode veto` shows each candidate and its blocking deadline, then rechecks the guards before executing. Native strategies use a matching execution grant. [npm package](https://www.npmjs.com/package/@ola-893/agentstreams-cli)
 
 ## Guides
 

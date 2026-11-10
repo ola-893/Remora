@@ -1,0 +1,122 @@
+{
+  "recordedAt": "2026-11-10T01:59:40.766Z",
+  "network": "testnet",
+  "registry": {
+    "network": "testnet",
+    "rpcUrl": "https://test.rpc.fastnear.com",
+    "contractId": "2f9e0f23f9b2a06f70aa0fc0b55d621ab5fdb9f60455adb3667debb161ef5ce1",
+    "deployedCodeHash": "AysVFMEvH84V1hgE4RipRLBEowmCCFgYUawgYvGnuejW",
+    "immutable": true
+  },
+  "worker": {
+    "network": "testnet",
+    "origin": "https://testnet-api.outlayer.ai",
+    "project": "rudepuma4060.testnet/remora-feed",
+    "version": "5601fced7480bc887e7fdb913255af19eaecf1b8dedf76623a6c5dd9f1cdbb04"
+  },
+  "discovery": {
+    "publisherId": "ap_d49018909353f8f9171b9688263a9cd1423bed457ad9188a83efb997435bc63a",
+    "automaticRunningAndStoppedStatus": "verified in production browser",
+    "heartbeat": {
+      "publisherId": "ap_d49018909353f8f9171b9688263a9cd1423bed457ad9188a83efb997435bc63a",
+      "method": "heartbeat",
+      "transactionHash": "AonnNS3SrxooH8MJdUTWRb3ePUywFrvEiiPM7D6sEzsK"
+    },
+    "stop": {
+      "publisherId": "ap_d49018909353f8f9171b9688263a9cd1423bed457ad9188a83efb997435bc63a",
+      "method": "stop",
+      "transactionHash": "B2JSxj8pcttDHuQSZcMwyVv1zvgDH4PJSBhtZu7cFd7k"
+    }
+  },
+  "subscription": {
+    "sessionId": "0aeebbf7-2de9-4c20-bb92-5e8c9baa67d9",
+    "openHash": "3mGBLQgoetwTMv4fwogEicMRFDxYxtqfxPCu6c6poxpL",
+    "closeHash": "vVvxsm4EBcdgxfWuWZe76sjbav3sCact6vycpBNnFNf",
+    "session_id": "0aeebbf7-2de9-4c20-bb92-5e8c9baa67d9",
+    "recipient_id": "rudepuma4060.testnet",
+    "quote_hash": "1e5b62a7c88deaa26e515625891cbe3e16a9e2dfa5537ff66814d11ad7c9463e",
+    "deposit": "10000",
+    "rate": "1",
+    "duration_seconds": 0,
+    "started_at": "1794275948",
+    "closed_at": "1794275966",
+    "earned": "18",
+    "refunded": "9982"
+  },
+  "checks": [
+    {
+      "check": "no subscription credential",
+      "http": 402
+    },
+    {
+      "check": "active real NEAR stream",
+      "http": 200,
+      "signedActions": 1,
+      "cursor": 1
+    },
+    {
+      "check": "direct unauthenticated encrypted entry read",
+      "http": 403
+    },
+    {
+      "check": "same credential after real stream closure",
+      "http": 403
+    }
+  ],
+  "action": {
+    "execution": "paper",
+    "source": "signed live NEAR Intents dry-run quote",
+    "signedActions": 1
+  },
+  "ownerOperations": [
+    {
+      "kind": "outlayer-compute-funding",
+      "hash": "Apb8C3ArG5KBBYWNX9N9ZWcuD46zVJXJtJLoNcucv7RD",
+      "createdAt": "2026-11-10T01:36:55.922Z"
+    },
+    {
+      "kind": "publisher-registration",
+      "hash": "GTTi4UUcwDjHrLoxm33KkgoVaUtQ9mgvhJFs3jRfHc7n",
+      "createdAt": "2026-11-10T01:50:13.360Z"
+    },
+    {
+      "kind": "registry-heartbeat-key",
+      "hash": "yqf1g8RbtkmgxB9TuBc2z61PU5WCvfLYKoEKJ3n1L8e",
+      "createdAt": "2026-11-10T01:50:44.888Z"
+    },
+    {
+      "kind": "registry-deployment",
+      "hash": "9X4kVE9qh1QxTdyZbuhJjbQ35is27gmZNxYde9yoBoVz",
+      "createdAt": "2026-11-09T18:42:42.325Z"
+    },
+    {
+      "kind": "outlayer-project",
+      "hash": "HNkfxkR3JYDFsKFuE2SA3nU6jQMssJBKNnWnZPrTtU1Y",
+      "createdAt": "2026-11-10T01:39:22.389Z"
+    },
+    {
+      "kind": "outlayer-compute-funding",
+      "hash": "CKcqVh4QXhfXo2HPjAqpH9j2hr8rANGRVfVygtYu7Tm4",
+      "createdAt": "2026-11-10T01:53:43.118Z"
+    }
+  ],
+  "compute": {
+    "nonce": 2,
+    "initialBalance": "30000",
+    "spent": "14080",
+    "available": "15920",
+    "tokenId": "usdc.fakes.testnet"
+  },
+  "validation": {
+    "cliCoreTests": 86,
+    "frontendTests": 11,
+    "nearTests": 30,
+    "workerTests": 2,
+    "packedInstall": "passed"
+  },
+  "limitations": [
+    "Native DeFi transactions remain public on NEAR.",
+    "No client-side hardware attestation verification or application-level end-to-end encryption to the worker.",
+    "Live action delivery tested with a paper fill; no new live DeFi swap in this delivery check."
+  ]
+}
