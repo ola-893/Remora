@@ -81,9 +81,13 @@ export async function verifyListing(envelope, entry) {
     visibility: b.execution === 'paper' ? 'paper' : b.visibility === 'confidential-requested' ? 'confidential-requested' : 'public-chain' };
 }
 
-async function json(url, signal) {
-  const response = await fetch(url, { signal, redirect: 'error', credentials: 'omit', cache: 'no-store', referrerPolicy: 'no-referrer' });
-  if (!response.ok) throw new Error('Feed returned HTTP ' + response.status);
+async function json(url, signal, init = {}, maxBytes = 131072) {
+  const response = await fetch(url, { ...init, signal, redirect: 'error', credentials: 'omit', cache: 'no-store', referrerPolicy: 'no-referrer' });
+  if (!response.ok) {
+    const error = new Error('Feed returned HTTP ' + response.status);
+    if (response.status === 429) error.retryAfterMs = Math.min(120000, Math.max(30000, Number(response.headers.get('retry-after')) * 1000 || 60000));
+    throw error;
+  }
   const reader = response.body.getReader();
   const chunks = [];
   let size = 0;
@@ -92,7 +96,7 @@ async function json(url, signal) {
       const { done, value } = await reader.read();
       if (done) break;
       size += value.byteLength;
-      if (size > 131072) throw new Error('Feed response is too large.');
+      if (size > maxBytes) throw new Error('Feed response is too large.');
       chunks.push(value);
     }
   } finally { await reader.cancel(); }
@@ -142,11 +146,61 @@ export async function probePublisher(entry, signal = AbortSignal.timeout(6000)) 
     }),
     read('/copy/health').catch(() => null),
   ]);
+  return publisherStatus(entry, envelope, health);
+}
+
+async function publisherStatus(entry, envelope, health) {
   const listing = await verifyListing(envelope, entry);
   const checkedAt = Date.now();
   const healthy = health?.ok === true && Number.isSafeInteger(health.observed_at) && Math.abs(checkedAt - health.observed_at * 1000) <= 30000;
   const modes = listing.activity === 'spot-trading' ? ['paper', 'agent-connect'] : ['wallet'];
   return { ...listing, checkedAt, state: healthy && entry.registryActive !== false && modes.includes(listing.execution) ? 'running' : healthy && entry.registryActive !== false ? 'unconfigured' : 'unavailable' };
+}
+
+// Public metadata only. Never request journal entries or send compute credentials.
+// OutLayer accepts 50 keys per batch: one listing and one health record per agent.
+export async function probePublishers(entries, signal = AbortSignal.timeout(15000)) {
+  const results = new Array(entries.length);
+  const remote = [];
+  const local = [];
+  entries.forEach((entry, index) => {
+    if (entry.origin === outlayerNetwork.origin) remote.push({ entry, index });
+    else local.push({ entry, index });
+  });
+  await Promise.all(local.map(async ({ entry, index }) => {
+    try { results[index] = { status: 'fulfilled', value: await probePublisher(entry, signal) }; }
+    catch (reason) { results[index] = { status: 'rejected', reason }; }
+  }));
+  for (let offset = 0; offset < remote.length; offset += 25) {
+    const group = remote.slice(offset, offset + 25);
+    try {
+      const keys = group.flatMap(({ entry }) => ['listing:' + entry.id, 'health:' + entry.id]);
+      const body = await json(outlayerNetwork.origin + '/public/storage/batch', signal, {
+        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ project: outlayerNetwork.project, keys }),
+      }, 9000000);
+      const read = key => {
+        const row = body?.results?.[key];
+        if (row?.exists !== true || row.error || typeof row.value !== 'string' || row.value.length > 174764) throw new Error('Public record unavailable.');
+        return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(row.value), char => char.charCodeAt(0))));
+      };
+      await Promise.all(group.map(async ({ entry, index }) => {
+        try {
+          const envelope = read('listing:' + entry.id);
+          let health;
+          try { health = read('health:' + entry.id); } catch { health = null; }
+          results[index] = { status: 'fulfilled', value: await publisherStatus(entry, envelope, health) };
+        } catch (reason) { results[index] = { status: 'rejected', reason }; }
+      }));
+    } catch (reason) {
+      for (const { index } of group) results[index] = { status: 'rejected', reason };
+      // Respect a server-wide backoff; don't multiply a refused request by page count.
+      if (reason.retryAfterMs) {
+        for (const { index } of remote.slice(offset + 25)) results[index] = { status: 'rejected', reason };
+        break;
+      }
+    }
+  }
+  return results;
 }
 
 export function usdcPerSecond(raw) {

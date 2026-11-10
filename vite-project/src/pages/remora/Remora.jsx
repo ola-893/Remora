@@ -6,7 +6,7 @@ import mark from '../../../../brand/remora/assets/remora-mark.svg';
 import loader from '../../../../brand/remora/assets/remora-loader.svg';
 import art from '../../../../brand/remora/hero/assets/cybernetic-pair.png';
 import recorded from './recorded.json';
-import { activities, directoryEntries, explorerUrl, feedOrigin, previewCommand, probePublisher, publisherId, registryEntries, startCommand, usdcPerSecond } from './directory.mjs';
+import { activities, directoryEntries, explorerUrl, feedOrigin, previewCommand, probePublisher, probePublishers, publisherId, registryEntries, startCommand, usdcPerSecond } from './directory.mjs';
 import './remora.css';
 
 const archive = { ...recorded, state: 'recorded' };
@@ -34,6 +34,7 @@ function useDirectory() {
   const [offers, setOffers] = useState({});
   const [catalogError, setCatalogError] = useState(false);
   const [catalogReady, setCatalogReady] = useState(false);
+  const nextProbeAt = useRef(0);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -73,20 +74,31 @@ function useDirectory() {
     let timer;
     let request;
     async function refresh() {
+      if (nextProbeAt.current > Date.now()) {
+        timer = setTimeout(refresh, nextProbeAt.current - Date.now());
+        return;
+      }
       request = new AbortController();
-      await Promise.all(entries.map(async entry => {
-        const signal = AbortSignal.any([request.signal, AbortSignal.timeout(6000)]);
-        try {
-          const next = await probePublisher(entry, signal);
-          if (!cancelled) setOffers(previous => ({ ...previous, [entry.id]: next }));
-        } catch {
-          if (!cancelled) setOffers(previous => {
+      const signal = AbortSignal.any([request.signal, AbortSignal.timeout(15000)]);
+      const results = await probePublishers(entries, signal);
+      if (cancelled) return;
+      setOffers(previous => {
+        const next = { ...previous };
+        results.forEach((result, index) => {
+          const entry = entries[index];
+          if (result.status === 'fulfilled') next[entry.id] = result.value;
+          else {
             const cached = previous[entry.id];
-            return { ...previous, [entry.id]: { ...(cached?.origin === entry.origin ? cached : {}), ...entry, state: 'unavailable' } };
-          });
-        }
-      }));
-      if (!cancelled && entries.length) timer = setTimeout(refresh, 15000);
+            next[entry.id] = { ...(cached?.origin === entry.origin ? cached : {}), ...entry,
+              state: result.reason.retryAfterMs ? 'checking' : 'unavailable' };
+          }
+        });
+        return next;
+      });
+      const backoff = Math.max(0, ...results.map(result => result.status === 'rejected' ? result.reason.retryAfterMs || 0 : 0));
+      nextProbeAt.current = backoff ? Date.now() + backoff : 0;
+      const delay = Math.max(15000, backoff);
+      if (entries.length) timer = setTimeout(refresh, delay);
     }
     void refresh();
     return () => { cancelled = true; clearTimeout(timer); request?.abort(); };
