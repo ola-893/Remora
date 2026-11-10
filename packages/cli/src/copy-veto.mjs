@@ -27,7 +27,8 @@ export async function honorVeto(agent, item) {
 // that deadline, so accepted blocks cannot lose a race to a slow state lock.
 export async function blockCopyAction(agent, id) {
   const state = await readAgentState(agent), item = state.pending?.[id], follow = state.follow;
-  if (follow?.status !== 'active' || follow.mode !== 'veto' || item?.sessionId !== follow.sessionId || item.status !== 'pending') throw new Error('Action is not pending for the active veto subscription.');
+  if (!follow) throw new Error('No copy subscription.');
+  if (follow.status !== 'active' || follow.mode !== 'veto' || item?.sessionId !== follow.sessionId || item.status !== 'pending') throw new Error('Action is not pending for the active veto subscription.');
   if (await hasVeto(agent, item)) return { actionId: id, status: 'blocked' };
   if (Date.now() >= item.blockUntil) throw new Error('COPY_VETO_WINDOW_CLOSED');
   if (Date.now() >= item.action.expiresAt) throw new Error('ACTION_EXPIRED');

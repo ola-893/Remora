@@ -12,7 +12,7 @@ let ready;
 export async function requireOutlayerVerifier() {
   ready ??= exec('outlayer-verify', ['--help'], { timeout: 10000, maxBuffer: 32768 }).catch(() => {
     ready = undefined;
-    throw new Error('OUTLAYER_VERIFIER_REQUIRED: install the official outlayer-verify CLI; see docs/NEAR_DELIVERY.md. No paid request was submitted.');
+    throw new Error(`OUTLAYER_VERIFIER_REQUIRED: run cargo install --git https://github.com/out-layer/outlayer-verify --rev ${verifierRevision} --locked outlayer-verify. No paid request was submitted.`);
   });
   await ready;
 }
