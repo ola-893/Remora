@@ -1,6 +1,6 @@
 {
   "name": "@ola-893/agentstreams-core",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "type": "module",
   "description": "Guarded paid API sessions for agents: deterministic policy and native NEAR payments",
   "license": "MIT",
