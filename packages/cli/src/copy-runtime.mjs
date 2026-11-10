@@ -18,6 +18,8 @@ import { appendFill, checkListingQuote, fetchFeed, feedPath, getListing, healthP
 import { registryHeartbeat, registryPublishers } from './registry.mjs';
 import { appendOutlayer, outlayerFeedResponse, publishOutlayer } from './outlayer.mjs';
 import { pendingOutlayerEntries } from './copy-feed.mjs';
+import { applySignalUpdate } from './signal-protocol.mjs';
+import { proposalForExecution, checkSignalBeforeExecution, proposeSignal, updateSignal, waitSignalWindow, finishSignalInState } from './signals.mjs';
 
 const addHistory = (state, item) => {
   state.history.push({ at: new Date().toISOString(), ...item });
@@ -196,18 +198,22 @@ async function finishSwap(agent, state, save, result) {
         execution: 'agent-connect', settlementRef: fill.tx_hash ?? fill.destination_tx_hash ?? result.correlationId, ...(trade.source ? { copiedFrom: trade.source } : {}) };
       await save();
     }
-    const publication = await appendFill(agent, state, trade.settled);
+    const publication = trade.signalId ? await finishSignalInState(agent, state, trade.signalId, 'settled', { settlementRef: trade.settled.settlementRef })
+      : await appendFill(agent, state, trade.settled);
     addHistory(state, { type: 'trade', status: result.status, actionId: trade.id, correlationId: result.correlationId, publication });
-  } else addHistory(state, { type: 'trade', status: result.status, actionId: trade.id, correlationId: result.correlationId });
+  } else {
+    if (trade.signalId) await finishSignalInState(agent, state, trade.signalId, 'failed');
+    addHistory(state, { type: 'trade', status: result.status, actionId: trade.id, correlationId: result.correlationId });
+  }
   if (state.pending?.[trade.id]) state.pending[trade.id].status = result.status.toLowerCase();
   state.tradePending = null;
   return { status: result.status, correlationId: result.correlationId, amountOut: result.details?.amount_out ?? null, transactionHash: result.details?.tx_hash ?? null };
 }
 
-async function recordPaper(agent, state, order, quote, id, copiedFrom) {
+async function recordPaper(agent, state, order, quote, id, copiedFrom, signalId) {
   const balances = paperBalances(state.paper, order, quote);
   const fill = paperFill(order, quote, id, copiedFrom);
-  const publication = await appendFill(agent, state, fill);
+  const publication = signalId ? await finishSignalInState(agent, state, signalId, 'settled', { settlementRef: fill.settlementRef }) : await appendFill(agent, state, fill);
   state.paper.balances = balances;
   const evidence = { ...fill, quote: quote.signedResponse };
   state.paper.fills = [...state.paper.fills.slice(-99), evidence];
@@ -216,7 +222,38 @@ async function recordPaper(agent, state, order, quote, id, copiedFrom) {
   return { status: 'paper-filled', mode: 'paper', fill, balances, publication, signedTransactions: 0 };
 }
 
-export async function runSpotTask(agent, order, execute, { requirePaper = false, referenceQuote } = {}) {
+export async function runSpotTask(agent, order, execute, options = {}) {
+  const state = await readAgentState(agent);
+  if (!execute || !state.publish?.enabled || state.publish.activity !== spot) return runSpotTaskInner(agent, order, execute, options);
+  const id = operationKey(agent.id, randomUUID());
+  const policy = state.executionPolicy;
+  try {
+    const preview = await runSpotTaskInner(agent, order, false, { ...options, signalPreparing: true });
+    const refusal = checkQuote(preview.quote, order, options.referenceQuote ?? preview.quote, policy);
+    if (refusal || preview.quote.warnings.length) throw new Error(refusal ?? 'INTENTS_QUOTE_WARNING');
+    const signal = await proposeSignal(agent, { id, activity: spot, execution: preview.execution,
+      action: { from: order.origin_asset, to: order.destination_asset, amountIn: order.amount, amountOut: preview.quote.amountOut } });
+    await waitSignalWindow(agent, signal, options.signal);
+    if (JSON.stringify((await readAgentState(agent)).executionPolicy) !== JSON.stringify(policy)) throw new Error('EXECUTION_POLICY_CHANGED');
+    const fresh = await runSpotTaskInner(agent, order, false, { requirePaper: options.requirePaper, signalPreparing: true });
+    const moved = checkQuote(fresh.quote, order, signal.action, policy);
+    if (moved || fresh.quote.warnings.length) throw new Error(moved ?? 'INTENTS_QUOTE_WARNING');
+    await updateSignal(agent, id, 'released');
+    const result = await runSpotTaskInner(agent, order, true, { ...options, referenceQuote: fresh.quote, preparedQuote: fresh.quote, signalId: id });
+    const phase = (await readAgentState(agent)).leaderSignals[id].phase;
+    if (['settled', 'failed'].includes(phase)) {
+      try { await updateSignal(agent, id, phase); } catch (error) { result.deliveryError = error.message; }
+    }
+    return result;
+  } catch (error) {
+    const current = (await readAgentState(agent)).leaderSignals?.[id];
+    if (current?.phase === 'proposed') await updateSignal(agent, id, 'cancelled').catch(() => {});
+    else if (current?.phase === 'released') await updateSignal(agent, id, error.confirmedFailure ? 'failed' : 'uncertain').catch(() => {});
+    throw error;
+  }
+}
+
+async function runSpotTaskInner(agent, order, execute, { requirePaper = false, referenceQuote, signalPreparing = false, preparedQuote, signalId } = {}) {
   return withAgentState(agent, async (state, save) => {
     const config = state.tasks[spot];
     if (!config) throw new Error('Enable spot-trading with paper balances or an Agent Connect account first.');
@@ -224,26 +261,29 @@ export async function runSpotTask(agent, order, execute, { requirePaper = false,
     const paper = config.mode === 'paper';
     if (requirePaper && !paper) throw new Error('PAPER_TRADING_REQUIRED');
     if (execute && !paper && !config.live) throw new Error('INTENTS_LIVE_DISABLED');
-    if ((execute || requirePaper) && (!p || order.origin_asset !== p.inputAsset || !p.assets.includes(order.destination_asset) ||
+    if ((execute || requirePaper || signalPreparing) && (!p || order.origin_asset !== p.inputAsset || !p.assets.includes(order.destination_asset) ||
         BigInt(order.amount) > BigInt(p.maxInput))) throw new Error('ORDER_OUTSIDE_EXECUTION_POLICY');
     if (referenceQuote && Date.now() - Date.parse(referenceQuote.observedAt) > 30000) throw new Error('TRADE_PREVIEW_STALE');
     const adapter = paper ? null : intentsAdapter(config);
-    const quote = paper ? await paperQuote(order, p?.slippageBps ?? 50) : await adapter.quote(order);
+    const quote = preparedQuote ?? (paper ? await paperQuote(order, p?.slippageBps ?? 50) : await adapter.quote(order));
     if (!execute) return { mode: 'preview', execution: paper ? 'paper' : 'agent-connect', quote, signedTransactions: 0 };
     const refusal = checkQuote(quote, order, referenceQuote ?? quote, p);
     if (refusal || quote.warnings.length) throw new Error(refusal ?? 'INTENTS_QUOTE_WARNING');
-    const id = operationKey(agent.id, randomUUID());
-    if (paper) return recordPaper(agent, state, order, quote, id);
+    const id = signalId ?? operationKey(agent.id, randomUUID());
+    if (signalId && (state.leaderSignals?.[signalId]?.phase !== 'released' || Date.now() >= state.leaderSignals[signalId].signalExpiresAt || !state.publish?.enabled)) throw new Error('LEADER_SIGNAL_EXPIRED');
+    if (paper) return recordPaper(agent, state, order, quote, id, undefined, signalId);
     const min = minimumOutput(quote, order, p);
-    return executeSwap(agent, state, save, adapter, { ...order, min_amount_out: min }, { id });
+    return executeSwap(agent, state, save, adapter, { ...order, min_amount_out: min }, { id, ...(signalId ? { signalId } : {}) });
   });
 }
 
 export async function reconcileCopy(agent) {
-  return withAgentState(agent, async (state, save) => {
+  let signalId;
+  const report = await withAgentState(agent, async (state, save) => {
     const report = {};
     if (state.tradePending) {
       const trade = state.tradePending;
+      signalId = trade.signalId;
       if (!trade.correlationId) report.trade = { resolved: false, reason: 'CORRELATION_ID_UNKNOWN', idempotencyKey: trade.key };
       else {
         const adapter = intentsAdapter(state.tasks[spot]);
@@ -262,6 +302,12 @@ export async function reconcileCopy(agent) {
     }
     return { resolved: !state.tradePending && !['opening', 'closing'].includes(state.follow?.status), ...report };
   });
+  const phase = signalId && (await readAgentState(agent)).leaderSignals?.[signalId]?.phase;
+  if (['settled', 'failed'].includes(phase)) {
+    try { await updateSignal(agent, signalId, phase); }
+    catch (error) { report.deliveryError = error.message; }
+  }
+  return report;
 }
 
 async function observeAction(agent, state, save, action, emit, client, approved = false) {
@@ -297,11 +343,12 @@ async function observeAction(agent, state, save, action, emit, client, approved 
     return record({ status: 'skipped', reason, quote: summary, action });
   }
   if (follow.mode === 'observe') return record({ status: 'observed', quote: summary, order: result.order, action });
-  if (['approve', 'veto'].includes(follow.mode) && !approved) {
+  if ((['approve', 'veto'].includes(follow.mode) || action.signalId && follow.mode === 'auto') && !approved) {
     let deadline;
     try { deadline = copyVetoDeadline(follow, action, policy); }
     catch (error) { return record({ status: 'skipped', reason: error.message }); }
-    (state.pending ??= {})[action.id] = { status: 'pending', action, quote: summary, order: result.order, sessionId: follow.sessionId, ...deadline };
+    (state.pending ??= {})[action.id] = { status: 'pending', action, quote: summary, order: result.order, sessionId: follow.sessionId,
+      ...(action.signalId && follow.mode === 'auto' ? { blockUntil: Date.now() } : {}), ...deadline };
     return record({ status: 'pending', quote: summary, order: result.order, ...deadline });
   }
   if (!paper && (!config.live || state.tradePending)) {
@@ -316,6 +363,14 @@ async function observeAction(agent, state, save, action, emit, client, approved 
   if (follow.mode === 'veto' && JSON.stringify(result.order) !== JSON.stringify(state.pending[action.id].order)) {
     state.pending[action.id].status = 'skipped';
     return record({ status: 'skipped', reason: 'COPY_CANDIDATE_CHANGED' });
+  }
+  if (action.signalId) {
+    try {
+      if (!await checkSignalBeforeExecution(action, follow, client)) return record({ status: 'waiting-signal', actionId: action.id });
+    } catch (error) {
+      if (state.pending?.[action.id]) state.pending[action.id].status = 'cancelled';
+      return record({ status: 'skipped', reason: error.message });
+    }
   }
   if (paper) {
     let filled;
@@ -382,7 +437,15 @@ async function copyTick(agent, emit, reviewer) {
         seen[action.id] = true;
         await save();
         try {
-          await observeAction(agent, state, save, action, event => {
+          let candidate = action;
+          if (action.signalId) {
+            const update = applySignalUpdate(state, action);
+            emit({ type: 'signal', signalId: action.signalId, phase: update.current?.phase, publisher: action.publisher });
+            await save();
+            if (action.phase !== 'proposed' || update.duplicate) continue;
+            candidate = proposalForExecution(action);
+          }
+          await observeAction(agent, state, save, candidate, event => {
             emit(event);
             const job = copyReviewJob(action, event, follow.sessionId);
             if (job) reviews.push(job);
@@ -395,7 +458,7 @@ async function copyTick(agent, emit, reviewer) {
       if (follow.mode === 'approve') for (const item of Object.values(state.pending ?? {})) {
         if (item.status === 'approved' && item.sessionId === follow.sessionId) await observeAction(agent, state, save, item.action, emit, client, true);
       }
-      if (follow.mode === 'veto') for (const item of Object.values(state.pending ?? {})) {
+      if (['veto', 'auto'].includes(follow.mode)) for (const item of Object.values(state.pending ?? {})) {
         if (!copyVetoDue(item, follow.sessionId)) continue;
         if (item.action.activity !== spot) dueStrategies.push(item.action.id);
         else await observeAction(agent, state, save, item.action, emit, client, true);

@@ -14,6 +14,7 @@ import { bundledWasm, historicalVaultWasm } from './setup.mjs';
 import { activityMode, nativeWalletActivities, strategyAction } from './strategy-actions.mjs';
 import { usdc } from './settings.mjs';
 import { outlayerNetwork } from '@ola-893/agentstreams-core/internal-outlayer';
+import { signalDomain, signalStatusDomain, validateSignalEvent, signalState } from './signal-protocol.mjs';
 
 export const agentIdPattern = /^ap_[a-f0-9]{64}$/;
 export const accountId = value => typeof value === 'string' && /^(?=.{2,64}$)[a-z0-9]+(?:[-_.][a-z0-9]+)*$/.test(value);
@@ -67,6 +68,8 @@ export async function configurePublish(agent, flags) {
   if (flags.delivery === 'outlayer' && origin !== outlayerNetwork.origin) throw new Error('OUTLAYER_ORIGIN_MISMATCH');
   const port = Number(flags.port ?? (new URL(origin).protocol === 'http:' ? new URL(origin).port || 80 : 5380));
   const duration = Number(flags.duration ?? 0);
+  const signalWindowSeconds = Number(flags['signal-window'] ?? 30);
+  if (!Number.isInteger(signalWindowSeconds) || signalWindowSeconds < 15 || signalWindowSeconds > 60) throw new Error('Use --signal-window between 15 and 60 seconds.');
   const rate = usdc(flags.rate);
   if (BigInt(rate) < 1n || !accountId(flags.recipient) || !flags.recipient.endsWith('.testnet') || !Number.isInteger(duration) || duration < 0 || duration > 4294967295 || !Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Provide a positive --rate, .testnet --recipient, --duration seconds (0 keeps the stream open until closed or funding is exhausted) and a valid --port.');
   const nova = flags['nova-group'] ? { group: flags['nova-group'], account: flags['nova-account'], keyEnv: flags['nova-key-env'] ?? 'NOVA_API_KEY', network: flags['nova-network'] ?? 'testnet' } : null;
@@ -76,7 +79,7 @@ export async function configurePublish(agent, flags) {
   return withAgentState(agent, state => {
     if (state.publish?.enabled) throw new Error('Stop publication before changing the listing.');
     const publicHistory = flags['public-history'] === true;
-    state.publish = { enabled: false, activity: selected[0], origin, port, duration, rate, recipient: flags.recipient, nova, performance, publicHistory,
+    state.publish = { enabled: false, activity: selected[0], origin, port, duration, rate, recipient: flags.recipient, nova, performance, publicHistory, signalWindowSeconds,
       ...(flags.delivery === 'outlayer' ? { delivery: 'outlayer' } : {}) };
     return { origin, activity: selected[0], rateRawUSDCPerSecond: rate, durationSeconds: duration, recipient: flags.recipient, journal: nova ? 'nova' : 'local-encrypted', publicHistory, enabled: false };
   });
@@ -124,6 +127,7 @@ function listing(agent, state) {
     journal: p.nova ? 'nova' : 'local-encrypted',
     execution: activityMode(state, p.activity ?? spot) ?? 'unconfigured',
     visibility: executionVisibility(state, p.activity ?? spot),
+    signals: { version: 1, windowSeconds: p.signalWindowSeconds ?? 30, cancellation: 'before-release' },
     ...(p.delivery === 'outlayer' ? { delivery: 'outlayer', deliveryKey: state.outlayerDeliveryKey } : {}),
     ...(p.publicHistory ? { history: publicListingHistory(state, p.activity ?? spot), historyPolicy: { delaySeconds: 86400, granularity: 'day', receipts: false } } : {}),
     ...(p.performance ? { performance: { provenance: 'publisher-reported', points: publicPerformance(p.performance) } } : {}),
@@ -219,7 +223,8 @@ async function appendAction(agent, state, entry, domain) {
   const key = await feedKey(agent);
   const action = { ...entry, sequence: (journal.at(-1)?.sequence ?? 0) + 1, publisher: agent.id };
   const pointer = await storeEntry(agent, key, signed(key, domain, action), state.publish.nova);
-  journal.push({ ...pointer, id: action.id, sequence: action.sequence, activity: action.activity });
+  journal.push({ ...pointer, id: action.id, sequence: action.sequence, activity: action.activity,
+    ...(action.signalId ? { signalId: action.signalId, phase: action.phase } : {}) });
   return { id: action.id, sequence: action.sequence, journalHash: pointer.hash };
 }
 
@@ -231,11 +236,32 @@ export function appendStrategyAction(agent, state, entry) {
   return appendAction(agent, state, entry, strategyDomain);
 }
 
+export function appendSignalEvent(agent, state, event) {
+  validateSignalEvent(event);
+  return appendAction(agent, state, event, signalDomain);
+}
+
+export async function localSignalState(agent, state, id) {
+  const key = await feedKey(agent);
+  const events = [];
+  for (const pointer of state.journal ?? []) {
+    if (pointer.signalId !== id) continue;
+    const envelope = await loadEntry(agent, key, pointer);
+    if (!verified(envelope, agent.publicKey, signalDomain)) throw new Error('INVALID_SIGNAL_SIGNATURE');
+    events.push(validateSignalEvent(envelope.body));
+  }
+  return signalState(events);
+}
+
 export function verifyAction(envelope, listing) {
   const b = envelope?.body;
   if (!b || b.publisher !== listing.id || b.activity !== listing.activity || !/^[a-f0-9]{64}$/.test(b.id ?? '') ||
       !Number.isSafeInteger(b.sequence) || b.sequence < 1 || !Number.isSafeInteger(b.at) || !Number.isSafeInteger(b.expiresAt) || b.expiresAt <= b.at ||
       (b.copiedFrom !== undefined && !agentIdPattern.test(b.copiedFrom))) throw new Error('INVALID_SIGNED_ACTION');
+  if (b.signalId !== undefined) {
+    if (!verified(envelope, listing.publicKey, signalDomain)) throw new Error('INVALID_SIGNAL_SIGNATURE');
+    return validateSignalEvent(b);
+  }
   if (nativeWalletActivities.has(b.activity)) {
     if (b.execution !== 'wallet' || b.expiresAt - b.at > 120000 ||
         !verified(envelope, listing.publicKey, strategyDomain) || canonical(strategyAction(b.activity, b.action)) !== canonical(b.action)) throw new Error('INVALID_SIGNED_STRATEGY');
@@ -305,7 +331,8 @@ export async function serveFeed(agent, { rpcUrl = 'https://test.rpc.fastnear.com
             ![next, next - 60].includes(expiresAt) || expiresAt <= now) return send(400, { error: 'INVALID_QUOTE_REQUEST' });
         return send(200, quoteFor(b, vaultId, token, expiresAt));
       }
-      if (path.pathname !== feedPath) return send(404, { error: 'NOT_FOUND' });
+      const signalId = path.pathname.startsWith('/copy/signals/') ? path.pathname.slice('/copy/signals/'.length) : null;
+      if (path.pathname !== feedPath && !/^[a-f0-9]{64}$/.test(signalId ?? '')) return send(404, { error: 'NOT_FOUND' });
       const header = req.headers['x-agentpay-session'];
       if (!header) return send(402, { protocol: 'agentpay-near-v1' });
       if (typeof header !== 'string' || header.length > 2048) return send(403, { error: 'SESSION_INVALID' });
@@ -323,6 +350,14 @@ export async function serveFeed(agent, { rpcUrl = 'https://test.rpc.fastnear.com
       };
       let access;
       try { access = await authenticate(); } catch { return send(403, { error: 'STREAM_ACCESS_DENIED' }); }
+      if (signalId) {
+        const nonce = path.searchParams.get('nonce');
+        if (!/^[a-f0-9]{64}$/.test(nonce ?? '')) return send(400, { error: 'SIGNAL_NONCE_REQUIRED' });
+        const status = await localSignalState(agent, state, signalId);
+        if (status.signalCreatedAt < Number(access.stream.started_at) * 1000) return send(403, { error: 'SIGNAL_PREDATES_SUBSCRIPTION' });
+        try { await authenticate(); } catch { return send(403, { error: 'STREAM_ACCESS_DENIED' }); }
+        return send(200, signed(key, signalStatusDomain, { ...status, sessionId: access.session.session_id, nonce, observedAt: Date.now() }));
+      }
       const after = Number(path.searchParams.get('after') ?? 0);
       if (!Number.isSafeInteger(after) || after < 0) return send(400, { error: 'INVALID_CURSOR' });
       const pointers = (state.journal ?? []).filter(p => p.sequence > after).slice(0, 8);
@@ -330,7 +365,7 @@ export async function serveFeed(agent, { rpcUrl = 'https://test.rpc.fastnear.com
       for (const pointer of pointers) {
         if ((pointer.activity ?? spot) !== b.activity) continue;
         const entry = await loadEntry(agent, key, pointer);
-        if (entry.body.at >= Number(access.stream.started_at) * 1000) entries.push(entry);
+        if ((entry.body.signalCreatedAt ?? entry.body.at) >= Number(access.stream.started_at) * 1000) entries.push(entry);
       }
       // A close may finalize while NOVA is retrieving the ciphertext. Check again before releasing entries.
       if (pointers.length) try { await authenticate(); } catch { return send(403, { error: 'STREAM_ACCESS_DENIED' }); }

@@ -85,13 +85,18 @@ export async function outlayerFeedResponse(publisher, path, headers = {}) {
       result = await outlayerServiceJson({ serviceUrl: outlayerNetwork.origin, vaultId,
         tokenId: '3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af', service: { publisher, healthPath: '/copy/health' } }, path);
       if (result.publisher !== listing.id) throw new Error('OUTLAYER_PUBLISHER_MISMATCH');
+    } else if (path.startsWith('/copy/signals/')) {
+      if (!headers['x-agentpay-session']) return Response.json({ protocol: 'agentpay-near-v1' }, { status: 402 });
+      const url = new URL(path, outlayerNetwork.origin);
+      result = await callOutlayer({ operation: 'signal', publisher, session: headers['x-agentpay-session'],
+        signalId: url.pathname.slice('/copy/signals/'.length), nonce: url.searchParams.get('nonce') });
     } else if (path.startsWith('/copy/actions')) {
       if (!headers['x-agentpay-session']) return Response.json({ protocol: 'agentpay-near-v1' }, { status: 402 });
       result = await callOutlayer({ operation: 'actions', publisher, session: headers['x-agentpay-session'], after: Number(new URL(path, outlayerNetwork.origin).searchParams.get('after') ?? 0) });
     } else return Response.json({ error: 'NOT_FOUND' }, { status: 404 });
     return Response.json(result);
   } catch (error) {
-    const denied = /^OUTLAYER_FEED_(STREAM_|SESSION_|UNTRUSTED_|QUOTE_|PUBLICATION_STOPPED)/.test(error.message);
+    const denied = /^OUTLAYER_FEED_(STREAM_|SESSION_|SIGNAL_|UNTRUSTED_|QUOTE_|PUBLICATION_STOPPED)/.test(error.message);
     if (denied) return Response.json({ error: 'STREAM_ACCESS_DENIED' }, { status: 403 });
     throw error;
   }

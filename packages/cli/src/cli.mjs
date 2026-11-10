@@ -33,6 +33,7 @@ const help = `Named agents and copy trading:
   agentstreams publish set --url ORIGIN --rate USDC_PER_SECOND --recipient SELLER.testnet [--duration SECONDS]
                                                 Add --public-history for daily action counts delayed by at least 24 hours
   agentstreams publish start | status | history | stop
+  agentstreams signal list | show ID | cancel ID | reconcile ID --hash HASH
   agentstreams publish register [--registry CONTRACT_ID]
   agentstreams registry deploy | show
   agentstreams registry set --registry CONTRACT_ID
@@ -121,7 +122,7 @@ export async function run(argv) {
   const strings = ['action-json', 'targets', 'max-inputs', 'copy-bps', 'hash', 'paper-balances', 'agent', 'activity', 'id', 'activities', 'rate', 'intents-agent-id', 'intents-key-env', 'intents-grant-env', 'from', 'to', 'amount-raw', 'nova-group', 'nova-account', 'nova-network', 'nova-key-env', 'performance-file', 'assets', 'input-asset', 'max-input-raw', 'copy-input-raw', 'max-age', 'max-slippage-bps', 'max-notional', 'stale-seconds', 'feed-failures', 'network', 'deployment', 'session', 'owner-id', 'recipient', 'amount', 'budget', 'max-stream', 'max-rate', 'max-duration', 'max-5xx', 'max-transport-errors', 'max-health-failures', 'idle-timeout', 'max-requests', 'reuse', 'poll-seconds', 'close-on-exit', 'url', 'health-path', 'quote-path', 'request-path', 'tiers', 'base-url', 'model', 'max-steps', 'prompt', 'tier', 'query', 'thinking', 'failure-cooldown', 'provider', 'reasoning-effort', 'max-output-tokens', 'repository', 'basic-rate', 'premium-rate', 'duration', 'run', 'timeout-seconds', 'transactions', 'hours', 'staking-pool', 'tokens', 'fund-near', 'token', 'balance-raw'];
   const booleans = ['api-key', 'cancel', 'resume', 'once', 'live', 'confidential', 'execute', 'json', 'help', 'version', 'enable', 'disable', 'dry-run', 'deploy', 'public-history'];
   const { values: v, positionals: p, tokens } = parseArgs({ args: argv, allowPositionals: true, strict: true, tokens: true, options: {
-    ...Object.fromEntries([...strings, 'veto-seconds', 'registry', 'delivery'].map(k => [k, { type: 'string' }])), ...Object.fromEntries(booleans.map(k => [k, { type: 'boolean' }])),
+    ...Object.fromEntries([...strings, 'veto-seconds', 'registry', 'delivery', 'signal-window'].map(k => [k, { type: 'string' }])), ...Object.fromEntries(booleans.map(k => [k, { type: 'boolean' }])),
     project: { type: 'string', default: '.' }, recording: { type: 'string', default: 'testnet' }, port: { type: 'string', default: '0' },
     'vault-name': { type: 'string', default: 'agentstreams' }, 'agent-name': { type: 'string', default: 'research-agent' }, rpc: { type: 'string', default: 'https://test.rpc.fastnear.com' }, service: { type: 'string', default: 'http://127.0.0.1:5321' },
   } });
@@ -143,7 +144,7 @@ export async function run(argv) {
     'grant:show': '', 'grant:create': 'transactions hours activities staking-pool tokens fund-near', 'grant:revoke': '', 'grant:reconcile': '',
     'grant:prepare': 'activity token balance-raw',
   };
-  const grouped = ['wallet', 'config', 'service', 'inference', 'agent', 'stream', 'task', 'publish', 'earnings', 'guard', 'copy', 'grant', 'registry', 'outlayer'];
+  const grouped = ['wallet', 'config', 'service', 'inference', 'agent', 'stream', 'task', 'publish', 'earnings', 'guard', 'copy', 'grant', 'registry', 'outlayer', 'signal'];
   let command = grouped.includes(p[0]) && p[1] ? `${p[0]}:${p[1]}` : p[0];
   if (p[0] === 'copy' && /^ap_[a-f0-9]{64}$/.test(p[1] ?? '')) command = 'copy:preview';
   const maxPositionals = copyPositionals.has(command) ? 3 : grouped.includes(p[0]) || ['install', 'fund', 'withdraw'].includes(p[0]) ? 2 : 1;

@@ -6,6 +6,7 @@ import { agentSetupState, readAgentState, withAgentState } from './agents.mjs';
 import { appendStrategyAction } from './copy-feed.mjs';
 import { prepareRangeDeposit, runWalletStrategy } from './strategy-wallet.mjs';
 import { activityBlocker, enforceStrategyPolicy, nativeWalletActivities, sizedStrategyAction, strategyAction } from './strategy-actions.mjs';
+import { proposeSignal, updateSignal, waitSignalWindow, checkSignalBeforeExecution } from './signals.mjs';
 
 function strategyHistory(state, entry) {
   state.history.push({ at: new Date().toISOString(), ...entry });
@@ -23,14 +24,18 @@ function orderClientId(agent, activity, action, id, publisher = 'local') {
   return operationKey(agent.id, publisher + ':' + (action.placement ?? id)).slice(0, 32);
 }
 
-async function saveResult(agent, id, result, copiedFrom) {
+async function saveResult(agent, id, result, copiedFrom, signal) {
+  let deliveryError;
+  if (signal) try { await updateSignal(agent, id, 'settled', { settlementRef: result.receipt.hash }); }
+  catch (error) { deliveryError = error.message; }
   for (let attempt = 0; ; attempt++) {
     try {
       return await withAgentState(agent, async state => {
         const at = Date.now();
         const entry = { id, activity: result.activity, action: result.action, execution: 'wallet', at, expiresAt: at + 120000,
           settlementRef: result.receipt.hash, ...(copiedFrom ? { copiedFrom } : {}) };
-        const publication = await appendStrategyAction(agent, state, entry).catch(error => ({ error: error.message }));
+        const publication = signal ? { signalId: id, phase: 'settled', deliveryConfirmed: !deliveryError, ...(deliveryError ? { deliveryError } : {}) }
+          : await appendStrategyAction(agent, state, entry).catch(error => ({ error: error.message }));
         if (copiedFrom && state.pending?.[id]) state.pending[id].status = result.status;
         strategyHistory(state, { type: 'strategy', activity: result.activity, status: result.status, actionId: id,
           transactionHash: result.receipt.hash, signing: result.receipt.signing, ...(copiedFrom ? { publisher: copiedFrom } : {}), publication });
@@ -50,16 +55,40 @@ export async function runStrategyTask(agent, activity, input, options = {}) {
   const policy = strategyPolicyFor(await readAgentState(agent), activity);
   const { ownerId } = await agentSetupState(agent);
   const id = operationKey(agent.id, randomUUID());
-  const result = await runWalletStrategy(activity, action, policy, { ...options, ownerId, agentId: agent.id, operationId: id,
-    orderClientId: orderClientId(agent, activity, action, id),
-    authorize: async inputs => {
-      options.signal?.throwIfAborted();
-      const current = strategyPolicyFor(await readAgentState(agent), activity);
-      enforceStrategyPolicy(activity, action, current, inputs);
-      if (JSON.stringify(current) !== JSON.stringify(policy)) throw new Error('STRATEGY_POLICY_CHANGED: run a new preview.');
-    },
-  });
-  return options.execute ? saveResult(agent, id, result) : result;
+  const publishing = (await readAgentState(agent)).publish;
+  let signal;
+  try {
+    if (options.execute && publishing?.enabled && publishing.activity === activity) {
+      await runWalletStrategy(activity, action, policy, { ...options, execute: false, ownerId, agentId: agent.id });
+      signal = await proposeSignal(agent, { id, activity, action, execution: 'wallet' });
+      await waitSignalWindow(agent, signal, options.signal);
+    }
+    const result = await runWalletStrategy(activity, action, policy, { ...options, ownerId, agentId: agent.id, operationId: id,
+      orderClientId: orderClientId(agent, activity, action, id),
+      authorize: async (inputs, plan) => {
+        options.signal?.throwIfAborted();
+        const current = strategyPolicyFor(await readAgentState(agent), activity);
+        enforceStrategyPolicy(activity, action, current, inputs);
+        if (JSON.stringify(current) !== JSON.stringify(policy)) throw new Error('STRATEGY_POLICY_CHANGED: run a new preview.');
+        if (signal) {
+          await withAgentState(agent, state => {
+            const active = state.leaderSignals?.[id];
+            if (active?.phase !== 'proposed' || Date.now() >= active.signalExpiresAt) throw new Error('LEADER_SIGNAL_CANCELLED_OR_EXPIRED');
+            active.executionPlan = plan;
+          });
+          await updateSignal(agent, id, 'released');
+          const active = (await readAgentState(agent)).leaderSignals[id];
+          if (Date.now() >= active.signalExpiresAt || active.phase !== 'released') throw new Error('LEADER_SIGNAL_EXPIRED');
+        }
+      },
+    });
+    return options.execute ? await saveResult(agent, id, result, undefined, signal) : result;
+  } catch (error) {
+    const active = (await readAgentState(agent)).leaderSignals?.[id];
+    if (active?.phase === 'proposed') await updateSignal(agent, id, 'cancelled').catch(() => {});
+    else if (active?.phase === 'released') await updateSignal(agent, id, error.confirmedFailure ? 'failed' : 'uncertain').catch(() => {});
+    throw error;
+  }
 }
 
 export async function prepareStrategyDeposit(agent, action, { execute } = {}) {
@@ -130,6 +159,16 @@ export async function approveStrategy(agent, id, { veto = false } = {}) {
   if (prepared.status === 'skipped') return prepared;
   const { entry, sessionId, policy, action, preview } = prepared;
   try {
+    if (entry.signalId) {
+      const client = await gatewayFor(agent.path);
+      let ready;
+      try { ready = await checkSignalBeforeExecution(entry, (await readAgentState(agent)).follow, client); }
+      finally { await client.dispose(); }
+      if (!ready) {
+        await withAgentState(agent, state => { if (state.pending[id]?.status === preparing) state.pending[id].status = 'pending'; }, lockOptions);
+        return { status: 'waiting-signal', actionId: id };
+      }
+    }
     const { ownerId } = await agentSetupState(agent);
     const result = await runWalletStrategy(entry.activity, action, policy, { execute: true, operationId: id, ownerId, agentId: agent.id,
       expectedExecutionAccountId: preview?.executionAccountId ?? ownerId, requireGrant: veto,
@@ -152,6 +191,7 @@ export async function approveStrategy(agent, id, { veto = false } = {}) {
             if (context.vault.active_session !== sessionId || !context.reusable || !Object.keys(await client.sessionHeaders()).length) {
               throw new Error('COPY_AUTHORITY_EXPIRED');
             }
+            if (entry.signalId && !await checkSignalBeforeExecution(entry, active, client)) throw new Error('SIGNAL_NOT_RELEASED');
             checkAge(entry, current);
             state.pending[id].status = 'submitting';
           }, lockOptions);

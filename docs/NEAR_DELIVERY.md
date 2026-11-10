@@ -43,6 +43,10 @@ agentstream copy ap_REPLACE_WITH_FULL_PUBLISHER_ID
 
 The usual payment limits, funded subscription vault, enabled activity and execution controls remain required before `copy start`. A follower that requests OutLayer-protected pages also needs its own configured compute key. The public website needs none.
 
+## Decisions before execution
+
+The new signal protocol publishes signed proposals before execution and requires a fresh release check before a follower can submit. See [lifecycle, cancellation and recovery](PRIVATE_SIGNALS.md). Deploy the matching CLI and worker together; rebuilding a local CLI does not update the live worker.
+
 ## What is public
 
 Discovery exposes the publisher identity, activity, price, payment recipient, execution mode and liveness. Optional history contains daily counts delayed at least 24 hours. Optional performance contains delayed, publisher-reported daily values. New listings omit transaction hashes, exact action timestamps, assets, sizes and order instructions. Recorded demo pages and repository evidence remain public historical evidence.

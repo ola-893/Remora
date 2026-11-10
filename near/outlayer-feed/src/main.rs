@@ -8,6 +8,7 @@ use serde::Serialize;
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 use std::time::{SystemTime, UNIX_EPOCH};
+mod signals;
 
 #[cfg(target_arch = "wasm32")]
 #[used]
@@ -113,7 +114,11 @@ fn delivery_key() -> Result<SigningKey> {
 }
 
 fn sign(body: Value) -> Result<Value> {
-    let bytes = serde_json::to_vec(&json!({"domain":"agentpay.page.v1","body":body})).unwrap();
+    sign_domain(body, "agentpay.page.v1")
+}
+
+fn sign_domain(body: Value, domain: &str) -> Result<Value> {
+    let bytes = serde_json::to_vec(&json!({"domain":domain,"body":body})).unwrap();
     let signature = delivery_key()?.sign(&bytes);
     Ok(json!({"body":body,"signature":STANDARD.encode(signature.to_bytes())}))
 }
@@ -344,7 +349,9 @@ fn run(input: Value) -> Result<Value> {
     if operation == "append" {
         let envelope = &input["entry"];
         let action = &envelope["body"];
-        let domain = if action["activity"] != "spot-trading" {
+        let domain = if action.get("signalId").is_some() {
+            "remora.signal.v1"
+        } else if action["activity"] != "spot-trading" {
             "agentstreams.strategy-action.v1"
         } else if action["execution"] == "paper" {
             "agentstreams.paper-action.v1"
@@ -354,6 +361,19 @@ fn run(input: Value) -> Result<Value> {
         verify(envelope, string(body, "publicKey")?, domain)?;
         if action["publisher"] != id || action["activity"] != body["activity"] {
             return Err("ACTION_IDENTITY_MISMATCH".to_string());
+        }
+        if action.get("signalId").is_some() {
+            signals::validate(action)?;
+            let phase_key = signals::key(id, string(action, "signalId")?, string(action, "phase")?);
+            if let Some(existing) = get(&phase_key)? {
+                if existing != *envelope {
+                    return Err("SIGNAL_PHASE_CHANGED".into());
+                }
+            } else {
+                // Separate immutable phase records prevent late duplicate proposals
+                // from overwriting a cancellation or settlement under concurrency.
+                put(&phase_key, envelope, false)?;
+            }
         }
         let sequence = number(&action["sequence"])?;
         if sequence == 0 || sequence > 1000000000 {
@@ -369,7 +389,7 @@ fn run(input: Value) -> Result<Value> {
         }
         return Ok(json!({"stored":true,"sequence":sequence}));
     }
-    if operation != "actions" {
+    if operation != "actions" && operation != "signal" {
         return Err("UNKNOWN_OPERATION".to_string());
     }
     let control = get(&format!("control:{id}"))?.ok_or("PUBLICATION_STOPPED")?;
@@ -378,6 +398,31 @@ fn run(input: Value) -> Result<Value> {
     }
     let header = string(&input, "session")?;
     let stream = authenticate(header, body)?;
+    if operation == "signal" {
+        let signal_id = string(&input, "signalId")?;
+        let nonce = string(&input, "nonce")?;
+        if [signal_id, nonce]
+            .iter()
+            .any(|s| s.len() != 64 || !s.bytes().all(|c| c.is_ascii_hexdigit()))
+        {
+            return Err("SIGNAL_INVALID".into());
+        }
+        let mut status = signals::state(id, signal_id, now() * 1000)?;
+        if number(&status["signalCreatedAt"])? < number(&stream["started_at"])? * 1000 {
+            return Err("SESSION_SIGNAL_PREDATES_SUBSCRIPTION".into());
+        }
+        authenticate(header, body)?;
+        let session: Value = serde_json::from_slice(
+            &URL_SAFE_NO_PAD
+                .decode(header)
+                .map_err(|_| "SESSION_INVALID")?,
+        )
+        .map_err(|_| "SESSION_INVALID")?;
+        status["sessionId"] = session["session_id"].clone();
+        status["nonce"] = json!(nonce);
+        status["observedAt"] = json!(now() * 1000);
+        return sign_domain(status, "remora.signal-status.v1");
+    }
     let after = number(&input["after"])?;
     if after > 1000000000 {
         return Err("INVALID_CURSOR".to_string());
@@ -389,7 +434,10 @@ fn run(input: Value) -> Result<Value> {
             break;
         };
         cursor = sequence;
-        if number(&entry["body"]["at"])? >= number(&stream["started_at"])? * 1000 {
+        let created = entry["body"]
+            .get("signalCreatedAt")
+            .unwrap_or(&entry["body"]["at"]);
+        if number(created)? >= number(&stream["started_at"])? * 1000 {
             entries.push(entry);
         }
     }

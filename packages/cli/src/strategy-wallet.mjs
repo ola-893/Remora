@@ -306,7 +306,7 @@ export async function runWalletStrategy(activity, action, policy, {
       } else if (Date.now() - Date.parse(plan.evidence.observedAt) > 60000) {
         throw new Error('STRATEGY_PREVIEW_STALE: start a new wallet approval.');
       }
-      await authorize?.(plan.inputs);
+      await authorize?.(plan.inputs, { receiverId: plan.receiverId, actions: plan.actions, executionAccountId: accountId, rpcUrl: wallet.rpcUrl });
     },
   });
   const updated = await views(wallet.rpcUrl);

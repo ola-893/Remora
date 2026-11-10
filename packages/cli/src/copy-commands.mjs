@@ -12,6 +12,7 @@ import { setupTestnet } from './setup.mjs';
 import { connectedOwner } from './owner-wallet.mjs';
 import { deployRegistry, registerPublisher, registryConfig, registryHeartbeat, registryPublishers, setRegistry } from './registry.mjs';
 import { configureOutlayerKey, outlayerDeliveryKey, outlayerNetwork, publishOutlayer } from './outlayer.mjs';
+import { updateSignal, reconcileSignal } from './signals.mjs';
 import { requirePayoutReconciled, reconcilePayouts } from './vault-money.mjs';
 import { inspectNearProfile, NearAgentStreamsClient } from '@ola-893/agentstreams-core/near';
 
@@ -21,7 +22,8 @@ export const copyFlags = {
   'agent:setup': 'network owner-id recipient vault-name agent-name rpc service deploy resume',
   'task:list': '', 'task:enable': 'paper-balances intents-agent-id intents-key-env intents-grant-env live confidential', 'task:disable': '', 'task:portfolio': '',
   'task:run': 'from to amount-raw action-json execute',
-  'publish:set': 'activities url port rate duration recipient nova-group nova-account nova-network nova-key-env performance-file public-history delivery',
+  'publish:set': 'activities url port rate duration recipient nova-group nova-account nova-network nova-key-env performance-file public-history delivery signal-window',
+  'signal:list': '', 'signal:show': '', 'signal:cancel': '', 'signal:reconcile': 'hash',
   'publish:start': '', 'publish:stop': '', 'publish:status': '', 'publish:history': '', 'publish:register': 'registry',
   'registry:deploy': '', 'registry:set': 'registry rpc', 'registry:show': '',
   'outlayer:key': 'api-key', 'outlayer:show': '',
@@ -32,7 +34,7 @@ export const copyFlags = {
   withdraw: '', 'agent:withdraw': '', 'stream:top-up': '', balance: '', status: '',
 };
 
-export const copyPositionals = new Set(['agent:withdraw', 'stream:top-up', 'agent:create', 'agent:use', 'agent:show', 'task:enable', 'task:disable', 'task:run', 'copy:start', 'copy:mode', 'copy:approve', 'copy:reject', 'copy:block', 'guard:set']);
+export const copyPositionals = new Set(['signal:show', 'signal:cancel', 'signal:reconcile', 'agent:withdraw', 'stream:top-up', 'agent:create', 'agent:use', 'agent:show', 'task:enable', 'task:disable', 'task:run', 'copy:start', 'copy:mode', 'copy:approve', 'copy:reject', 'copy:block', 'guard:set']);
 const paymentLimits = { budget: 'budget', 'max-stream': 'max_deposit', 'max-rate': 'max_rate', 'max-duration': 'max_duration_seconds', recipient: 'recipients' };
 const runtimeLimits = { 'max-5xx': 'maxConsecutive5xx', 'max-transport-errors': 'maxConsecutiveTransportErrors', 'max-health-failures': 'maxConsecutiveHealthFailures', 'idle-timeout': 'idleTimeoutSeconds', 'max-requests': 'maxRequestsPerStream', 'poll-seconds': 'healthPollSeconds', 'failure-cooldown': 'failureCooldownSeconds', reuse: 'reuseStream', 'close-on-exit': 'closeOnExit' };
 const strategyFlags = ['targets', 'max-inputs', 'copy-bps', 'assets', 'max-age', 'max-slippage-bps'];
@@ -203,6 +205,11 @@ export async function runCopyCommand(command, p, v, workspace, agent, emit, prov
     case 'publish:set':
       return configurePublish(agent, { ...v, port: provided.includes('port') ? v.port : undefined,
         recipient: v.recipient ?? (await agentSetupState(agent)).ownerId ?? (await connectedOwner())?.accountId });
+    case 'signal:list': return { signals: Object.values(state.leaderSignals ?? {}).map(s => ({ signalId: s.signalId, activity: s.activity, phase: s.phase,
+      expiresAt: s.signalExpiresAt, expired: Date.now() >= s.signalExpiresAt, deliveredPhases: s.deliveredPhases ?? [] })) };
+    case 'signal:show': if (!state.leaderSignals?.[arg]) throw new Error('SIGNAL_NOT_FOUND'); return state.leaderSignals[arg];
+    case 'signal:cancel': return updateSignal(agent, arg, 'cancelled');
+    case 'signal:reconcile': return reconcileSignal(agent, arg, v.hash);
     case 'publish:start':
     case 'publish:stop':
       if (command === 'publish:start' && state.publish?.delivery === 'outlayer') await outlayerDeliveryKey(agent);
