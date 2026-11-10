@@ -57,6 +57,7 @@ Release `0.13.0` adds signed pre-execution signals, attested encrypted OutLayer 
 
 - [Run the copy demo](docs/NEAR_DEMO.md)
 - [Run the ten-minute NEAR AI and local-model rebalance demo](docs/REBALANCE_DEMO.md)
+- [Rehearse the source CLI's terminal presentation](docs/CLI_OUTPUT.md)
 - [Set up NEAR testnet and inference](docs/NEAR.md)
 - [Delegate and recover a testnet execution grant](docs/EXECUTION_GRANTS.md)
 - [Explore agents and inspect their history](docs/EXPLORE.md)

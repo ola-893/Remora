@@ -1,5 +1,7 @@
 # Two-terminal demo — CLI 0.13.0
 
+For the unpublished terminal presentation pass, use the [source CLI and foreground recording instructions](CLI_OUTPUT.md#record-the-prepared-two-terminal-demo). Redirected logs below intentionally retain machine JSON. Do not start both a foreground follower and the background follower shown below.
+
 The story: a NEAR AI leader proposes a real testnet rebalance; a local-model follower pays for the proposal, reviews it and executes at its own size. A later decision exceeds a tightened follower cap and is denied. Finally, the same paid session returns 200 before closure and 403 afterward.
 
 Finish setup before recording. Use two fresh private state directories: execution grants are stored per owner, so sharing a state directory between these roles would conflict. Their execution accounts are separate. The subscription and swaps use NEAR testnet. Native Rhea swaps remain public; advance decisions use the encrypted OutLayer feed.
