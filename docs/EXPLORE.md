@@ -18,6 +18,8 @@ For an independently reachable HTTPS feed, `publish set --url https://YOUR_FEED_
 
 `--public-history` opts into delayed daily counts. The browser only reads the directory, public listing and health. It never receives compute credentials or calls the protected action operation. Publisher-reported performance is labelled and delayed; it is not independently verified P&L.
 
+OutLayer listings and health are fetched in public batches of up to 25 publishers per request, rather than two requests per publisher. Each listing still has its signature checked independently. A malformed record does not invalidate other publishers in the batch. Rate-limited refreshes respect a backoff across registry refreshes and show active, unverified offers as Checking until they can be verified again. [OutLayer batch storage API](https://app.outlayer.ai/docs/storage)
+
 Build the frontend from the repository root with `npm --prefix vite-project ci` and `npm run build:web`. The static host serves the SPA on direct profile links.
 
 ## UI references
