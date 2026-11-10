@@ -450,7 +450,7 @@ async function copyTick(agent, emit, reviewer) {
           }
           await observeAction(agent, state, save, candidate, event => {
             emit(event);
-            const job = copyReviewJob(action, event, follow.sessionId);
+            const job = copyReviewJob(candidate, event, follow.sessionId);
             if (job) reviews.push(job);
           }, client);
         }

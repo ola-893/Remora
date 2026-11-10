@@ -148,3 +148,15 @@ test('leader runtime delivers proposal and release before broadcast, cancels bef
     }
   }
 });
+
+test('copy review receives the bound proposal and logical action ID', async () => {
+  const { copyReviewJob } = await import('../cli/src/copy-review.mjs');
+  const { proposalForExecution } = await import('../cli/src/signals.mjs');
+  const action = { from: 'nep141:wrap.near', to: 'nep141:usdc.near', amountIn: '100', amountOut: '200' };
+  const event = { ...proposal, activity: 'spot-trading', execution: 'paper', action, actionHash: signalActionHash(action) };
+  const candidate = proposalForExecution(event);
+  const job = copyReviewJob(candidate, { type: 'action', status: 'pending', blockUntil: Date.now() + 30000, order: { amountIn: '50' } }, 'session');
+  assert.equal(job.actionId, proposal.signalId);
+  assert.deepEqual(job.evidence[0].action, action);
+  assert.equal(job.evidence[0].lifecyclePhase, 'proposed');
+});
