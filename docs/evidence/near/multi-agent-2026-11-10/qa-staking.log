@@ -1,0 +1,22 @@
+{
+  "running": true,
+  "agentId": "ap_7150f810961f74c8948968b6d1802f99a99395b71872c117d45ad6b38bd584de"
+}
+{
+  "type": "registry",
+  "publisherId": "ap_7150f810961f74c8948968b6d1802f99a99395b71872c117d45ad6b38bd584de",
+  "method": "heartbeat",
+  "transactionHash": "CBbx3J4GU6G3F89y7dZpLxz4CAAoy9s6MnbxgoAD3fMF"
+}
+{
+  "type": "registry",
+  "publisherId": "ap_7150f810961f74c8948968b6d1802f99a99395b71872c117d45ad6b38bd584de",
+  "method": "heartbeat",
+  "transactionHash": "AZ6Ca9Uiz4HyRWNQ1SUxgrapYsszahAH3GuaE3372AwM"
+}
+{
+  "type": "registry",
+  "publisherId": "ap_7150f810961f74c8948968b6d1802f99a99395b71872c117d45ad6b38bd584de",
+  "method": "stop",
+  "transactionHash": "J1GHYcFSYepfRd9E457ULRM62vBLoKXykRRurhe335zK"
+}

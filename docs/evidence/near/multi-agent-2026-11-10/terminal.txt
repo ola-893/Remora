@@ -1,0 +1,247 @@
+$ agentstream agent create qa-spot --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "version": 1,
+  "name": "qa-spot",
+  "id": "ap_e50ddc785db51b3f9b129ff84bd133acf82980109d84ed6798f20b2e56e5381d",
+  "publicKey": "ed25519:BXgu5nKBxPQGDYAJaiG2ud1vA2HdjH32im6UeytFQxu9",
+  "createdAt": "2026-11-10T08:37:35.901Z",
+  "next": "agentstreams task list",
+  "paymentSetup": "agentstreams agent setup --network testnet"
+}
+
+$ agentstream task enable spot-trading --paper-balances nep141:wrap.near=1000000000000000000000000 --agent qa-spot --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "activity": "spot-trading",
+  "enabled": true,
+  "config": {
+    "mode": "paper"
+  }
+}
+
+$ agentstream publish set --delivery outlayer --activities spot-trading --rate 0.000001 --recipient rudepuma4060.testnet --public-history --agent qa-spot --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "origin": "https://testnet-api.outlayer.ai",
+  "activity": "spot-trading",
+  "rateRawUSDCPerSecond": "1",
+  "durationSeconds": 0,
+  "recipient": "rudepuma4060.testnet",
+  "journal": "local-encrypted",
+  "publicHistory": true,
+  "enabled": false
+}
+
+$ agentstream agent create qa-staking --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "version": 1,
+  "name": "qa-staking",
+  "id": "ap_7150f810961f74c8948968b6d1802f99a99395b71872c117d45ad6b38bd584de",
+  "publicKey": "ed25519:G2eMrfgmhbwhX8V1Bv9DkpRvFb8AHUaLv21eKJvhSR3w",
+  "createdAt": "2026-11-10T08:37:36.330Z",
+  "next": "agentstreams task list",
+  "paymentSetup": "agentstreams agent setup --network testnet"
+}
+
+$ agentstream task enable staking-moves --agent qa-staking --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "activity": "staking-moves",
+  "enabled": true,
+  "config": {
+    "mode": "wallet"
+  }
+}
+
+$ agentstream publish set --delivery outlayer --activities staking-moves --rate 0.000001 --recipient rudepuma4060.testnet --public-history --agent qa-staking --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "origin": "https://testnet-api.outlayer.ai",
+  "activity": "staking-moves",
+  "rateRawUSDCPerSecond": "1",
+  "durationSeconds": 0,
+  "recipient": "rudepuma4060.testnet",
+  "journal": "local-encrypted",
+  "publicHistory": true,
+  "enabled": false
+}
+
+$ agentstream agent create qa-liquidity --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "version": 1,
+  "name": "qa-liquidity",
+  "id": "ap_2c604756e473014a4f475d63599988d765207366654d4865dac0a21c54c6bd46",
+  "publicKey": "ed25519:8RbGdoBoA1ei8cnS2TeY3KQDg5zzreskpS3qgZdLFUBG",
+  "createdAt": "2026-11-10T08:37:36.755Z",
+  "next": "agentstreams task list",
+  "paymentSetup": "agentstreams agent setup --network testnet"
+}
+
+$ agentstream task enable liquidity-ranges --agent qa-liquidity --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "activity": "liquidity-ranges",
+  "enabled": true,
+  "config": {
+    "mode": "wallet"
+  }
+}
+
+$ agentstream publish set --delivery outlayer --activities liquidity-ranges --rate 0.000001 --recipient rudepuma4060.testnet --public-history --agent qa-liquidity --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "origin": "https://testnet-api.outlayer.ai",
+  "activity": "liquidity-ranges",
+  "rateRawUSDCPerSecond": "1",
+  "durationSeconds": 0,
+  "recipient": "rudepuma4060.testnet",
+  "journal": "local-encrypted",
+  "publicHistory": true,
+  "enabled": false
+}
+
+$ agentstream agent create qa-rebalance --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "version": 1,
+  "name": "qa-rebalance",
+  "id": "ap_fb158c272010bcce2d4e0137465ee2f22ff30e5fa92538cba691d66ec645d81a",
+  "publicKey": "ed25519:DCtfDGu4b4LWpi8hFs8xuuUZrBzdrwr8Bs6yb4yo16Ld",
+  "createdAt": "2026-11-10T08:37:37.177Z",
+  "next": "agentstreams task list",
+  "paymentSetup": "agentstreams agent setup --network testnet"
+}
+
+$ agentstream task enable portfolio-rebalance --agent qa-rebalance --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "activity": "portfolio-rebalance",
+  "enabled": true,
+  "config": {
+    "mode": "wallet"
+  }
+}
+
+$ agentstream publish set --delivery outlayer --activities portfolio-rebalance --rate 0.000001 --recipient rudepuma4060.testnet --public-history --agent qa-rebalance --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "origin": "https://testnet-api.outlayer.ai",
+  "activity": "portfolio-rebalance",
+  "rateRawUSDCPerSecond": "1",
+  "durationSeconds": 0,
+  "recipient": "rudepuma4060.testnet",
+  "journal": "local-encrypted",
+  "publicHistory": true,
+  "enabled": false
+}
+
+$ agentstream agent create qa-yield --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "version": 1,
+  "name": "qa-yield",
+  "id": "ap_e6377cc130bc4a9588b7c5506041f8e6c1d03979143684f8ba944b4462fda16a",
+  "publicKey": "ed25519:4ujRV5Zy5VynbwqLhZ8VRbVgzzwn3ugotxH9UuW2YGAD",
+  "createdAt": "2026-11-10T08:37:37.595Z",
+  "next": "agentstreams task list",
+  "paymentSetup": "agentstreams agent setup --network testnet"
+}
+
+$ agentstream task enable yield-reallocation --agent qa-yield --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "activity": "yield-reallocation",
+  "enabled": true,
+  "config": {
+    "mode": "wallet"
+  }
+}
+
+$ agentstream publish set --delivery outlayer --activities yield-reallocation --rate 0.000001 --recipient rudepuma4060.testnet --public-history --agent qa-yield --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "origin": "https://testnet-api.outlayer.ai",
+  "activity": "yield-reallocation",
+  "rateRawUSDCPerSecond": "1",
+  "durationSeconds": 0,
+  "recipient": "rudepuma4060.testnet",
+  "journal": "local-encrypted",
+  "publicHistory": true,
+  "enabled": false
+}
+
+$ agentstream agent create qa-orders --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "version": 1,
+  "name": "qa-orders",
+  "id": "ap_1823f924880507a95de502674a208c04fe4fcc25c3a32f63085459194d81d215",
+  "publicKey": "ed25519:2Vsq5LEtuRMf6PMVb87HRh7qrusCbNT8yajHQ2C425rY",
+  "createdAt": "2026-11-10T08:37:38.010Z",
+  "next": "agentstreams task list",
+  "paymentSetup": "agentstreams agent setup --network testnet"
+}
+
+$ agentstream task enable limit-orders --agent qa-orders --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "activity": "limit-orders",
+  "enabled": true,
+  "config": {
+    "mode": "wallet"
+  }
+}
+
+$ agentstream publish set --delivery outlayer --activities limit-orders --rate 0.000001 --recipient rudepuma4060.testnet --public-history --agent qa-orders --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "origin": "https://testnet-api.outlayer.ai",
+  "activity": "limit-orders",
+  "rateRawUSDCPerSecond": "1",
+  "durationSeconds": 0,
+  "recipient": "rudepuma4060.testnet",
+  "journal": "local-encrypted",
+  "publicHistory": true,
+  "enabled": false
+}
+
+$ agentstream publish start --agent qa-spot --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "enabled": true,
+  "id": "ap_e50ddc785db51b3f9b129ff84bd133acf82980109d84ed6798f20b2e56e5381d",
+  "origin": "https://testnet-api.outlayer.ai",
+  "next": "Run agentstreams agent run to serve the listing and gated journal."
+}
+
+$ agentstream publish start --agent qa-staking --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "enabled": true,
+  "id": "ap_7150f810961f74c8948968b6d1802f99a99395b71872c117d45ad6b38bd584de",
+  "origin": "https://testnet-api.outlayer.ai",
+  "next": "Run agentstreams agent run to serve the listing and gated journal."
+}
+
+$ agentstream publish start --agent qa-liquidity --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "enabled": true,
+  "id": "ap_2c604756e473014a4f475d63599988d765207366654d4865dac0a21c54c6bd46",
+  "origin": "https://testnet-api.outlayer.ai",
+  "next": "Run agentstreams agent run to serve the listing and gated journal."
+}
+
+$ agentstream publish start --agent qa-rebalance --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "enabled": true,
+  "id": "ap_fb158c272010bcce2d4e0137465ee2f22ff30e5fa92538cba691d66ec645d81a",
+  "origin": "https://testnet-api.outlayer.ai",
+  "next": "Run agentstreams agent run to serve the listing and gated journal."
+}
+
+$ agentstream publish start --agent qa-yield --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "enabled": true,
+  "id": "ap_e6377cc130bc4a9588b7c5506041f8e6c1d03979143684f8ba944b4462fda16a",
+  "origin": "https://testnet-api.outlayer.ai",
+  "next": "Run agentstreams agent run to serve the listing and gated journal."
+}
+
+$ agentstream publish start --agent qa-orders --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "enabled": true,
+  "id": "ap_1823f924880507a95de502674a208c04fe4fcc25c3a32f63085459194d81d215",
+  "origin": "https://testnet-api.outlayer.ai",
+  "next": "Run agentstreams agent run to serve the listing and gated journal."
+}
+
+$ agentstream task disable liquidity-ranges --agent qa-liquidity --project /Users/deonorla/Documents/Github/agentstreams/.local/multi-agent-qa-2026-11-10
+{
+  "activity": "liquidity-ranges",
+  "enabled": false,
+  "config": null
+}
+

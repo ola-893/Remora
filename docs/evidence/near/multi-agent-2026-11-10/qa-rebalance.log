@@ -1,0 +1,28 @@
+{
+  "running": true,
+  "agentId": "ap_fb158c272010bcce2d4e0137465ee2f22ff30e5fa92538cba691d66ec645d81a"
+}
+{
+  "type": "registry",
+  "publisherId": "ap_fb158c272010bcce2d4e0137465ee2f22ff30e5fa92538cba691d66ec645d81a",
+  "method": "heartbeat",
+  "transactionHash": "1g3bx9YEQErb62a7x8Za4iWdRkjGZwW2BZpkQyzeNcX"
+}
+{
+  "type": "registry",
+  "publisherId": "ap_fb158c272010bcce2d4e0137465ee2f22ff30e5fa92538cba691d66ec645d81a",
+  "method": "heartbeat",
+  "transactionHash": "Bx7jXJ7SPkXc77aW5G6zG4bNBPGKXRtcNDgyhH7dG9ZP"
+}
+{
+  "type": "registry",
+  "publisherId": "ap_fb158c272010bcce2d4e0137465ee2f22ff30e5fa92538cba691d66ec645d81a",
+  "method": "heartbeat",
+  "transactionHash": "jyB4qjEqHdNZq93zFGADNefrGHcrNfEKLVUX4DnZPY1"
+}
+{
+  "type": "registry",
+  "publisherId": "ap_fb158c272010bcce2d4e0137465ee2f22ff30e5fa92538cba691d66ec645d81a",
+  "method": "stop",
+  "transactionHash": "6Pv821g8vr1SgLfThzfDi8mfpwMCRPGKKjidovVytxSV"
+}

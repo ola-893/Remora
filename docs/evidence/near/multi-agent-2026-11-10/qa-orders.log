@@ -1,0 +1,16 @@
+{
+  "running": true,
+  "agentId": "ap_1823f924880507a95de502674a208c04fe4fcc25c3a32f63085459194d81d215"
+}
+{
+  "type": "registry",
+  "publisherId": "ap_1823f924880507a95de502674a208c04fe4fcc25c3a32f63085459194d81d215",
+  "method": "heartbeat",
+  "transactionHash": "Fztm2v7eZRjUkM3V8HmtrgSLCGtiWdoVXRL2DNEdW3mK"
+}
+{
+  "type": "registry",
+  "publisherId": "ap_1823f924880507a95de502674a208c04fe4fcc25c3a32f63085459194d81d215",
+  "method": "heartbeat",
+  "transactionHash": "FS61MHRcd7ELH2v4dEVLf4bS7ZC5yN2wbvqhfEipf9Gs"
+}

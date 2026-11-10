@@ -22,6 +22,10 @@ OutLayer listings and health are fetched in public batches of up to 25 publisher
 
 Build the frontend from the repository root with `npm --prefix vite-project ci` and `npm run build:web`. The static host serves the SPA on direct profile links.
 
+## Multi-agent check
+
+The [November 10 discovery test](evidence/near/multi-agent-2026-11-10/evidence.json) created one publisher for each of the six activities and displayed all six as Running together. It checked the activity filter and clean stops. Multiple open tabs exposed an HTTP 429 failure in the original per-agent polling; batched reads and backoff fixed that, and a later production check displayed a running publisher alongside stopped publishers. All 14 frontend tests pass. These were publication and liveness checks, without financial strategy execution. The final simultaneous Running/Activity disabled browser recheck remains pending a fresh compute-funding approval; the expired, unsigned request was cancelled without a deposit.
+
 ## UI references
 
 - Mobbin's finance directory informed the placement of activity and status filters alongside search and results. [Finance directory](https://mobbin.com/search/apps/web?content_type=apps&sort=popularity&filter=appCategories.Finance)
