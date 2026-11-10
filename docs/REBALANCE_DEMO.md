@@ -1,177 +1,177 @@
-# Ten-minute rebalance with a NEAR AI leader and a local follower
+# Two-terminal demo — CLI 0.13.0
 
-This walkthrough shows how a follower can reuse a rebalance decision with limited inference and at its own size. The leader uses NEAR AI to submit guarded rebalances on Rhea Exchange pool `0` on testnet. The follower subscribes to the signed decisions and uses a local model for advisory review of each candidate during a 30-second veto window. The follower's grant signs after that window if the action stays unblocked and passes its checks. Each role uses a separate funded execution account, even if you connect the same Meteor owner in both terminals.
+The story: a NEAR AI leader proposes a real testnet rebalance; a local-model follower pays for the proposal, reviews it and executes at its own size. A later decision exceeds a tightened follower cap and is denied. Finally, the same paid session returns 200 before closure and 403 afterward.
 
-Use Node.js 22.22.2 or later, `jq`, a NEAR AI API key, and a running local OpenAI-compatible endpoint such as Ollama. The browser wallet needs at least 6 test NEAR for fresh vault setup, additional test NEAR for two grants and fees, and 0.002 Circle testnet USDC for the follower. Finish wallet setup before starting the ten-minute clock. [Testnet setup and faucet](NEAR.md)
+Finish setup before recording. Use two fresh private state directories: execution grants are stored per owner, so sharing a state directory between these roles would conflict. Their execution accounts are separate. The subscription and swaps use NEAR testnet. Native Rhea swaps remain public; advance decisions use the encrypted OutLayer feed.
 
-```sh
-npm install -g @ola-893/agentstreams-cli@0.11.0
-agentstream --version
-```
+Prerequisites: Node 22.22.2+, jq, CLI 0.13.0, `outlayer-verify`, the installed Ollama `qwen2.5:1.5b` model, a NEAR AI API key, at least 4 test NEAR plus fees, and 0.002 Circle testnet USDC in the owner wallet. Use `rudepuma4060.testnet`, which owns your existing OutLayer compute key #2. The top-up helper mints faucet USDC.e and adds 0.1 to that compute key; this is separate from Circle subscription USDC.
 
-## Terminal 1. Prepare the NEAR AI leader and start its feed
+The helper scripts use the installed CLI's modules. They do not change the released CLI or read owner wallet private keys. The close-proof helper calls the existing stream-close operation and prints HTTP status codes without printing the session credential. [Privacy and verification limits](IMPLEMENTATION_STATUS.md)
 
-Use a fresh workspace. `AGENTSTREAMS_HOME` separates the two roles' local state and grants. Enter the inference key through the CLI's hidden prompt.
+## Terminal 1 — one-time leader setup
 
 ```sh
-DEMO="$HOME/remora-rebalance-demo"
+REPO='/Users/deonorla/Documents/Github/agentstreams'
+DEMO="$HOME/remora-demo-013"
+CLI_ROOT="$(npm root -g)/@ola-893/agentstreams-cli"
 mkdir -p "$DEMO"
 cd "$DEMO"
 export AGENTSTREAMS_HOME="$DEMO/leader-state"
+mkdir -p "$AGENTSTREAMS_HOME"
+chmod 700 "$AGENTSTREAMS_HOME"
+cp -p "$HOME/.agentpay/outlayer-key.json" "$AGENTSTREAMS_HOME/outlayer-key.json"
 
+agentstream --version
+outlayer-verify --help >/dev/null
 agentstream agent create leader
-agentstream wallet connect --network testnet
-SELLER=$(agentstream wallet show | jq -er '.accountId')
-agentstream inference models --provider near-ai | jq -r '.models[].id'
-NEAR_MODEL='Qwen/Qwen3.6-35B-A3B-FP8'
-agentstream inference set --agent leader --provider near-ai --model "$NEAR_MODEL" \
-  --api-key --timeout-seconds 40
+agentstream wallet connect --network testnet --owner-id rudepuma4060.testnet --rpc https://test.rpc.fastnear.com
+node "$REPO/scripts/demo-compute-top-up.mjs" --cli-root "$CLI_ROOT"
+
+NEAR_MODEL=$(agentstream inference models --provider near-ai --json | jq -er '[.models[] | select(.agentCompatible)][0].id')
+agentstream inference set --agent leader --provider near-ai --model "$NEAR_MODEL" --api-key --timeout-seconds 120
 agentstream inference show --agent leader
 
 agentstream task enable portfolio-rebalance --agent leader
 agentstream guard set execution --agent leader --activity portfolio-rebalance \
   --targets 0 --assets nep141:wrap.testnet,nep141:rft.tokenfactory.testnet \
   --max-inputs nep141:wrap.testnet=2000000000000000000000 --max-age 120 --max-slippage-bps 100
-agentstream grant create --agent leader --transactions 20 --hours 2 \
-  --activities portfolio-rebalance --tokens wrap.testnet,rft.tokenfactory.testnet --fund-near 0.25
-agentstream grant prepare --agent leader --activity portfolio-rebalance \
-  --token wrap.testnet --balance-raw 20000000000000000000000
-agentstream grant show
+agentstream grant create --agent leader --transactions 20 --hours 2 --activities portfolio-rebalance \
+  --tokens wrap.testnet,rft.tokenfactory.testnet --fund-near 0.25
+agentstream grant prepare --agent leader --activity portfolio-rebalance --token wrap.testnet --balance-raw 20000000000000000000000
+agentstream grant prepare --agent leader --activity portfolio-rebalance --token rft.tokenfactory.testnet
+agentstream grant show --agent leader
 
 ACTION='{"poolId":0,"base":"wrap.testnet","amount":"2000000000000000000000","weights":{"wrap.testnet":2500,"rft.tokenfactory.testnet":7500}}'
 agentstream task run portfolio-rebalance --agent leader --action-json "$ACTION"
-
-ORIGIN='http://127.0.0.1:5380'
-agentstream publish set --agent leader --activities portfolio-rebalance \
-  --url "$ORIGIN" --recipient "$SELLER" --rate 0.000001 --duration 900
+SELLER=$(agentstream wallet show --json | jq -er '.accountId')
+printf '%s\n' "$SELLER" > "$DEMO/seller.txt"
+agentstream publish set --agent leader --delivery outlayer --activities portfolio-rebalance \
+  --recipient "$SELLER" --rate 0.000001 --duration 900 --signal-window 30
 agentstream publish start --agent leader
-agentstream agent run --agent leader > "$DEMO/leader-feed.log" 2>&1 &
+agentstream agent show leader --json | jq -er '.id' > "$DEMO/leader-id.txt"
+agentstream agent run --agent leader --json > "$DEMO/leader-feed.log" 2>&1 &
 PUBLISH_PID=$!
 ```
 
-If the example model ID has changed, choose a listed ID. Keep the feed process running and copy the full `id` from `publish start` and the `SELLER` account to Terminal 2. A follower only receives actions published after its stream opens.
+Approve initial wallet setup requests. Enter only the NEAR AI API key at the CLI's hidden prompt. The `cp` above copies an already configured OutLayer compute credential locally, without displaying it; it copies no wallet key. Run this setup once in a fresh demo directory. Start Terminal 2 next, and finish its setup before asking the leader to act.
 
-## Terminal 2. Prepare the local follower and open the stream
-
-Configure a small local model and prepare the second grant before opening the stream. The example uses Ollama. If you use a different local endpoint, set `LOCAL_URL` and `LOCAL_MODEL` to match it.
+## Terminal 2 — one-time follower setup
 
 ```sh
-DEMO="$HOME/remora-rebalance-demo"
+REPO='/Users/deonorla/Documents/Github/agentstreams'
+DEMO="$HOME/remora-demo-013"
+CLI_ROOT="$(npm root -g)/@ola-893/agentstreams-cli"
 cd "$DEMO"
 export AGENTSTREAMS_HOME="$DEMO/follower-state"
-ORIGIN='http://127.0.0.1:5380'
-SELLER='REPLACE_WITH_THE_LEADER_WALLET.testnet'
-PUBLISHER_ID='REPLACE_WITH_THE_FULL_ap_ID'
+mkdir -p "$AGENTSTREAMS_HOME"
+chmod 700 "$AGENTSTREAMS_HOME"
+cp -p "$HOME/.agentpay/outlayer-key.json" "$AGENTSTREAMS_HOME/outlayer-key.json"
+SELLER=$(cat "$DEMO/seller.txt")
+LEADER_ID=$(cat "$DEMO/leader-id.txt")
 
 agentstream agent create follower
-agentstream wallet connect --network testnet
-LOCAL_URL='http://127.0.0.1:11434/v1'
-LOCAL_MODEL='qwen2.5:1.5b'
-ollama pull "$LOCAL_MODEL"
-curl -fsS "$LOCAL_URL/models" | jq -r '.data[].id'
-curl -fsS --max-time 90 "$LOCAL_URL/chat/completions" -H 'Content-Type: application/json' \
-  --data "$(jq -cn --arg model "$LOCAL_MODEL" '{model:$model,messages:[{role:"user",content:"Reply ready."}],max_tokens:8}')" \
-  | jq -er '.choices[0].message.content'
-agentstream inference set --agent follower --provider local --base-url "$LOCAL_URL" --model "$LOCAL_MODEL" \
-  --max-output-tokens 384
+agentstream wallet connect --network testnet --owner-id "$SELLER" --rpc https://test.rpc.fastnear.com
+agentstream inference set --agent follower --provider local --base-url http://127.0.0.1:11434/v1 \
+  --model qwen2.5:1.5b --max-output-tokens 384 --timeout-seconds 45
+curl -fsS http://127.0.0.1:11434/v1/chat/completions -H 'Content-Type: application/json' \
+  --data '{"model":"qwen2.5:1.5b","messages":[{"role":"user","content":"Reply ready."}],"max_tokens":8}' | jq -r '.choices[0].message.content'
 agentstream inference show --agent follower
 
-agentstream agent setup --agent follower --network testnet --recipient "$SELLER"
-agentstream agent setup --agent follower --network testnet --recipient "$SELLER" --deploy
+agentstream agent setup --agent follower --network testnet --recipient "$SELLER" --rpc https://test.rpc.fastnear.com --deploy
 agentstream guard set payment --agent follower --budget 0.01 --max-stream 0.002 \
   --max-rate 0.000001 --max-duration 900 --recipient "$SELLER"
 agentstream fund 0.002 --agent follower
 agentstream payments --enable --agent follower
+agentstream guard set payment --agent follower --poll-seconds 10 --idle-timeout 600 --close-on-exit false
 
 agentstream task enable portfolio-rebalance --agent follower
 agentstream guard set execution --agent follower --activity portfolio-rebalance \
   --targets 0 --assets nep141:wrap.testnet,nep141:rft.tokenfactory.testnet \
-  --max-inputs nep141:wrap.testnet=1000000000000000000000 --copy-bps 5000 \
-  --max-age 120 --max-slippage-bps 100
-agentstream grant create --agent follower --transactions 20 --hours 2 \
-  --activities portfolio-rebalance --tokens wrap.testnet,rft.tokenfactory.testnet --fund-near 0.25
-agentstream grant prepare --agent follower --activity portfolio-rebalance \
-  --token wrap.testnet --balance-raw 20000000000000000000000
-agentstream grant show
+  --max-inputs nep141:wrap.testnet=1000000000000000000000 --copy-bps 5000 --max-age 120 --max-slippage-bps 100
+agentstream grant create --agent follower --transactions 20 --hours 2 --activities portfolio-rebalance \
+  --tokens wrap.testnet,rft.tokenfactory.testnet --fund-near 0.25
+agentstream grant prepare --agent follower --activity portfolio-rebalance --token wrap.testnet --balance-raw 20000000000000000000000
+agentstream grant prepare --agent follower --activity portfolio-rebalance --token rft.tokenfactory.testnet
+agentstream grant show --agent follower
+```
 
-agentstream copy "$PUBLISHER_ID" --url "$ORIGIN" --agent follower
-agentstream copy start "$PUBLISHER_ID" --url "$ORIGIN" --activity portfolio-rebalance --agent follower
-agentstream copy mode veto --agent follower --veto-seconds 30
-agentstream agent run --agent follower > "$DEMO/follower.log" 2>&1 &
+The preview in Terminal 1 must succeed, both grants must report active, and the local completion must return text before recording. Fresh deployment needs browser-approved funding and configuration; do not skip failed setup commands. A grant preparation failure must be reconciled before repeating any uncertain transaction.
+
+## Record — Terminal 2 starts paying and listening
+
+```sh
+agentstream copy "$LEADER_ID" --agent follower
+agentstream guard show --agent follower
+agentstream copy start "$LEADER_ID" --activity portfolio-rebalance --agent follower
+agentstream copy mode veto --agent follower --veto-seconds 45
+agentstream stream status --agent follower
+agentstream agent run --agent follower --json > "$DEMO/follower.log" 2>&1 &
 FOLLOWER_PID=$!
+tail -f "$DEMO/follower.log"
 ```
 
-The 900-second offer reserves 0.0009 test USDC and leaves time to close after the ten-minute run. If setup took several minutes, run the short local completion again before starting the leader.
+`Ctrl+C` stops this log viewer, while the follower remains running in the background. Do not close the terminal. The 900-second offer lasts at most 15 minutes; the idle policy is 10 minutes, so perform the two decisions and closure promptly.
 
-## Show where each limit is enforced
-
-Use the payment and execution sections of the guard output as two separate demo beats. Run this in Terminal 2.
+## Record — Terminal 1 asks for the first decision
 
 ```sh
-agentstream guard show --agent follower | jq '{
-  payment: .payment,
-  rebalanceExecution: .strategyExecution["portfolio-rebalance"]
-}'
+agentstream inference show --agent leader
+agentstream agent run --agent leader --activity portfolio-rebalance --max-steps 8 \
+  --prompt "Evaluate this testnet rebalance objective: $ACTION. Read strategy_guard, call strategy_preview, examine its live Rhea evidence, and use strategy_apply exactly once if the guard and preview permit it. Explain your decision using the returned evidence. Stop after the confirmed result or a refusal."
+agentstream signal list --agent leader
 ```
 
-1. **Subscription payments on NEAR.** Show the receipt from the wallet-approved `guard set payment` command and the policy read back from the vault. When opening a stream, the vault contract checks the budget, maximum deposit, rate, duration, and approved recipient. Open the recorded `RATE_LIMIT` receipt to show the contract rejecting a correctly signed over-rate stream request even when it was submitted directly to the vault. [Testnet contract rejection receipts](evidence/near/repository-showcase-verification.json#L22)
-2. **Trade execution in the CLI.** Show the follower’s allowed assets, maximum input, copy size, quote age, and slippage settings. The CLI checks the proposed trade before submission. The short intro’s over-limit card comes from the rebalance regression test, which lowered the input cap and got `STRATEGY_INPUT_LIMIT`. The owner veto and confirmed swap come from the separate live rehearsal. [CLI guard test](../packages/test/strategy.test.mjs#L128) · [Live rehearsal](evidence/near/remora-veto-testnet-2026-11-09.json)
+Show the NEAR AI tool output, `evidence.source` / Rhea venue data, the proposal and the receipt. In Terminal 2, wait for a `copy-review` note and an execution with `status: wallet-confirmed`. Allow the 30-second leader window and the follower's 45-second veto window; they overlap. Keep the publisher running.
 
-## Start the clock in Terminal 1
+## Record — Terminal 2 tightens its own limit
 
-Run five NEAR AI passes spaced two minutes apart. Each pass asks for one guarded swap of at most 0.002 test wNEAR. The shell stops on a missing or unconfirmed result so you can investigate before submitting again. The final wait brings the session to ten minutes if each pass finishes within its slot.
+Press `Ctrl+C` to leave the log viewer, then run:
 
 ```sh
-(
-  set -e
-  STARTED=$(date +%s)
-  for PASS in 0 1 2 3 4; do
-    DELAY=$((STARTED + PASS * 120 - $(date +%s)))
-    if [ "$DELAY" -gt 0 ]; then sleep "$DELAY"; fi
-    RESULT=$(agentstream agent run --agent leader --activity portfolio-rebalance --max-steps 8 --json \
-      --prompt "Do exactly one testnet portfolio-rebalance using this action: $ACTION. Call strategy_guard, strategy_preview, then strategy_apply with that exact action once. Stop after the tool returns. If a guard refuses, report the refusal and stop.")
-    printf '%s\n' "$RESULT" | jq '{activity, status: .result.status, transactionHash: .result.receipt.hash, signing: .result.receipt.signing, inference: [.events[] | select(.type == "inference")]}'
-    printf '%s\n' "$RESULT" | jq -e '.results | length == 1 and (.[0].status == "wallet-confirmed") and (.[0].receipt.hash != null) and (.[0].receipt.signing == "grant")' >/dev/null
-  done
-  DELAY=$((STARTED + 600 - $(date +%s)))
-  if [ "$DELAY" -gt 0 ]; then sleep "$DELAY"; fi
-)
-agentstream publish history --agent leader
+agentstream copy history --agent follower --json | jq '.history[-12:]'
+agentstream guard set execution --agent follower --activity portfolio-rebalance \
+  --max-inputs nep141:wrap.testnet=500000000000000000000
+agentstream guard show --agent follower
+tail -f "$DEMO/follower.log"
 ```
 
-## Watch the follower in Terminal 2
+The follower still copies at 50%, but now permits at most 0.0005 wNEAR. The next leader objective allows 0.002 wNEAR, making the copied request 0.001 wNEAR. For this freshly funded portfolio, that exceeds the follower cap. This demonstrates a deterministic guard denial, not an owner veto or a model changing policy.
 
-The runner logs the candidate, its `blockUntil` deadline and the model's `copy-review` note. An unblocked candidate can execute after the deadline. The signed action expires after two minutes. To veto a candidate, copy its ID from `copy pending` and block it before the deadline.
+## Record — Terminal 1 asks for the second decision
+
+Run the same `agentstream agent run ... --prompt ...` command again. The leader's limits are unchanged. Terminal 2 should report `status: skipped` with `STRATEGY_INPUT_LIMIT`; the second follower action must have no transaction receipt. If the leader reports a refusal or an uncertain transaction, investigate it rather than claiming that a second action executed.
+
+An optional owner-veto demonstration uses `agentstream copy pending --agent follower`, then `agentstream copy block ACTION_ID --agent follower` before `blockUntil`. Do that on an eligible candidate with the original larger cap. The block command prints `status: blocked`; it is distinct from `STRATEGY_INPUT_LIMIT`.
+
+## Record — Terminal 2 closes and proves denied access
+
+Press `Ctrl+C` to leave the log viewer. Stop the follower runner and wait for it to release its state lock. `close-on-exit false` deliberately preserves the active stream for this single close-and-probe command.
 
 ```sh
-tail -n 45 "$DEMO/follower.log"
-agentstream copy pending --agent follower
-ACTION_ID='REPLACE_WITH_THE_PENDING_ACTION_ID'
-agentstream copy block "$ACTION_ID" --agent follower
-agentstream copy history --agent follower
+kill -TERM "$FOLLOWER_PID"
+wait "$FOLLOWER_PID"
+node "$REPO/scripts/demo-close-proof.mjs" --project "$DEMO" --agent follower --cli-root "$CLI_ROOT"
+agentstream stream status --agent follower
+agentstream copy history --agent follower --json | jq '.history[-12:]'
 ```
 
-The follower applies the same target weights with half the leader's maximum input. Its quote and receipt are for its own execution account. A matching grant signs the Rhea transaction after the deadline. Model review status is separate from execution status.
+The helper must print `beforeCloseHTTP: 200`, a real `closeTransaction`, and `afterCloseHTTP: 403` for the same in-memory session credential. It prints actual results and exits unsuccessfully if these assertions fail. Keep the leader running until after the proof, so the denial comes from stream closure rather than publisher shutdown. If the helper fails before closing, run `agentstream copy stop --agent follower` and inspect the stream status.
 
-## Close and recover
+## Cleanup — after the recording
 
-In Terminal 2, close the paid stream before stopping the publisher.
+Terminal 2:
 
 ```sh
-kill "$FOLLOWER_PID"
-# The default runner closes the stream on exit. Check the status and close it explicitly if still active.
-agentstream copy status --agent follower
 agentstream grant revoke --agent follower
 ```
 
-In Terminal 1, stop publication and recover the leader's grant balance.
+Terminal 1:
 
 ```sh
 agentstream publish stop --agent leader
-kill "$PUBLISH_PID"
+kill -TERM "$PUBLISH_PID"
+wait "$PUBLISH_PID"
 agentstream grant revoke --agent leader
 ```
 
-For an uncertain wallet or grant transaction, use `wallet reconcile` or `grant reconcile` in the terminal for that role before retrying. [Recovery details](EXECUTION_GRANTS.md#recover-funds)
-
-The local-model testnet rehearsal records the operator veto, an automatic follower swap, both model outputs and the subscription interruptions. [Rehearsal evidence](evidence/near/remora-veto-testnet-2026-11-09.json)
+Revocation sweeps recoverable grant assets before deleting the execution account. For an uncertain transaction, use the relevant `wallet reconcile`, `grant reconcile` or `signal reconcile ID --hash HASH` command before retrying. This runbook has been checked against CLI 0.13.0 and the current public Rhea pool, but a newly provisioned NEAR AI rebalance pair has not been fully rehearsed with these exact setup commands. The new encrypted delivery lifecycle was live-tested with signed paper quotes and real testnet subscription payments.
