@@ -43,7 +43,7 @@ export function intentsAdapter(config, fetchImpl = fetch) {
       const amountOut = quote?.amountOut ?? quote?.amount_out;
       const amountIn = quote?.amountIn ?? quote?.amount_in;
       if (!rawAmount(amountOut) || !rawAmount(amountIn)) throw new Error('INTENTS_QUOTE_AMOUNTS_MISSING');
-      return { source: 'agent-connect', observedAt: new Date().toISOString(), confidentialRequested: config.confidential === true, amountIn, amountOut, amountInUsd: result.spend?.amount_usd ?? null, warnings: (result.warnings ?? []).map(item => item.code), ownerApproval: result.owner_approval === true };
+      return { source: 'agent-connect', observedAt: new Date(Date.now()).toISOString(), confidentialRequested: config.confidential === true, amountIn, amountOut, amountInUsd: result.spend?.amount_usd ?? null, warnings: (result.warnings ?? []).map(item => item.code), ownerApproval: result.owner_approval === true };
     },
     async execute(order, key) {
       if (!config.live) throw new Error('INTENTS_LIVE_DISABLED');
