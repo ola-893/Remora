@@ -1,0 +1,5 @@
+{
+  "network": "testnet",
+  "rpcUrl": "https://test.rpc.fastnear.com",
+  "contractId": "2f9e0f23f9b2a06f70aa0fc0b55d621ab5fdb9f60455adb3667debb161ef5ce1"
+}

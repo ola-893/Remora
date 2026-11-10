@@ -1,5 +1,5 @@
 [workspace]
-members = ["vault", "test-token"]
+members = ["vault", "test-token", "registry"]
 resolver = "2"
 
 [workspace.dependencies]
