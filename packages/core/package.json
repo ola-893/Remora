@@ -31,7 +31,8 @@
     "./internal-preflight": "./runtime/near/lib/testnet-preflight.mjs",
     "./internal-evidence": "./runtime/near/lib/evidence.mjs",
     "./internal-evidence-audit": "./runtime/near/lib/audit.mjs",
-    "./internal-session": "./runtime/near/lib/session.mjs"
+    "./internal-session": "./runtime/near/lib/session.mjs",
+    "./internal-outlayer": "./runtime/near/lib/outlayer.mjs"
   },
   "files": [
     "src/",

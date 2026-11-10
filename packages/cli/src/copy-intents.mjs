@@ -67,6 +67,7 @@ export function intentsAdapter(config, fetchImpl = fetch) {
       }
       if (result.status === 'SUCCESS') {
         const details = result.details, requested = details?.request, at = Date.parse(result.updated_at);
+        if (config.confidential && details?.confidential !== true) throw new Error('INTENTS_CONFIDENTIALITY_UNCONFIRMED: reconcile this execution before another trade.');
         if (!requested || !['origin_asset', 'destination_asset', 'amount'].every(key => requested[key] === order[key]) ||
             !rawAmount(details.amount_out) || BigInt(details.amount_out) < BigInt(order.min_amount_out) ||
             !Number.isSafeInteger(at) || at > Date.now() + 5000) throw new Error('INTENTS_SETTLEMENT_MISMATCH');

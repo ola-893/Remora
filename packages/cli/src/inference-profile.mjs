@@ -41,13 +41,13 @@ export async function writeInferenceProfile(project, inference, apiKey) {
   await atomicWrite(await profilePath(home, project), JSON.stringify({ version: 1, inference, apiKey }));
 }
 
-export async function promptInferenceKey() {
+export async function promptInferenceKey(label = 'Inference API key') {
   const input = process.stdin;
   const terminal = Boolean(input.isTTY);
   const output = new Writable({ write(_chunk, _encoding, done) { done(); } });
   const reader = createInterface({ input, output, terminal, historySize: 0, crlfDelay: Infinity });
   reader.once('SIGINT', () => reader.close());
-  if (terminal) process.stderr.write('Inference API key (input hidden): ');
+  if (terminal) process.stderr.write(label + ' (input hidden): ');
   try {
     for await (const line of reader) return validateInferenceKey(line);
     throw new Error('No inference API key entered.');

@@ -13,6 +13,7 @@ import { credential } from './copy-intents.mjs';
 import { bundledWasm, historicalVaultWasm } from './setup.mjs';
 import { activityMode, nativeWalletActivities, strategyAction } from './strategy-actions.mjs';
 import { usdc } from './settings.mjs';
+import { outlayerNetwork } from '@ola-893/agentstreams-core/internal-outlayer';
 
 export const agentIdPattern = /^ap_[a-f0-9]{64}$/;
 export const accountId = value => typeof value === 'string' && /^(?=.{2,64}$)[a-z0-9]+(?:[-_.][a-z0-9]+)*$/.test(value);
@@ -40,8 +41,10 @@ export async function readJsonResponse(response, max = 131072) {
   return JSON.parse(Buffer.concat(parts).toString('utf8'));
 }
 
-export async function fetchFeed(origin, path, headers) {
-  const response = await fetch(`${origin}${path}`, { headers, redirect: 'error', signal: AbortSignal.timeout(10000) });
+export async function fetchFeed(origin, path, headers, publisher) {
+  const response = origin === outlayerNetwork.origin
+    ? await (await import('./outlayer.mjs')).outlayerFeedResponse(publisher, path, headers)
+    : await fetch(`${origin}${path}`, { headers, redirect: 'error', signal: AbortSignal.timeout(10000) });
   if (!response.ok) throw new Error(`FEED_HTTP_${response.status}`);
   return readJsonResponse(response);
 }
@@ -59,7 +62,9 @@ function verified(envelope, key, domain) {
 export async function configurePublish(agent, flags) {
   const selected = flags.activities?.split(',') ?? [spot];
   if (selected.length !== 1 || selected[0] !== spot && !nativeWalletActivities.has(selected[0])) throw new Error('Choose one supported activity from agentstreams task list.');
-  const origin = originOf(flags.url ?? 'http://127.0.0.1:5380');
+  if (flags.delivery !== undefined && !['local', 'outlayer'].includes(flags.delivery)) throw new Error('Use --delivery local or outlayer.');
+  const origin = originOf(flags.url ?? (flags.delivery === 'outlayer' ? outlayerNetwork.origin : 'http://127.0.0.1:5380'));
+  if (flags.delivery === 'outlayer' && origin !== outlayerNetwork.origin) throw new Error('OUTLAYER_ORIGIN_MISMATCH');
   const port = Number(flags.port ?? (new URL(origin).protocol === 'http:' ? new URL(origin).port || 80 : 5380));
   const duration = Number(flags.duration ?? 0);
   const rate = usdc(flags.rate);
@@ -71,25 +76,46 @@ export async function configurePublish(agent, flags) {
   return withAgentState(agent, state => {
     if (state.publish?.enabled) throw new Error('Stop publication before changing the listing.');
     const publicHistory = flags['public-history'] === true;
-    state.publish = { enabled: false, activity: selected[0], origin, port, duration, rate, recipient: flags.recipient, nova, performance, publicHistory };
+    state.publish = { enabled: false, activity: selected[0], origin, port, duration, rate, recipient: flags.recipient, nova, performance, publicHistory,
+      ...(flags.delivery === 'outlayer' ? { delivery: 'outlayer' } : {}) };
     return { origin, activity: selected[0], rateRawUSDCPerSecond: rate, durationSeconds: duration, recipient: flags.recipient, journal: nova ? 'nova' : 'local-encrypted', publicHistory, enabled: false };
   });
 }
 
 export function publicListingHistory(state, activity) {
-  return (state.history ?? []).flatMap(event => {
-    if (!event.publication?.journalHash) return [];
+  const cutoff = Date.now() - 86400000;
+  const days = new Map();
+  for (const event of state.history ?? []) {
+    const at = Date.parse(event.at);
+    if (!Number.isFinite(at) || at > cutoff || !event.publication?.journalHash) continue;
+    let kind;
     if (activity === spot && event.type === 'trade' && ['paper-filled', 'SUCCESS'].includes(event.status)) {
-      return [{ at: event.at, kind: event.status === 'paper-filled' ? 'paper-fill' : 'intent-fill' }];
+      kind = event.status === 'paper-filled' ? 'paper-fill' : 'intent-fill';
     }
-    if (event.type === 'strategy' && event.activity === activity && event.status === 'wallet-confirmed' &&
-        /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(event.transactionHash ?? '')) {
-      return [{ at: event.at, kind: 'wallet-action', receipt: event.transactionHash }];
-    }
-    return [];
-  }).slice(-50);
+    if (event.type === 'strategy' && event.activity === activity && event.status === 'wallet-confirmed') kind = 'wallet-action';
+    if (!kind) continue;
+    const day = new Date(at).toISOString().slice(0, 10) + 'T00:00:00.000Z';
+    const key = `${day}:${kind}`;
+    const row = days.get(key) ?? { at: day, kind, count: 0 };
+    row.count++;
+    days.set(key, row);
+  }
+  return [...days.values()].sort((a, b) => a.at.localeCompare(b.at)).slice(-50);
 }
 
+function executionVisibility(state, activity) {
+  if (activity !== spot) return 'public-chain';
+  if (state.tasks[spot]?.mode === 'paper') return 'paper';
+  return state.tasks[spot]?.confidential ? 'confidential-requested' : 'public-chain';
+}
+
+function publicPerformance(performance) {
+  const cutoff = Date.now() - 86400000;
+  return performance.filter(point => Date.parse(point.date + 'T23:59:59.999Z') <= cutoff);
+}
+
+/* Public discovery contains delayed statistics. The signed journal retains
+   actionable records and receipts behind the subscription check. */
 function listing(agent, state) {
   const p = state.publish;
   return {
@@ -97,21 +123,28 @@ function listing(agent, state) {
     activity: p.activity ?? spot, recipient: p.recipient, rate: p.rate, duration: p.duration,
     journal: p.nova ? 'nova' : 'local-encrypted',
     execution: activityMode(state, p.activity ?? spot) ?? 'unconfigured',
-    ...(p.publicHistory ? { history: publicListingHistory(state, p.activity ?? spot) } : {}),
-    ...(p.performance ? { performance: { provenance: 'publisher-reported', points: p.performance, journalHead: state.journal?.at(-1)?.hash ?? null } } : {}),
+    visibility: executionVisibility(state, p.activity ?? spot),
+    ...(p.delivery === 'outlayer' ? { delivery: 'outlayer', deliveryKey: state.outlayerDeliveryKey } : {}),
+    ...(p.publicHistory ? { history: publicListingHistory(state, p.activity ?? spot), historyPolicy: { delaySeconds: 86400, granularity: 'day', receipts: false } } : {}),
+    ...(p.performance ? { performance: { provenance: 'publisher-reported', points: publicPerformance(p.performance) } } : {}),
   };
 }
 
+export async function signedListing(agent, state) {
+  return signed(await feedKey(agent), 'agentpay.listing.v1', listing(agent, state));
+}
+
 export async function getListing(id, origin) {
-  const envelope = await fetchFeed(origin, listingPath).catch(error => {
+  const envelope = await fetchFeed(origin, listingPath, undefined, id).catch(error => {
     if (error.message !== 'FEED_HTTP_404') throw error;
-    return fetchFeed(origin, legacyListingPath);
+    return fetchFeed(origin, legacyListingPath, undefined, id);
   });
   const b = envelope?.body;
   if (!b || b.version !== 1 || b.id !== id || !agentIdPattern.test(id) || typeof b.publicKey !== 'string' || b.publicKey.length > 70 ||
       `ap_${fingerprint(b.publicKey)}` !== id || b.origin !== origin || b.network !== 'testnet' || (b.activity !== spot && !nativeWalletActivities.has(b.activity)) ||
       !accountId(b.recipient) || !b.recipient.endsWith('.testnet') || !rawAmount(b.rate) || !Number.isInteger(b.duration) || b.duration < 0 || b.duration > 4294967295 ||
       !verified(envelope, b.publicKey, 'agentpay.listing.v1')) throw new Error('INVALID_SIGNED_LISTING');
+  if (b.delivery === 'outlayer' && (b.origin !== outlayerNetwork.origin || !/^ed25519:[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(b.deliveryKey ?? ''))) throw new Error('INVALID_DELIVERY_KEY');
   return b;
 }
 
@@ -222,6 +255,15 @@ export async function publicationHistory(agent) {
   return { actions: await Promise.all((state.journal ?? []).slice(-20).map(p => loadEntry(agent, key, p))) };
 }
 
+export async function pendingOutlayerEntries(agent) {
+  const state = await readAgentState(agent);
+  if (state.publish?.delivery !== 'outlayer') return [];
+  const key = await feedKey(agent);
+  return Promise.all((state.journal ?? []).filter(pointer => !pointer.outlayerUploaded).slice(0, 8).map(async pointer => ({
+    id: pointer.id, entry: await loadEntry(agent, key, pointer),
+  })));
+}
+
 export async function subscribers(agent) {
   const directory = join(agent.path, 'subscribers');
   let files;
@@ -311,7 +353,7 @@ export function verifyPage(envelope, listing, sessionId, after, freshness) {
   const page = envelope?.body;
   if (!page || page.sessionId !== sessionId || page.after !== after || !Number.isSafeInteger(page.cursor) || page.cursor < after || page.cursor > after + 8 ||
       !Number.isSafeInteger(page.observedAt) || page.observedAt > Date.now() + 5000 || Date.now() - page.observedAt > freshness * 1000 ||
-      !Array.isArray(page.entries) || page.entries.length > 8 || !verified(envelope, listing.publicKey, 'agentpay.page.v1')) throw new Error('FEED_STALE_OR_INVALID');
+      !Array.isArray(page.entries) || page.entries.length > 8 || !verified(envelope, listing.delivery === 'outlayer' ? listing.deliveryKey : listing.publicKey, 'agentpay.page.v1')) throw new Error('FEED_STALE_OR_INVALID');
   let previous = after;
   const actions = page.entries.map(entry => {
     const action = verifyAction(entry, listing);

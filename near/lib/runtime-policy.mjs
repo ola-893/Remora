@@ -18,7 +18,8 @@ export function runtimePolicy(input = {}) {
 }
 export function serviceConfig(input = {}) {
   const result = { healthPath: '/health', quotePath: '/quote', requestPath: '/research', tiers: ['basic', 'premium'], ...input };
-  if (!input || typeof input !== 'object' || Array.isArray(input) || Object.keys(input).some(k => !['healthPath', 'quotePath', 'requestPath', 'tiers'].includes(k))) throw new Error('INVALID_SERVICE_CONFIG');
+  if (!input || typeof input !== 'object' || Array.isArray(input) || Object.keys(input).some(k => !['healthPath', 'quotePath', 'requestPath', 'tiers', 'publisher'].includes(k))) throw new Error('INVALID_SERVICE_CONFIG');
+  if (result.publisher !== undefined && !/^ap_[a-f0-9]{64}$/.test(result.publisher)) throw new Error('INVALID_SERVICE_PUBLISHER');
   for (const key of ['healthPath', 'quotePath', 'requestPath']) {
     const path = result[key];
     if (typeof path !== 'string' || !/^\/(?!\/)/.test(path) || path.includes('\\') || /[?#\s]/.test(path) || new URL(path, 'https://service.invalid').origin !== 'https://service.invalid') throw new Error('INVALID_SERVICE_PATH');

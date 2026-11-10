@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const runtime = resolve(root, 'packages/core/runtime');
 await rm(runtime, { recursive: true, force: true });
-const files = ['sdk/index.mjs', 'sdk/index.d.ts', 'lib/config.mjs', 'lib/runtime-policy.mjs', 'lib/permit.mjs', 'lib/session.mjs', 'lib/stream.mjs', 'lib/policy.mjs', 'lib/worker-client.mjs', 'lib/deployment.mjs', 'lib/testnet-preflight.mjs', 'lib/evidence.mjs', 'lib/audit.mjs', 'policy-worker.mjs', 'provider.mjs'];
+const files = ['sdk/index.mjs', 'sdk/index.d.ts', 'lib/config.mjs', 'lib/runtime-policy.mjs', 'lib/permit.mjs', 'lib/session.mjs', 'lib/outlayer.mjs', 'lib/outlayer-network.json', 'lib/stream.mjs', 'lib/policy.mjs', 'lib/worker-client.mjs', 'lib/deployment.mjs', 'lib/testnet-preflight.mjs', 'lib/evidence.mjs', 'lib/audit.mjs', 'policy-worker.mjs', 'provider.mjs'];
 for (const file of files) {
   const dest = resolve(runtime, 'near', file);
   await mkdir(dirname(dest), { recursive: true });
@@ -22,6 +22,7 @@ if (!process.argv.includes('--runtime-only')) {
   const wasm = await readFile(resolve(root, 'near/contracts/target/wasm32-unknown-unknown/release/agentpay_vault.wasm'));
   if (!WebAssembly.validate(wasm)) throw new Error('INVALID_BUNDLED_VAULT_WASM');
   await writeFile(resolve(artifacts, 'agentpay_vault.wasm'), wasm);
+  await copyFile(resolve(root, 'near/contracts/target/wasm32-unknown-unknown/release/remora_registry.wasm'), resolve(artifacts, 'remora_registry.wasm'));
   for (const version of ['2.0.0','2.1.0']) await copyFile(resolve(root, `near/contracts/historical/vault-v${version}.wasm`), resolve(artifacts, `vault-v${version}.wasm`));
   await writeFile(resolve(artifacts, 'manifest.json'), JSON.stringify({ sha256: createHash('sha256').update(wasm).digest('hex'), source: 'near/contracts/vault', build: 'npm run build:near', network: 'testnet' }, null, 2));
   const ui = resolve(root, 'packages/cli/ui');

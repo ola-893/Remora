@@ -105,7 +105,9 @@ test('native strategy fills retain their activity and settlement in the signed j
     assert.throws(() => verifyAction(envelope, { ...listing, activity: 'staking-moves' }), /INVALID_SIGNED_ACTION/);
     const history = [{ type: 'strategy', activity, status: 'wallet-confirmed', at: new Date(at).toISOString(),
       transactionHash: settlementRef, publication, action }];
-    assert.deepEqual(publicListingHistory({ history }, activity), [{ at: history[0].at, kind: 'wallet-action', receipt: settlementRef }]);
+    assert.deepEqual(publicListingHistory({ history }, activity), []);
+    history[0].at = new Date(Date.now() - 2 * 86400000).toISOString();
+    assert.deepEqual(publicListingHistory({ history }, activity), [{ at: history[0].at.slice(0, 10) + 'T00:00:00.000Z', kind: 'wallet-action', count: 1 }]);
   }
 });
 

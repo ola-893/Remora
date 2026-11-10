@@ -7,6 +7,7 @@ import { mkdir, readFile, writeFile, rename, open, unlink } from 'node:fs/promis
 import { join, dirname } from 'node:path';
 import { createHash } from 'node:crypto';
 import { updateObservation, closeReason } from './lib/runtime-policy.mjs';
+import { outlayerServiceJson } from './lib/outlayer.mjs';
 
 const config = await readConfig();
 const credential = await readKey(
@@ -19,6 +20,7 @@ const client = new NearAgentStreamsClient({
 const stateDir = process.env.AGENTPAY_STATE_DIR || join(dirname(process.env.NEAR_CONFIG || '.local/near/deployment.json'), 'service-state');
 const circuitFile = join(stateDir, createHash('sha256').update(`${config.vaultId}|${config.serviceUrl}|${config.recipientId}`).digest('hex') + '.circuit.json');
 const json = async (path) => {
+  if (config.service.publisher) return outlayerServiceJson(config, path);
   const response = await fetch(`${config.serviceUrl}${path}`, {
     signal: AbortSignal.timeout(10000),
     redirect: "error",

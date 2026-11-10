@@ -15,6 +15,9 @@ import { grantAccount } from './agent-grant.mjs';
 import { connectedOwner } from './owner-wallet.mjs';
 import { copyReviewJob, copyReviewer } from './copy-review.mjs';
 import { appendFill, checkListingQuote, fetchFeed, feedPath, getListing, healthPath, originOf, quotePath, readJsonResponse, serveFeed, verifyPage } from './copy-feed.mjs';
+import { registryHeartbeat, registryPublishers } from './registry.mjs';
+import { appendOutlayer, outlayerFeedResponse, publishOutlayer } from './outlayer.mjs';
+import { pendingOutlayerEntries } from './copy-feed.mjs';
 
 const addHistory = (state, item) => {
   state.history.push({ at: new Date().toISOString(), ...item });
@@ -34,13 +37,20 @@ async function gateway(agent, work) {
 
 async function offer(agent, state, id, url) {
   if (id === agent.id) throw new Error('Choose another agent to copy.');
-  const source = url ?? state.directory[id];
+  let source = url ?? state.directory[id];
+  if (!source) {
+    const entries = await registryPublishers(agent, id).catch(error => {
+      if (error.message.startsWith('REGISTRY_NOT_CONFIGURED')) return [];
+      throw error;
+    });
+    source = entries[0]?.origin;
+  }
   if (!source) throw new Error('Supply --url with the publisher’s feed origin on first lookup.');
   return getListing(id, originOf(source));
 }
 
 async function readQuote(listing, config) {
-  const quote = await fetchFeed(listing.origin, `${quotePath(config.vaultId)}?tier=basic`);
+  const quote = await fetchFeed(listing.origin, `${quotePath(config.vaultId)}?tier=basic`, undefined, listing.id);
   return { quote, hash: checkListingQuote(listing, config.vaultId, config.tokenId, quote) };
 }
 
@@ -52,7 +62,7 @@ export async function previewCopy(agent, id, url) {
   if ((await agentSetupState(agent)).configured) {
     const { config } = await settings(agent.path);
     admission = await gateway(agent, async client => {
-      const [{ vault }, { quote }, health] = await Promise.all([client.status(), readQuote(listing, config), fetchFeed(listing.origin, healthPath)]);
+      const [{ vault }, { quote }, health] = await Promise.all([client.status(), readQuote(listing, config), fetchFeed(listing.origin, healthPath, undefined, listing.id)]);
       if (listing.duration === 0) maxEscrowRawUSDC = vault.policy.max_deposit;
       return assessQuote({ vault: { ...vault, vault_id: config.vaultId }, quote, health });
     });
@@ -65,7 +75,8 @@ async function openCopy(agent, state, save, listing, mode) {
   if (!profile.paymentsEnabled) throw new Error('PAYMENTS_DISABLED: run agentstreams payments --enable after checking the subscription limits.');
   const { hash, quote } = await readQuote(listing, config);
   if (!config.runtimePolicy.reuseStream) throw new Error('Enable reuse with agentstreams config set --reuse true.');
-  await setService(agent.path, { url: listing.origin, recipient: listing.recipient, healthPath, quotePath: quotePath(config.vaultId, quote.expires_at), requestPath: feedPath, tiers: ['basic'] });
+  await setService(agent.path, { url: listing.origin, recipient: listing.recipient, healthPath, quotePath: quotePath(config.vaultId, quote.expires_at), requestPath: feedPath, tiers: ['basic'],
+    publisher: listing.delivery === 'outlayer' ? listing.id : undefined });
   return gateway(agent, async client => {
     const checked = await client.check({ tier: 'basic', expectedQuoteHash: hash });
     if (checked.decision !== 'OPEN') throw new Error(checked.reason ?? 'COPY_OPEN_DENIED');
@@ -340,7 +351,10 @@ async function copyTick(agent, emit, reviewer) {
       if (!Object.keys(headers).length) return closeCopy(agent, state, save, 'paused', 'LEASE_EXPIRED', client);
       let page;
       try {
-        const response = await fetch(`${follow.listing.origin}${feedPath}?after=${follow.cursor}`, { headers, redirect: 'error', signal: AbortSignal.timeout(10000) }).catch(async () => {
+        const request = follow.listing.delivery === 'outlayer'
+          ? outlayerFeedResponse(follow.listing.id, `${feedPath}?after=${follow.cursor}`, headers)
+          : fetch(`${follow.listing.origin}${feedPath}?after=${follow.cursor}`, { headers, redirect: 'error', signal: AbortSignal.timeout(10000) });
+        const response = await request.catch(async () => {
           const transport = await client.observeResult({ kind: 'transport' });
           if (transport.decision === 'CLOSE') return transport;
           throw new Error('FEED_TRANSPORT_ERROR');
@@ -419,13 +433,16 @@ export async function runCopyAgent(agent, { once, rpc, emit }) {
   process.once('SIGINT', stop);
   process.once('SIGTERM', stop);
   let server, listening;
+  let nextHeartbeat = 0;
+  let nextDeliveryRefresh = 0;
   try {
     await lock.writeFile(`${process.pid}\n`);
     emit({ running: true, agentId: agent.id });
     do {
       try {
         const state = await readAgentState(agent);
-        const target = state.publish?.enabled ? `${state.publish.origin}|${state.publish.port}` : null;
+        const remote = state.publish?.delivery === 'outlayer';
+        const target = state.publish?.enabled && !remote ? `${state.publish.origin}|${state.publish.port}` : null;
         if (target !== listening) {
           await server?.close();
           server = undefined;
@@ -434,7 +451,25 @@ export async function runCopyAgent(agent, { once, rpc, emit }) {
             server = await serveFeed(agent, { rpcUrl: rpc });
             listening = target;
             emit({ publisher: state.publish.origin, port: server.port });
+            nextHeartbeat = 0;
           }
+        }
+        if (remote && state.publish.enabled) {
+          if (Date.now() >= nextDeliveryRefresh) {
+            await publishOutlayer(agent);
+            nextDeliveryRefresh = Date.now() + 15000;
+          }
+          for (const pending of await pendingOutlayerEntries(agent)) {
+            await appendOutlayer(agent, pending.entry);
+            await withAgentState(agent, current => {
+              const pointer = current.journal.find(item => item.id === pending.id);
+              if (pointer) pointer.outlayerUploaded = true;
+            }, { waitMs: 12000 });
+          }
+        }
+        if ((server || remote && state.publish?.enabled) && state.registry && Date.now() >= nextHeartbeat) {
+          nextHeartbeat = Date.now() + 45000;
+          emit({ type: 'registry', ...await registryHeartbeat(agent) });
         }
       } catch (error) { emit({ type: 'publisher-error', reason: error.message }); }
       try {
@@ -454,6 +489,13 @@ export async function runCopyAgent(agent, { once, rpc, emit }) {
     try {
       await reviewer.settled();
       await server?.close();
+      if ((await readAgentState(agent)).publish?.delivery === 'outlayer') {
+        try { await publishOutlayer(agent, false); } catch (error) { emit({ type: 'publisher-error', reason: error.message }); }
+      }
+      if ((await readAgentState(agent)).registry) {
+        try { emit({ type: 'registry', ...await registryHeartbeat(agent, true) }); }
+        catch (error) { emit({ type: 'registry-error', reason: error.message }); }
+      }
       if ((await readAgentState(agent)).follow?.status === 'active') {
         const { config } = await settings(agent.path);
         if (config.runtimePolicy.closeOnExit) emit(await stopCopy(agent, 'paused', 'RUNNER_EXIT'));

@@ -10,6 +10,8 @@ import { changeMode, decideAction, previewCopy, reconcileCopy, runCopyAgent, run
 import { settings, setLimits, setRuntime, reconcileLimits, usdc, durationSeconds } from './settings.mjs';
 import { setupTestnet } from './setup.mjs';
 import { connectedOwner } from './owner-wallet.mjs';
+import { deployRegistry, registerPublisher, registryConfig, registryHeartbeat, registryPublishers, setRegistry } from './registry.mjs';
+import { configureOutlayerKey, outlayerDeliveryKey, outlayerNetwork, publishOutlayer } from './outlayer.mjs';
 import { requirePayoutReconciled, reconcilePayouts } from './vault-money.mjs';
 import { inspectNearProfile, NearAgentStreamsClient } from '@ola-893/agentstreams-core/near';
 
@@ -19,8 +21,10 @@ export const copyFlags = {
   'agent:setup': 'network owner-id recipient vault-name agent-name rpc service deploy resume',
   'task:list': '', 'task:enable': 'paper-balances intents-agent-id intents-key-env intents-grant-env live confidential', 'task:disable': '', 'task:portfolio': '',
   'task:run': 'from to amount-raw action-json execute',
-  'publish:set': 'activities url port rate duration recipient nova-group nova-account nova-network nova-key-env performance-file public-history',
-  'publish:start': '', 'publish:stop': '', 'publish:status': '', 'publish:history': '',
+  'publish:set': 'activities url port rate duration recipient nova-group nova-account nova-network nova-key-env performance-file public-history delivery',
+  'publish:start': '', 'publish:stop': '', 'publish:status': '', 'publish:history': '', 'publish:register': 'registry',
+  'registry:deploy': '', 'registry:set': 'registry rpc', 'registry:show': '',
+  'outlayer:key': 'api-key', 'outlayer:show': '',
   'earnings:show': '', 'earnings:claim': 'from', discover: 'activity url id',
   'copy:preview': 'url', 'copy:start': 'url activity', 'copy:mode': 'veto-seconds', 'copy:pending': '', 'copy:approve': '', 'copy:reject': '', 'copy:block': '',
   'copy:pause': '', 'copy:resume': '', 'copy:stop': '', 'copy:status': '', 'copy:history': '',
@@ -118,6 +122,11 @@ export async function runCopyCommand(command, p, v, workspace, agent, emit, prov
   const arg = p[2];
   switch (command) {
     case 'agent:create': return createAgent(workspace, arg);
+    case 'registry:deploy': return deployRegistry();
+    case 'registry:set': if (!v.registry) throw new Error('Use registry set --registry CONTRACT_ID.'); return setRegistry(v.registry, v.rpc);
+    case 'registry:show': return registryConfig(agent);
+    case 'outlayer:key': if (!v['api-key']) throw new Error('Use outlayer key --api-key.'); return configureOutlayerKey();
+    case 'outlayer:show': return outlayerNetwork;
     case 'agent:list': return listAgents(workspace);
     case 'agent:use': if (!arg) throw new Error('Supply an agent name.'); return selectAgent(workspace, arg);
     case 'stream:top-up': return ownerVaultAction(agent, agent?.path ?? workspace, p[2], { topUp: true });
@@ -196,12 +205,28 @@ export async function runCopyCommand(command, p, v, workspace, agent, emit, prov
         recipient: v.recipient ?? (await agentSetupState(agent)).ownerId ?? (await connectedOwner())?.accountId });
     case 'publish:start':
     case 'publish:stop':
-      return withAgentState(agent, current => {
+      if (command === 'publish:start' && state.publish?.delivery === 'outlayer') await outlayerDeliveryKey(agent);
+      if (command === 'publish:start' && state.publish?.origin.startsWith('https://')) await registerPublisher(agent);
+      const publication = await withAgentState(agent, current => {
         if (!current.publish) throw new Error('Configure publish set first.');
         current.publish.enabled = command === 'publish:start';
         return { enabled: current.publish.enabled, id: agent.id, origin: current.publish.origin, ...(current.publish.enabled ? { next: 'Run agentstreams agent run to serve the listing and gated journal.' } : {}) };
       });
-    case 'publish:status': return { agentId: agent.id, publication: state.publish ?? null, entries: state.journal?.length ?? 0 };
+      // Stop local delivery first, even when the registry or remote worker is down.
+      // Both remote shutdowns are attempted; registry liveness also expires after 120s.
+      const failures = [];
+      if (state.publish?.delivery === 'outlayer') {
+        try { await publishOutlayer(agent, command === 'publish:start'); }
+        catch (error) { failures.push(error.message); }
+      }
+      if (command === 'publish:stop') {
+        try { await registryHeartbeat(agent, true); }
+        catch (error) { failures.push(error.message); }
+      }
+      if (failures.length) throw new Error(`PUBLICATION_${publication.enabled ? 'START' : 'STOP'}_UNCONFIRMED: ${failures.join('; ')}`);
+      return publication;
+    case 'publish:register': return registerPublisher(agent, v.registry);
+    case 'publish:status': return { agentId: agent.id, publication: state.publish ?? null, registry: state.registry ?? null, entries: state.journal?.length ?? 0 };
     case 'publish:history': return publicationHistory(agent);
     case 'earnings:show': return earnings(agent, 'show', v);
     case 'earnings:claim': return earnings(agent, 'claim', v);
@@ -213,8 +238,13 @@ export async function runCopyCommand(command, p, v, workspace, agent, emit, prov
         await withAgentState(agent, current => { current.directory[listing.id] = listing.origin; });
         return { listings: !v.activity || v.activity === listing.activity ? [listing] : [] };
       }
-      const results = await Promise.allSettled(Object.entries(state.directory).map(([id, origin]) => getListing(id, origin)));
-      const ids = Object.keys(state.directory);
+      const registered = await registryPublishers(agent).catch(error => {
+        if (error.message.startsWith('REGISTRY_NOT_CONFIGURED')) return [];
+        throw error;
+      });
+      const entries = [...new Map([...Object.entries(state.directory), ...registered.map(item => [item.id, item.origin])]).entries()];
+      const results = await Promise.allSettled(entries.map(([id, origin]) => getListing(id, origin)));
+      const ids = entries.map(([id]) => id);
       return { listings: results.flatMap(item => item.status === 'fulfilled' && (!v.activity || item.value.activity === v.activity) ? [item.value] : []), unavailable: results.flatMap((item, i) => item.status === 'rejected' ? [ids[i]] : []) };
     }
     case 'copy:preview': return previewCopy(agent, p[1], v.url);
