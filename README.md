@@ -49,7 +49,7 @@ agentstream --version
 agentstream task list
 ```
 
-Release `0.12.0` adds NEAR registry discovery and OutLayer-protected remote feeds. `copy mode veto` shows each candidate and its blocking deadline, then rechecks the guards before executing. Native strategies use a matching execution grant. [npm package](https://www.npmjs.com/package/@ola-893/agentstreams-cli)
+Release `0.13.0` adds signed pre-execution signals, attested encrypted OutLayer delivery, and owner-approved delayed evidence. Remote feeds require the official `outlayer-verify` executable; [setup](docs/NEAR_DELIVERY.md). `copy mode veto` shows each candidate and its blocking deadline, then rechecks the guards before executing. Native strategies use a matching execution grant. [npm package](https://www.npmjs.com/package/@ola-893/agentstreams-cli)
 
 ## Guides
 
