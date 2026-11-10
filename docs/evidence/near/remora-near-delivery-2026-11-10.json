@@ -26,6 +26,10 @@
       "publisherId": "ap_d49018909353f8f9171b9688263a9cd1423bed457ad9188a83efb997435bc63a",
       "method": "stop",
       "transactionHash": "B2JSxj8pcttDHuQSZcMwyVv1zvgDH4PJSBhtZu7cFd7k"
+    },
+    "screenshots": {
+      "running": "remora-discovery-running-2026-11-10.png",
+      "stopped": "remora-discovery-stopped-2026-11-10.png"
     }
   },
   "subscription": {
