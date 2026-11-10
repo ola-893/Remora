@@ -1,0 +1,94 @@
+{
+  "worker": "f35ef464251560236df7f6816e71690161f395f81bf20bc5ef1be7df18ce6324",
+  "network": "testnet",
+  "execution": "paper",
+  "startedAt": "2026-11-10T13:53:48.489Z",
+  "finishedAt": "2026-11-10T13:57:32.786Z",
+  "checks": [
+    {
+      "check": "attested encrypted publisher registration",
+      "publisher": "ap_e50ddc785db51b3f9b129ff84bd133acf82980109d84ed6798f20b2e56e5381d"
+    },
+    {
+      "check": "no stream credential denied",
+      "http": 402
+    },
+    {
+      "check": "follower queued advance proposal",
+      "received": 1,
+      "events": [
+        {
+          "type": "signal",
+          "phase": "proposed"
+        },
+        {
+          "type": "action",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "check": "proposal alone cannot execute"
+    },
+    {
+      "check": "leader release and settlement",
+      "signalId": "34391fa26d25e1a14118d17fdd9200a2691c274626014884b89e52c4ec17f9ff",
+      "status": "paper-filled"
+    },
+    {
+      "check": "follower executed after release and veto deadline",
+      "received": 2
+    },
+    {
+      "check": "repeat polling does not replay"
+    },
+    {
+      "check": "cancelled proposal is discarded without execution"
+    },
+    {
+      "check": "sealed journal is not publicly readable",
+      "http": 403
+    },
+    {
+      "check": "public listing excludes actionable signal fields"
+    },
+    {
+      "check": "closed stream cannot read encrypted feed",
+      "http": 403
+    }
+  ],
+  "stream": {
+    "sessionId": "cbe8da6a-0f86-4a42-9832-f055ba477c7e",
+    "openHash": "2AFRiftUYEhhJohM1vTWX8DjxyouEEGZPanGSeaFJxSP"
+  },
+  "close": {
+    "hash": "2VKq2XuDj1QvwB2StUFdxCfhHWMxHLkxkd5VPoS4qp8E",
+    "earnedRawUSDC": "110",
+    "refundedRawUSDC": "9890"
+  },
+  "setup": [
+    {
+      "kind": "compute-funding",
+      "hash": "ATe96taBmDxx4r786hwuJazdwegdoddX5WYDMKxpwcry",
+      "value": "100000"
+    },
+    {
+      "kind": "worker-deployment",
+      "hash": "Gt58YzVznVEzjzjuKp44K99ncRgayfPzygAB81wxPj3a",
+      "wasmHash": "f35ef464251560236df7f6816e71690161f395f81bf20bc5ef1be7df18ce6324"
+    }
+  ],
+  "attestationChecks": {
+    "verifiedCalls": 2,
+    "proof": "attestation-proof.json"
+  },
+  "limits": {
+    "confidentialSwapExecuted": false,
+    "investmentReturnsVerified": false,
+    "localModelUsed": false
+  },
+  "cleanup": {
+    "followerStopped": true,
+    "publisherRegistryStopped": true
+  }
+}

@@ -24,6 +24,8 @@ The remora fish rides alongside a shark and benefits from its movement. A follow
 
 Streaming makes the exchange payable. The feed checks the active subscription on each protected request, and the NEAR vault enforces its payment policy. The CLI applies the follower's execution rules, including allowed assets, size, slippage and age. [Setup and enforcement boundaries](docs/NEAR.md#where-the-limits-run)
 
+Publishing leaders deliver signed proposals before execution. Followers require a fresh release check, can veto a queued action, and keep their own spending controls. Remote feed payloads use attested encrypted delivery; public evidence is delayed and explicitly approved. [Privacy boundaries](docs/PRIVACY.md) · [Public reporting](docs/PUBLIC_PERFORMANCE.md)
+
 ## Proof
 
 | Check | Recorded result |
@@ -32,6 +34,7 @@ Streaming makes the exchange payable. The feed checks the active subscription on
 | Live decision reuse with limited inference | In a live Rhea rebalance rehearsal on NEAR testnet, the owner vetoed one candidate. The follower used a local model to review a later candidate and settled the swap at half the leader's size after its veto window. [Rehearsal evidence](docs/evidence/near/remora-veto-testnet-2026-11-09.json) |
 | Deterministic guards | The recorded run denied a stale preview. Automated tests also reject expired actions, excess notional and disallowed order size. [Recorded denial](docs/evidence/copy-trading/hour-2026-11-07/terminal.txt#L1555) · [Guard tests](packages/test/copy.test.mjs#L159) |
 | Closing the stream cuts off copying | The same signed session went from HTTP 200 to 403. The leader published again and the follower stayed at 14 fills. [Access check](docs/evidence/copy-trading/hour-2026-11-07/terminal.txt#L2635) · [Close receipt](https://testnet.nearblocks.io/txns/D6Du8Loc9UgjsWJy9nuyKNLNKa46gEfqp1wz57cVZAMf) |
+| Attested advance decisions | Live encrypted delivery queued a private proposal, copied after release and the veto deadline, discarded cancellation, prevented replay, and returned 403 after stream closure. Swaps were paper fills; payment was real NEAR testnet USDC. [Evidence and verification bundle](docs/evidence/near/privacy-2026-11-10/evidence.json) |
 | NEAR discovery and protected remote delivery | A registered publisher appeared automatically in production Explore and became unavailable after stopping. OutLayer delivered a signed paper action with an active real stream, rejected a public encrypted-record read, and returned 403 after closure. [Delivery evidence](docs/evidence/near/remora-near-delivery-2026-11-10.json) |
 
 Paper fills change virtual balances. The USDC stream settled on NEAR testnet. In a separate live test, one Meteor signature funded an isolated account that signed its own Rhea rebalance and returned the assets on revoke. [Execution grant receipts](docs/evidence/near/remora-execution-grant.json)
@@ -55,7 +58,11 @@ Release `0.12.0` adds NEAR registry discovery and OutLayer-protected remote feed
 - [Set up NEAR testnet and inference](docs/NEAR.md)
 - [Delegate and recover a testnet execution grant](docs/EXECUTION_GRANTS.md)
 - [Explore agents and inspect their history](docs/EXPLORE.md)
-- [NEAR discovery, protected delivery and privacy boundaries](docs/NEAR_DELIVERY.md)
+- [NEAR discovery and protected delivery](docs/NEAR_DELIVERY.md)
+- [Privacy, attestation and operator trust](docs/PRIVACY.md)
+- [Private signal lifecycle and recovery](docs/PRIVATE_SIGNALS.md)
+- [Public evidence and activity metrics](docs/PUBLIC_PERFORMANCE.md)
+- [Confidential execution coverage](docs/CONFIDENTIAL_EXECUTION.md)
 - [Hackathon description and evidence](docs/HACKATHON_NEAR.md)
 
 [MIT license](LICENSE)

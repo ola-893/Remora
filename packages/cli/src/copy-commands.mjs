@@ -131,7 +131,7 @@ export async function runCopyCommand(command, p, v, workspace, agent, emit, prov
     case 'registry:set': if (!v.registry) throw new Error('Use registry set --registry CONTRACT_ID.'); return setRegistry(v.registry, v.rpc);
     case 'registry:show': return registryConfig(agent);
     case 'outlayer:key': if (!v['api-key']) throw new Error('Use outlayer key --api-key.'); return configureOutlayerKey();
-    case 'outlayer:show': return outlayerNetwork;
+    case 'outlayer:show': return { ...outlayerNetwork, attestation: 'required', transport: 'hpke-p256-sha256-aes256gcm', secretProfile: 'remora-feed-v1', secretBuildLock: 'required', verifier: 'outlayer-verify' };
     case 'agent:list': return listAgents(workspace);
     case 'agent:use': if (!arg) throw new Error('Supply an agent name.'); return selectAgent(workspace, arg);
     case 'stream:top-up': return ownerVaultAction(agent, agent?.path ?? workspace, p[2], { topUp: true });

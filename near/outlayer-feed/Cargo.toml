@@ -16,6 +16,9 @@ sha2 = "0.10"
 ed25519-dalek = "2"
 getrandom = "0.2"
 wasi-http-client = "0.2"
+hpke = { version = "0.13", default-features = false, features = ["std", "p256"] }
+aes-gcm = "0.10"
+rand_chacha = "0.9"
 
 [profile.release]
 opt-level = "s"

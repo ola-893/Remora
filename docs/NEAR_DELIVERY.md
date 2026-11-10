@@ -7,16 +7,18 @@ Remora lets useful decisions from one agent benefit others. The shared directory
 - The static Cloudflare frontend reads a NEAR testnet publisher registry. It needs no Railway backend or private browser API key.
 - The registry stores publisher ID, feed origin, public signing key, owner, last heartbeat and publication status. It contains no action journal.
 - The leader runner uses a restricted NEAR function-call key for `heartbeat` and `stop`, with a 0.05 test NEAR fee allowance. It cannot transfer owner funds or call another contract. Registration and adding this key require initial browser approvals.
-- OutLayer executes the protected feed worker. Public storage contains signed listings and health. Worker storage encrypts action records, publication controls and the delivery signing seed.
+- OutLayer executes the protected feed worker. Public storage contains signed listings and health. The worker application seals action records and publication controls with AES-256-GCM, in addition to OutLayer storage encryption. Its delivery key is derived inside the enclave from a protected secret rather than stored as a readable seed.
 - Each paid action request checks the actual finalized NEAR vault and stream, including vault code hash, token, recipient, rate, quote, session signature, expiry and available stream deposit. The worker checks access again immediately before returning a signed page.
 
-The follower verifies the publisher's signature on each action. The publisher's signed listing delegates a separate public key for delivery pages; it does not delegate authority to change the action.
+The CLI verifies each paid call with the independent OutLayer verifier, checks the pinned binary and onchain secret build restriction, and uses HPKE for feed requests and responses. The follower also verifies the publisher's signature on each action. The publisher's signed listing delegates a separate public key for delivery pages; it does not delegate authority to change the action.
 
 ## Configure through the CLI
 
 Keep owner wallet keys in the browser wallet. Use the default browser profile that already contains the wallet. CLI credentials are configured through hidden prompts, without `.env` files.
 
 ```sh
+cargo install --git https://github.com/out-layer/outlayer-verify \
+  --rev 90c27d9d4fc843194ddc6f8ebaafa4eb320c3bb6 --locked outlayer-verify
 agentstream wallet connect --network testnet
 agentstream outlayer show
 agentstream outlayer key --api-key
@@ -47,9 +49,11 @@ The usual payment limits, funded subscription vault, enabled activity and execut
 
 The new signal protocol publishes signed proposals before execution and requires a fresh release check before a follower can submit. See [lifecycle, cancellation and recovery](PRIVATE_SIGNALS.md). Deploy the matching CLI and worker together; rebuilding a local CLI does not update the live worker.
 
+The shared project uses the generated `PROTECTED_FEED_MASTER` in author profile `remora-feed-v1`. Its onchain access condition must be exactly the approved worker hash. The project owner creates this secret in the OutLayer browser UI; subscribers never enter its value. The CLI refuses a missing or broadened restriction before bootstrapping encryption. See [trust boundaries and upgrades](PRIVACY.md).
+
 ## What is public
 
-Discovery exposes the publisher identity, activity, price, payment recipient, execution mode and liveness. Optional history contains daily counts delayed at least 24 hours. Optional performance contains delayed, publisher-reported daily values. New listings omit transaction hashes, exact action timestamps, assets, sizes and order instructions. Recorded demo pages and repository evidence remain public historical evidence.
+Discovery exposes the publisher identity, activity, price, payment recipient, execution mode and liveness. Optional history contains daily counts delayed at least 24 hours. Optional performance contains delayed, publisher-reported daily values. Separately approved evidence uses an explicit per-action release policy and a full-day privacy delay; [public reporting details](PUBLIC_PERFORMANCE.md). Listings omit exact action timestamps, assets, sizes and order instructions. Transaction hashes are omitted unless the owner explicitly approves a receipt release. Recorded demo pages and repository evidence remain public historical evidence.
 
 ## What this does not make private
 
@@ -57,9 +61,9 @@ Native Rhea/Ref swaps, staking, lending, liquidity and order transactions are pu
 
 The `confidential` adapter option is only a request for supported spot execution; a missing confirmation cannot be treated as private execution. It does not make all six activities confidential.
 
-This integration pins the worker build and verifies delegated page signatures. It does not yet perform client-side hardware-attestation verification or application-level end-to-end encryption to the enclave. HTTPS requests pass through OutLayer's API gateway. Do not claim that the gateway cannot observe request/response plaintext. The shared project's operator also controls future deployments; version pinning alone does not prove that an operator cannot expose project storage through another build. An authorized subscriber can retain or redistribute data it receives.
+The current integration verifies call attestations and encrypts protected payloads to the enclave. The gateway still observes traffic metadata and compute credentials. The secret owner retains the ability to change its access policy; the client checks the current lock but cannot prove it was never broadened in the past. Authorized subscribers can retain or redistribute received data. See the complete [privacy threat model](PRIVACY.md). Existing legacy plaintext transport records are not retroactively protected.
 
-Before claiming private execution, a future adapter needs a verifiable confidential settlement path with a defined threat model. Delayed website statistics and encrypted feed storage alone do not provide that.
+Before claiming private execution, an adapter needs a verifiable confidential settlement path with a defined threat model. See [confidential execution coverage](CONFIDENTIAL_EXECUTION.md). Delayed website statistics and encrypted feed storage alone do not provide that.
 
 ## Deployment and verification
 
@@ -80,3 +84,5 @@ npm run build:web
 Registry tests use a real local NEAR sandbox. Worker session tests use a session generated by the JavaScript signing protocol and reject closed, exhausted, mismatched and forged sessions.
 
 The [November 10 live delivery check](evidence/near/remora-near-delivery-2026-11-10.json) verified automatic running/stopped status in production Explore. A real NEAR testnet stream authorized one signed paper action through OutLayer (200); no credential returned 402, a direct public encrypted-record read returned 403, and the same session returned 403 after onchain closure. The action used a signed live NEAR Intents dry-run quote. This verifies protected delivery, not a new live swap or confidential native settlement.
+
+The [encrypted signal QA](evidence/near/privacy-2026-11-10/evidence.json) verifies advance proposal delivery, release-gated copying, cancellation, replay prevention and real stream closure through the new attested encrypted transport. Its [verification bundle](evidence/near/privacy-2026-11-10/attestation-proof.json) contains ciphertext inputs/outputs and can be checked with `outlayer-verify bundle FILE --offline`. This run used paper execution; it does not establish live confidential settlement or investment returns.

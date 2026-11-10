@@ -1,3 +1,6 @@
+import { encryptOutlayerInput, transportProtocol } from './outlayer-transport.mjs';
+import { requireOutlayerVerifier, verifyOutlayerCall } from './outlayer-attestation.mjs';
+import { JsonRpcProvider } from 'near-api-js';
 import { createHash } from 'node:crypto';
 import { readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -27,9 +30,10 @@ async function computeKey() {
   return apiKey;
 }
 
-export async function callOutlayer(input, { fetchImpl = fetch, version = outlayerNetwork.version } = {}) {
+export async function callAttestedOutlayer(input, { fetchImpl = fetch, version = outlayerNetwork.version, verify = verifyOutlayerCall } = {}) {
   if (!version || !/^[a-f0-9]{64}$/.test(version)) throw new Error('OUTLAYER_PROJECT_NOT_DEPLOYED');
   const apiKey = await computeKey();
+  if (verify === verifyOutlayerCall) await requireOutlayerVerifier();
   const response = await fetchImpl(`${outlayerNetwork.origin}/call/${outlayerNetwork.project}`, { method: 'POST', redirect: 'error', signal: AbortSignal.timeout(45000),
     headers: { 'content-type': 'application/json', 'X-Payment-Key': apiKey, 'X-Compute-Limit': '2000' },
     body: JSON.stringify({ input, version_key: version }) });
@@ -38,6 +42,7 @@ export async function callOutlayer(input, { fetchImpl = fetch, version = outlaye
     const reason = typeof result.reason === 'string' && /^[a-z_]{1,64}$/.test(result.reason) ? ':' + result.reason : '';
     throw new Error(`OUTLAYER_HTTP_${response.status}${reason}`);
   }
+  const callId = result.call_id;
   // Poll the original call. Retrying POST can charge and execute it twice.
   for (let attempt = 0; result.status === 'pending' && attempt < 30; attempt++) {
     if (!/^[a-f0-9-]{36}$/.test(result.call_id ?? '')) throw new Error('OUTLAYER_CALL_ID_REQUIRED');
@@ -47,14 +52,42 @@ export async function callOutlayer(input, { fetchImpl = fetch, version = outlaye
     result = await poll.json();
   }
   if (result.status !== 'completed' || !result.output || typeof result.output !== 'object') throw new Error('OUTLAYER_EXECUTION_UNCONFIRMED');
+  const proof = await verify({ callId, input, output: result.output, version, caller: apiKey.split(':')[0] });
+  if (proof?.verified) await atomicWrite(join(configHome(), 'outlayer-verification.json'), JSON.stringify({ ...proof, verifiedAt: new Date().toISOString(), transport: input.operation }));
   if (result.output.error) throw new Error('OUTLAYER_FEED_' + String(result.output.error).slice(0, 120));
   return result.output;
+}
+
+export async function requireSecretBuildLock(version, provider = new JsonRpcProvider({ url: 'https://test.rpc.fastnear.com' })) {
+  const owner = outlayerNetwork.project.split('/')[0];
+  const row = await provider.callFunction({ contractId: 'outlayer.testnet', method: 'get_secrets',
+    args: { accessor: { Project: { project_id: outlayerNetwork.project } }, profile: 'remora-feed-v1', owner }, blockQuery: { finality: 'final' } });
+  if (JSON.stringify(row?.access) !== JSON.stringify({ WasmHash: { hash: version } })) throw new Error('OUTLAYER_SECRET_BUILD_LOCK_REQUIRED');
+}
+
+const transportKeys = new Map();
+export async function callOutlayer(input, options = {}) {
+  const version = options.version ?? outlayerNetwork.version;
+  if (!transportKeys.has(version)) {
+    if (!options.verify || options.verify === verifyOutlayerCall) await requireSecretBuildLock(version);
+    const key = await callAttestedOutlayer({ operation: 'transport-key' }, options);
+    if (key.protocol !== transportProtocol || typeof key.publicKey !== 'string') throw new Error('OUTLAYER_TRANSPORT_KEY_INVALID');
+    transportKeys.set(version, key.publicKey);
+  }
+  const encrypted = await encryptOutlayerInput(transportKeys.get(version), input);
+  const envelope = await callAttestedOutlayer(encrypted.input, options);
+  const result = await encrypted.decrypt(envelope);
+  if (result.error) throw new Error('OUTLAYER_FEED_' + String(result.error).slice(0, 120));
+  return result;
 }
 
 export async function outlayerDeliveryKey(agent) {
   const { publicKey } = await callOutlayer({ operation: 'delivery-key' });
   if (!/^ed25519:[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(publicKey ?? '')) throw new Error('INVALID_OUTLAYER_DELIVERY_KEY');
-  await withAgentState(agent, state => { state.outlayerDeliveryKey = publicKey; });
+  await withAgentState(agent, state => {
+    if (state.outlayerDeliveryKey && state.outlayerDeliveryKey !== publicKey) for (const pointer of state.journal ?? []) pointer.outlayerUploaded = false;
+    state.outlayerDeliveryKey = publicKey;
+  });
   return publicKey;
 }
 

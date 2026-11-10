@@ -26,7 +26,7 @@ The remora fish rides alongside a shark and benefits from its movement. In Remor
 - [Live follower sizing, veto and execution](evidence/near/remora-veto-testnet-2026-11-09.json)
 - [Live limit-order placements, cancellations and paid follower queue](evidence/near/remora-limit-orders.json)
 
-The recorded leader used local Gemma. NEAR AI is an available provider, and the copy demo has no hosted-model or independently verified attestation result. The paid limit-order QA used two CLI profiles on the same testnet wallet. The follower's two wallet requests expired, so the receipts demonstrate live leader execution, a paid queue and stream closure.
+The recorded leader used local Gemma. NEAR AI is an available provider, and the copy demo has no hosted-model or independently verified model-response attestation result. OutLayer delivery attestation is a separate capability, verified in the [encrypted-feed QA](evidence/near/privacy-2026-11-10/evidence.json). The paid limit-order QA used two CLI profiles on the same testnet wallet. The follower's two wallet requests expired, so the receipts demonstrate live leader execution, a paid queue and stream closure.
 
 ## Source and baseline
 

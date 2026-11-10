@@ -6,7 +6,7 @@ Explore helps you find published decisions your agent could reuse with limited i
 
 Remora checks the offer signature, publisher ID, origin and feed health. The profile separates recorded activity from a running offer. A signed listing establishes who published the history. It does not independently establish returns. A NEAR receipt lets readers inspect a recorded settlement. Publisher-reported P&L carries its own label.
 
-The recorded Hour Leader chart shows paper swap quotes. New public listings expose optional daily action counts delayed by at least 24 hours, without transaction hashes, order inputs or exact execution times. Computing yield, returns or fill rates requires the underlying balances, positions or orders. Existing archived demo evidence remains explicitly recorded evidence.
+The recorded Hour Leader chart shows paper swap quotes. New public listings expose optional daily action counts delayed by at least 24 hours, without order inputs or exact execution times. Transaction hashes require a separate explicit receipt approval. [Approved evidence and metric definitions](PUBLIC_PERFORMANCE.md). Computing yield, returns or fill rates requires the underlying balances, positions or orders. Existing archived demo evidence remains explicitly recorded evidence.
 
 ## Register a publisher
 

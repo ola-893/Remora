@@ -7,7 +7,7 @@ import test from 'node:test';
 import { KeyPair } from 'near-api-js';
 import { canonical } from '../../near/lib/audit.mjs';
 import { outlayerListing, outlayerNetwork, outlayerServiceJson, publicOutlayerRecord } from '../../near/lib/outlayer.mjs';
-import { callOutlayer } from '../cli/src/outlayer.mjs';
+import { callAttestedOutlayer } from '../cli/src/outlayer.mjs';
 import { verifyPage } from '../cli/src/copy-feed.mjs';
 
 const key = KeyPair.fromRandom('ed25519');
@@ -66,7 +66,12 @@ test('OutLayer execution pins the build, caps compute and polls the original pen
   const apiKey = 'fixture.testnet:1:' + 'a'.repeat(64);
   await writeFile(join(home, 'outlayer-key.json'), JSON.stringify({ version: 1, apiKey }), { mode: 0o600 });
   let posts = 0, polls = 0;
-  const result = await callOutlayer({ operation: 'delivery-key' }, { version: 'b'.repeat(64), fetchImpl: async (url, init) => {
+  const result = await callAttestedOutlayer({ operation: 'delivery-key' }, { version: 'b'.repeat(64), verify: async proof => {
+    assert.equal(proof.callId, '12345678-1234-1234-1234-123456789012');
+    assert.equal(proof.version, 'b'.repeat(64)); assert.equal(proof.caller, 'fixture.testnet');
+    assert.deepEqual(proof.input, { operation: 'delivery-key' });
+    assert.equal(proof.output.publicKey, publicKey);
+  }, fetchImpl: async (url, init) => {
     assert.equal(new URL(url).origin, outlayerNetwork.origin);
     assert.equal(init.redirect, 'error');
     assert.equal(init.headers['X-Payment-Key'], apiKey);

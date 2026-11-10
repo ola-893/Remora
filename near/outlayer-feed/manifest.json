@@ -1,6 +1,21 @@
 {
-  "display": { "name": "Remora subscription feed" },
-  "operations": ["delivery-key", "publish", "append", "actions", "signal"],
-  "capabilities": { "network": ["test.rpc.fastnear.com"] },
-  "callers": { "direct": "deny", "contract": "deny" }
+  "display": {
+    "name": "Remora subscription feed"
+  },
+  "operations": [
+    "transport-key",
+    "encrypted"
+  ],
+  "capabilities": {
+    "network": [
+      "test.rpc.fastnear.com"
+    ]
+  },
+  "callers": {
+    "direct": "deny",
+    "contract": "deny"
+  },
+  "author_secrets": {
+    "profile": "remora-feed-v1"
+  }
 }

@@ -9,6 +9,7 @@ use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 use std::time::{SystemTime, UNIX_EPOCH};
 mod signals;
+mod transport;
 
 #[cfg(target_arch = "wasm32")]
 #[used]
@@ -95,22 +96,10 @@ fn verify(envelope: &Value, key: &str, domain: &str) -> Result<()> {
 }
 
 fn delivery_key() -> Result<SigningKey> {
-    let seed = if let Some(bytes) =
-        storage::get_worker("delivery-key").map_err(|_| "STORAGE_UNAVAILABLE")?
-    {
-        bytes
-    } else {
-        if env::signer_account_id() != env::var("OUTLAYER_PROJECT_OWNER") {
-            return Err("DELIVERY_KEY_NOT_INITIALIZED".to_string());
-        }
-        let mut seed = [0u8; 32];
-        getrandom::getrandom(&mut seed).map_err(|_| "RANDOMNESS_UNAVAILABLE")?;
-        storage::set_worker("delivery-key", &seed).map_err(|_| "STORAGE_UNAVAILABLE")?;
-        seed.to_vec()
-    };
-    Ok(SigningKey::from_bytes(
-        &seed.try_into().map_err(|_| "INVALID_DELIVERY_KEY")?,
-    ))
+    Ok(SigningKey::from_bytes(&transport::derive(
+        &transport::master()?,
+        b"delivery-ed25519",
+    )))
 }
 
 fn sign(body: Value) -> Result<Value> {
@@ -124,16 +113,36 @@ fn sign_domain(body: Value, domain: &str) -> Result<Value> {
 }
 
 fn get(key: &str) -> Result<Option<Value>> {
-    storage::get_worker(key)
+    let public = key.starts_with("listing:") || key.starts_with("health:");
+    let address = if public {
+        key.to_string()
+    } else {
+        format!("sealed:v1:{key}")
+    };
+    storage::get_worker(&address)
         .map_err(|_| "STORAGE_UNAVAILABLE".to_string())?
         .map(|bytes| {
-            serde_json::from_slice(&bytes).map_err(|_| "INVALID_STORED_RECORD".to_string())
+            let plain = if public {
+                bytes
+            } else {
+                transport::open_record(key, &bytes, &transport::master()?)?
+            };
+            serde_json::from_slice(&plain).map_err(|_| "INVALID_STORED_RECORD".to_string())
         })
         .transpose()
 }
 
 fn put(key: &str, value: &Value, public: bool) -> Result<()> {
-    storage::set_worker_with_options(key, &serde_json::to_vec(value).unwrap(), Some(!public))
+    let plain = serde_json::to_vec(value).unwrap();
+    let (address, bytes) = if public {
+        (key.to_string(), plain)
+    } else {
+        (
+            format!("sealed:v1:{key}"),
+            transport::seal_record(key, &plain, &transport::master()?)?,
+        )
+    };
+    storage::set_worker_with_options(&address, &bytes, Some(!public))
         .map_err(|_| "STORAGE_UNAVAILABLE".to_string())
 }
 
@@ -293,6 +302,20 @@ fn validate_session(
 }
 
 fn run(input: Value) -> Result<Value> {
+    let master = transport::master()?;
+    match string(&input, "operation")? {
+        "transport-key" => Ok(transport::public_key(&master)),
+        "encrypted" => {
+            let request = transport::open(&input, &master, now() * 1000)?;
+            let output =
+                run_private(request.input.clone()).unwrap_or_else(|error| json!({"error":error}));
+            transport::respond(&request, output)
+        }
+        _ => Err("ENCRYPTED_TRANSPORT_REQUIRED".into()),
+    }
+}
+
+fn run_private(input: Value) -> Result<Value> {
     if input.to_string().len() > 131072 {
         return Err("INPUT_TOO_LARGE".to_string());
     }
