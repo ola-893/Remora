@@ -112,7 +112,9 @@ Operate the same streams directly:
   agentstreams verify [--run /path/run.json]      Verify saved testnet receipts (read-only)
   agentstreams ui [--run /path/run.json] Replay captured real NEAR runs
 
-Common: --project PATH, --agent NAME, --json, --verbose, --help, --version
+  agentstreams diagnostics                       Read-only executable, revision and terminal checks
+
+Common: --project PATH, --agent NAME, --json, --verbose, --color=auto|always|never, --help, --version
 Interactive terminals show concise summaries; pipes retain structured output.
 --json prints JSON values (one per line for event streams); --verbose adds redacted details.
 Financial flags and positional fund/withdraw use decimal USDC. Legacy fund --amount uses raw units.
@@ -134,13 +136,14 @@ async function runCommand(argv) {
     ...Object.fromEntries([...strings, 'veto-seconds', 'registry', 'delivery', 'signal-window'].map(k => [k, { type: 'string' }])), ...Object.fromEntries(booleans.map(k => [k, { type: 'boolean' }])),
     project: { type: 'string', default: '.' }, recording: { type: 'string', default: 'testnet' }, port: { type: 'string', default: '0' },
     'vault-name': { type: 'string', default: 'agentstreams' }, 'agent-name': { type: 'string', default: 'research-agent' }, rpc: { type: 'string', default: 'https://test.rpc.fastnear.com' }, service: { type: 'string', default: 'http://127.0.0.1:5321' },
+    color: { type: 'string', default: 'auto' },
   } });
-  const output = createPresentation({ json: v.json, verbose: v.verbose, command: p });
+  const output = createPresentation({ json: v.json, verbose: v.verbose, color: v.color, command: p });
   presentationContext.getStore().output = output;
   const emit = output.emit;
   if (v.version) return v.json ? emit(version) : process.stdout.write(version + '\n');
   if (v.help || !p.length) {
-    const rendered = renderHelp(version, help, { plain: v.json });
+    const rendered = renderHelp(version, help, { plain: v.json, color: v.color });
     if (v.json) return emit(rendered);
     return process.stdout.write(rendered + '\n');
   }
@@ -154,7 +157,7 @@ async function runCommand(argv) {
     'service:serve': 'repository port deployment basic-rate premium-rate duration',
     'inference:set': 'provider base-url model api-key max-steps thinking reasoning-effort max-output-tokens timeout-seconds', 'inference:models': 'provider', 'inference:show': '', inference: '', 'agent:run': 'prompt max-steps once rpc activity',
     request: 'tier query', 'stream:check': 'tier', 'stream:open': 'tier', 'stream:status': '', 'stream:close': 'session',
-    monitor: '', reconcile: '', close: 'session', verify: 'rpc run', fund: 'amount', doctor: '', payments: 'enable disable',
+    monitor: '', reconcile: '', close: 'session', verify: 'rpc run', fund: 'amount', doctor: '', diagnostics: '', payments: 'enable disable',
     install: 'dry-run', mcp: '', ui: 'recording port run',
     'grant:show': '', 'grant:create': 'transactions hours activities staking-pool tokens fund-near', 'grant:revoke': '', 'grant:reconcile': '',
     'grant:prepare': 'activity token balance-raw',
@@ -164,11 +167,15 @@ async function runCommand(argv) {
   if (p[0] === 'copy' && /^ap_[a-f0-9]{64}$/.test(p[1] ?? '')) command = 'copy:preview';
   const maxPositionals = copyPositionals.has(command) ? 3 : grouped.includes(p[0]) || ['install', 'fund', 'withdraw'].includes(p[0]) ? 2 : 1;
   if (p.length > maxPositionals) throw new Error('Unexpected positional arguments. See --help.');
-  const common = ['project', 'agent', 'json', 'verbose', 'help', 'version'];
+  const common = ['project', 'agent', 'json', 'verbose', 'color', 'help', 'version'];
   const provided = tokens.filter(token => token.kind === 'option' && !common.includes(token.name)).map(token => token.name);
   if (Object.hasOwn(allowed, command)) {
     const flags = new Set(allowed[command].split(' '));
     for (const flag of provided) if (!flags.has(flag)) throw new Error(`--${flag} is not supported by ${p.join(' ')}.`);
+  }
+  if (command === 'diagnostics') {
+    const { cliDiagnostics } = await import('./diagnostics.mjs');
+    return emit(await cliDiagnostics({ color: v.color, json: v.json }));
   }
   const workspace = await projectPath(v.project);
   const identityOnly = ['wallet', 'registry', 'outlayer'].includes(p[0]) || ['agent:create', 'agent:use', 'agent:list'].includes(command);

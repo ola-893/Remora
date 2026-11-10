@@ -1,5 +1,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { stripVTControlCharacters } from 'node:util';
+import { usesColor, validateColor, tones } from './output-mode.mjs';
 
 // Only the output boundary uses this context. Signing, policy and runner events
 // retain their existing inputs, return values and timing.
@@ -89,7 +90,8 @@ const reasons = {
   COPY_AUTHORITY_EXPIRED: 'The subscription or execution authority has expired.',
 };
 
-export function createPresentation({ stream = process.stdout, diagnostics = process.stderr, env = process.env, json = false, verbose = false, command = [] } = {}) {
+export function createPresentation({ stream = process.stdout, diagnostics = process.stderr, env = process.env, json = false, verbose = false, color = 'auto', command = [] } = {}) {
+  validateColor(color);
   const human = Boolean(stream.isTTY && !json);
   const seen = new Map();
   let suppressed = 0;
@@ -98,11 +100,10 @@ export function createPresentation({ stream = process.stdout, diagnostics = proc
   const commandName = grouped.has(command[0]) ? command.slice(0, 2).join(':') : command[0];
   function block(title, rows = [], next, tone = 'info', target = stream) {
     const width = Math.max(20, Math.min(target.columns ?? 80, 96));
-    const color = Boolean(target.isTTY && !Object.hasOwn(env, 'NO_COLOR') && env.TERM !== 'dumb');
-    // Standard ANSI colors adapt to terminal themes, including light backgrounds.
-    const code = { info: 36, done: 32, wait: 33, error: 31 }[tone] ?? 36;
+    const colored = usesColor({ stream: target, env, color, json });
+    const code = tones[tone] ?? tones.info;
     const mark = env.TERM !== 'dumb' && /UTF-?8/i.test(env.LC_ALL ?? env.LC_CTYPE ?? env.LANG ?? '') ? ({ info: '›', done: '✓', wait: '…', error: '!' })[tone] : ({ info: '>', done: 'OK', wait: '...', error: '!' })[tone];
-    const header = wrap(`${mark} ${title}`, width - 2).map(line => color ? `\x1b[${code};1m${line}\x1b[0m` : line);
+    const header = wrap(`${mark} ${title}`, width - 2).map(line => colored ? `\x1b[${code};1m${line}\x1b[0m` : line);
     const lines = ['', ...header];
     for (const [key, value] of rows) {
       if (value === undefined || value === null || value === '') continue;
@@ -143,6 +144,7 @@ export function createPresentation({ stream = process.stdout, diagnostics = proc
   }
   function subscription(v, title) {
     const l = v.listing ?? {};
+    if (!title && ['paused', 'stopped'].includes(v.status)) return block(`Copy ${v.status}`, [['Leader', l.name ?? short(l.id)], ['Network', network(l.network)], ['Stream', v.closeHash ? 'Closure receipt recorded' : 'Inspect stream status; no closure receipt in this result'], ['Reason', v.reason], ...receiptRows({ transactionHash: v.closeHash, explorerUrl: v.receipt?.explorerUrl })], undefined, v.closeHash ? 'done' : 'wait');
     block(title ?? `Copy ${v.status ?? 'status'}`, [['Leader', l.name ?? short(l.id)], ['Network', network(l.network)], ['Activity', label(l.activity)],
       ['Payment', l.rate == null ? undefined : `${usdc(l.rate, l.network)} / second`], ['Recipient', l.recipient], ['Duration', seconds(l.duration)],
       ['Mode', mode(v.mode)], ['Veto window', seconds(v.vetoSeconds)], ['Session', short(v.sessionId)], ['Reason', v.reason],
@@ -165,6 +167,10 @@ export function createPresentation({ stream = process.stdout, diagnostics = proc
     if (!v || typeof v !== 'object') return block('Remora', [['Result', v]]);
     if (Array.isArray(v)) { for (const item of v) render(item); return; }
     if (Array.isArray(v.events)) for (const e of v.events) render(e);
+    if (v.type === 'cli-diagnostics') return block('CLI execution path · read-only', [['Package root', v.packageRoot], ['Executable', v.executable], ['Node', v.node], ['Revision', v.revision], ['Renderer', v.rendererFingerprint], ['State home', v.stateHome], ['stdout / stderr', `${v.stdoutTTY ? 'TTY' : 'pipe'} / ${v.stderrTTY ? 'TTY' : 'pipe'}`], ['TERM', v.term], ['NO_COLOR', v.noColor ? 'Set' : 'Unset'], ['FORCE_COLOR', v.forceColor ?? 'Unset'], ['Output', v.outputMode], ['Color', v.color]], undefined);
+    if (v.type === 'close-proof') return block(v.beforeCloseHTTP === 200 && v.afterCloseHTTP === 403 && v.closeTransaction ? 'Stream closed · further access denied' : 'Closure proof needs inspection', [['Before close', `HTTP ${v.beforeCloseHTTP}`], ['After close', `HTTP ${v.afterCloseHTTP}`], ['Transaction', v.closeTransaction], ['Same session', v.sameSessionCredential]], undefined, v.beforeCloseHTTP === 200 && v.afterCloseHTTP === 403 && v.closeTransaction ? 'done' : 'wait');
+    if (v.type === 'compute-funded') return block('OutLayer compute funding confirmed', [['Network', network(v.network)], ['Compute key', v.computeKey], ['Amount', amount(v.amountRaw, v.tokenId)], ...receiptRows(v)], undefined, 'done');
+    if (v.type === 'demo-check') return block('Demo readiness · no changes made', [['Role', v.role], ['Checkout', v.packageRoot], ['Agent', v.agent], ['Network', network(v.network)], ['Publication', v.publicationEnabled === undefined ? undefined : v.publicationEnabled ? 'Enabled' : 'Disabled'], ['Subscription', v.subscriptionStatus ?? 'None'], ['Runner PID', v.runnerPid], ['Inference', v.inferenceProvider], ['Grant', v.granted === undefined ? undefined : v.granted ? 'Active' : 'Not active'], ['Pending trade', v.pendingTrade], ['Operation', v.operation]], v.next, v.ready === false ? 'wait' : 'info');
     if (v.type === 'tool') {
       if (v.result?.decision === 'DENY' || v.result?.status) return render({ ...v.result, activity: v.result.activity });
       return block(/guard|portfolio/.test(v.name) ? 'Agent reads its configured rules' : 'Agent tool returned', [['Tool', v.name], ['Policy', 'Models cannot change your limits.']], undefined);
@@ -173,7 +179,10 @@ export function createPresentation({ stream = process.stdout, diagnostics = proc
     if (v.type === 'inference') return block('Model response received', [['Provider', v.provider], ['Model', v.model], ['Attestation', v.attestationVerified === true ? 'Reported verified for this response' : 'Not verified for this response']]);
     if (v.type === 'copy-review') return block('Follower model review · advisory', [['Action ID', v.actionId], ['Review', ({ NO_CONCERN: 'No concern reported; this is not policy or owner approval.', REVIEW: 'Model flagged a concern; execution still follows guards and owner controls.', INSUFFICIENT_CONTEXT: 'Not enough context for a model opinion.', UNAVAILABLE: 'Inference unavailable; execution controls are unchanged.' })[v.status] ?? v.status], ['Evidence', v.evidenceIds?.join(', ')]], undefined, v.status === 'NO_CONCERN' ? 'info' : 'wait');
     if (v.type === 'signal') return block(`Decision signal · ${v.phase}`, [['Signal ID', short(v.signalId)], ['Meaning', ({ proposed: 'Proposed before execution; may expire or be cancelled.', released: 'Released to eligible subscribers; settlement not established.', settled: 'Leader reported settlement; inspect execution evidence.', uncertain: 'Execution outcome uncertain; reconcile before another attempt.', cancelled: 'Cancelled; do not execute this signal.', expired: 'Expired; do not execute this signal.', failed: 'Leader execution failed.' })[v.phase]]], undefined, ['uncertain', 'failed'].includes(v.phase) ? 'error' : 'info');
-    if (v.running) return block('Agent runner started', [['Agent ID', short(v.agentId)]], 'Listening for state changes. Ctrl+C stops this runner.');
+    if (v.running) {
+      block('Agent runner started', [['Agent ID', short(v.agentId)]]);
+      return block('Waiting for the next event', [], 'Listening for state changes. Ctrl+C stops this runner.', 'wait');
+    }
     if (v.type === 'registry') return block(v.method === 'stop' ? 'Directory marked stopped' : 'Directory heartbeat sent', [['Agent', short(v.publisherId)]], undefined);
     if (v.type?.endsWith('-error') || v.type === 'closure-unconfirmed' || v.error) return failure(v);
     if (['DENY', 'skipped'].includes(v.decision ?? v.status) && policyReasons.test(v.reason ?? '')) return block('Action blocked by policy', [...actionRows(v), ['Reason', reasons[String(v.reason).split(':')[0]] ?? v.reason], ['Code', v.reason ?? v.code]], 'Your execution limits remain unchanged.', 'error');
@@ -287,10 +296,11 @@ export function createPresentation({ stream = process.stdout, diagnostics = proc
     render(v);
   }
   function wallet(options, url) {
-    const event = { ownerWalletApproval: true, operation: options.kind === 'connect' ? 'Connect wallet' : options.plan.label, url };
+    const hideLink = env.REMORA_TRANSCRIPT === '1';
+    const event = { ownerWalletApproval: true, operation: options.kind === 'connect' ? 'Connect wallet' : options.plan.label, url: hideLink ? '[approval link omitted from transcript]' : url };
     // This fragment is a required one-use approval link. Print it only here,
     // unmodified and unwrapped so it remains clickable/copyable.
-    if (!diagnostics.isTTY || json) { diagnostics.write(JSON.stringify(event) + '\n'); return; }
+    if (!human || !diagnostics.isTTY || json) { diagnostics.write(JSON.stringify(event) + '\n'); return; }
     const p = options.plan ?? {};
     const rows = [['Purpose', event.operation], ['Network', 'NEAR testnet'], ['Owner', p.ownerId ?? options.accountId], ['Recipient', p.receiverId]];
     for (const a of p.actions ?? []) {
@@ -303,7 +313,7 @@ export function createPresentation({ stream = process.stdout, diagnostics = proc
     }
     block('Wallet approval needed', rows, options.kind === 'connect' ? 'Continue in your default browser wallet. This is sign-in, not transaction approval.' : 'Review full transaction details in your browser wallet, then approve or cancel.', 'wait', diagnostics);
     if (verbose && p.actions) block('Transaction details · redacted', [['Actions', JSON.stringify(redact(p.actions))]], undefined, 'info', diagnostics);
-    diagnostics.write(url + '\n');
+    diagnostics.write(hideLink ? 'Approval link omitted from transcript; the request opens in your default browser.\n' : url + '\n');
   }
   function start(agent, state) {
     if (!human) return;
@@ -329,10 +339,10 @@ export function walletNotice(options, url) {
   process.stderr.write(JSON.stringify({ ownerWalletApproval: true, operation: options.kind === 'connect' ? 'Connect wallet' : options.plan.label, url }) + '\n');
 }
 
-export function printCliError(error, { json = false } = {}) {
+export function printCliError(error, { json = false, color = 'auto' } = {}) {
   const message = cleanText(error.message ?? 'OPERATION_FAILED');
   if (json) process.stderr.write(JSON.stringify({ error: message }) + '\n');
   else if (!process.stderr.isTTY) process.stderr.write(`Remora · ${message}\n`);
-  else if (policyReasons.test(message)) createPresentation({ stream: process.stderr }).emit({ decision: 'DENY', reason: message });
-  else createPresentation().failure({ reason: message });
+  else if (policyReasons.test(message)) createPresentation({ stream: process.stderr, color }).emit({ decision: 'DENY', reason: message });
+  else createPresentation({ color }).failure({ reason: message });
 }
