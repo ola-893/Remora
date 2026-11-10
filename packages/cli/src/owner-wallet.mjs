@@ -1,3 +1,4 @@
+import { walletNotice } from './presentation.mjs';
 import { createServer } from 'node:http';
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import { mkdir, open, readFile, stat, unlink } from 'node:fs/promises';
@@ -188,7 +189,7 @@ export async function startOwnerSession({ kind, plan, minBlockHeight, rpcUrl = r
 
 async function waitInBrowser(options) {
   const session = await startOwnerSession(options);
-  process.stderr.write(JSON.stringify({ ownerWalletApproval: true, operation: options.kind === 'connect' ? 'Connect wallet' : options.plan.label, url: session.url }) + '\n');
+  walletNotice(options, session.url);
   browserOpen(session.url);
   try { return await session.done; } finally { await session.close(); }
 }

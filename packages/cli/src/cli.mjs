@@ -10,6 +10,7 @@ import { showSettings, setRuntime, setService, setInference, setLimits, reconcil
 import { readInferenceProfile } from './inference-profile.mjs';
 import { assertInferenceModel, inferenceConfig } from './inference.mjs';
 import { renderHelp } from './brand.mjs';
+import { createPresentation, presentationContext } from './presentation.mjs';
 
 const version = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')).version;
 const help = `Named agents and copy trading:
@@ -111,7 +112,9 @@ Operate the same streams directly:
   agentstreams verify [--run /path/run.json]      Verify saved testnet receipts (read-only)
   agentstreams ui [--run /path/run.json] Replay captured real NEAR runs
 
-Common: --project PATH, --agent NAME, --json, --help, --version
+Common: --project PATH, --agent NAME, --json, --verbose, --help, --version
+Interactive terminals show concise summaries; pipes retain structured output.
+--json prints JSON values (one per line for event streams); --verbose adds redacted details.
 Financial flags and positional fund/withdraw use decimal USDC. Legacy fund --amount uses raw units.
 Paid APIs must implement the agentStreams protocol. CLI inference uses a local tool-capable endpoint or NEAR AI. MCP clients connect to the tool server separately.
 One service and one active stream per profile. Streams have no time limit by default; access ends on closure or prepaid funds running out. Run the agent/MCP/monitor for automatic health and idle closure.
@@ -121,16 +124,26 @@ const integer = value => { if (!/^[0-9]+$/.test(value || '')) throw new Error('E
 const boolean = value => { if (!['true', 'false'].includes(value)) throw new Error('Use true or false.'); return value === 'true'; };
 
 export async function run(argv) {
+  return presentationContext.run({}, () => runCommand(argv));
+}
+
+async function runCommand(argv) {
   const strings = ['action-json', 'targets', 'max-inputs', 'copy-bps', 'hash', 'paper-balances', 'agent', 'activity', 'id', 'activities', 'rate', 'intents-agent-id', 'intents-key-env', 'intents-grant-env', 'from', 'to', 'amount-raw', 'nova-group', 'nova-account', 'nova-network', 'nova-key-env', 'performance-file', 'assets', 'input-asset', 'max-input-raw', 'copy-input-raw', 'max-age', 'max-slippage-bps', 'max-notional', 'stale-seconds', 'feed-failures', 'network', 'deployment', 'session', 'owner-id', 'recipient', 'amount', 'budget', 'max-stream', 'max-rate', 'max-duration', 'max-5xx', 'max-transport-errors', 'max-health-failures', 'idle-timeout', 'max-requests', 'reuse', 'poll-seconds', 'close-on-exit', 'url', 'health-path', 'quote-path', 'request-path', 'tiers', 'base-url', 'model', 'max-steps', 'prompt', 'tier', 'query', 'thinking', 'failure-cooldown', 'provider', 'reasoning-effort', 'max-output-tokens', 'repository', 'basic-rate', 'premium-rate', 'duration', 'run', 'timeout-seconds', 'transactions', 'hours', 'staking-pool', 'tokens', 'fund-near', 'token', 'balance-raw'];
-  const booleans = ['api-key', 'cancel', 'resume', 'once', 'live', 'confidential', 'execute', 'json', 'help', 'version', 'enable', 'disable', 'dry-run', 'deploy', 'public-history', 'public-receipt'];
+  const booleans = ['api-key', 'cancel', 'resume', 'once', 'live', 'confidential', 'execute', 'json', 'verbose', 'help', 'version', 'enable', 'disable', 'dry-run', 'deploy', 'public-history', 'public-receipt'];
   const { values: v, positionals: p, tokens } = parseArgs({ args: argv, allowPositionals: true, strict: true, tokens: true, options: {
     ...Object.fromEntries([...strings, 'veto-seconds', 'registry', 'delivery', 'signal-window'].map(k => [k, { type: 'string' }])), ...Object.fromEntries(booleans.map(k => [k, { type: 'boolean' }])),
     project: { type: 'string', default: '.' }, recording: { type: 'string', default: 'testnet' }, port: { type: 'string', default: '0' },
     'vault-name': { type: 'string', default: 'agentstreams' }, 'agent-name': { type: 'string', default: 'research-agent' }, rpc: { type: 'string', default: 'https://test.rpc.fastnear.com' }, service: { type: 'string', default: 'http://127.0.0.1:5321' },
   } });
-  const emit = value => process.stdout.write(typeof value === 'string' ? value + '\n' : JSON.stringify(value, (_, item) => typeof item === 'bigint' ? item.toString() : item, 2) + '\n');
-  if (v.version) return emit(version);
-  if (v.help || !p.length) return emit(renderHelp(version, help, { plain: v.json }));
+  const output = createPresentation({ json: v.json, verbose: v.verbose, command: p });
+  presentationContext.getStore().output = output;
+  const emit = output.emit;
+  if (v.version) return v.json ? emit(version) : process.stdout.write(version + '\n');
+  if (v.help || !p.length) {
+    const rendered = renderHelp(version, help, { plain: v.json });
+    if (v.json) return emit(rendered);
+    return process.stdout.write(rendered + '\n');
+  }
   const allowed = {
     ...copyFlags,
     'wallet:connect': 'network rpc port owner-id', 'wallet:show': '', 'wallet:disconnect': '', 'wallet:reconcile': 'hash cancel',
@@ -151,7 +164,7 @@ export async function run(argv) {
   if (p[0] === 'copy' && /^ap_[a-f0-9]{64}$/.test(p[1] ?? '')) command = 'copy:preview';
   const maxPositionals = copyPositionals.has(command) ? 3 : grouped.includes(p[0]) || ['install', 'fund', 'withdraw'].includes(p[0]) ? 2 : 1;
   if (p.length > maxPositionals) throw new Error('Unexpected positional arguments. See --help.');
-  const common = ['project', 'agent', 'json', 'help', 'version'];
+  const common = ['project', 'agent', 'json', 'verbose', 'help', 'version'];
   const provided = tokens.filter(token => token.kind === 'option' && !common.includes(token.name)).map(token => token.name);
   if (Object.hasOwn(allowed, command)) {
     const flags = new Set(allowed[command].split(' '));
@@ -161,6 +174,10 @@ export async function run(argv) {
   const identityOnly = ['wallet', 'registry', 'outlayer'].includes(p[0]) || ['agent:create', 'agent:use', 'agent:list'].includes(command);
   const agent = identityOnly ? null : await selectedAgent(workspace, command === 'agent:show' ? p[2] ?? v.agent : v.agent);
   const project = agent?.path ?? workspace;
+  // Read-only display context; unavailable metadata must not block a command.
+  if (output.human && agent) output.configure(await agentSetupState(agent).catch(() => null));
+  if (command === 'agent:run' && output.human) output.start(agent, agent ? await readAgentState(agent) : null);
+  try {
   if (command === 'agent:run' && (!v.prompt && (provided.includes('max-steps') || v.activity) || v.prompt && (v.once || provided.includes('rpc')))) throw new Error('Use --prompt with --max-steps, or the copy runner with --once and --rpc.');
   if (Object.hasOwn(copyFlags, command) || (command === 'agent:run' && !v.prompt) || (command === 'reconcile' && agent)) {
     const result = await runCopyCommand(command, p, v, workspace, agent, emit, provided);
@@ -383,4 +400,5 @@ export async function run(argv) {
     }
     default: throw new Error('Unknown command. Run agentstreams --help.');
   }
+  } finally { output.finish(); }
 }
