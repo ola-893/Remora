@@ -11,7 +11,7 @@ npm install -g @ola-893/agentstreams-cli
 agentstream --version
 ```
 
-Use version `0.11.0` for timed veto windows, execution grants and automatic follower review. [Ten-minute rebalance demo](REBALANCE_DEMO.md)
+Use version `0.12.0` for NEAR registry discovery and OutLayer delivery, alongside timed veto windows, execution grants and automatic follower review. [Remote delivery setup](NEAR_DELIVERY.md) · [Ten-minute rebalance demo](REBALANCE_DEMO.md)
 
 ## Build from source
 
@@ -22,8 +22,8 @@ rustup target add wasm32-unknown-unknown
 npm run install:all
 npm run pack:distribution
 npm install -g \
-  .local/distribution/ola-893-agentstreams-core-0.8.0.tgz \
-  .local/distribution/ola-893-agentstreams-cli-0.11.0.tgz
+  .local/distribution/ola-893-agentstreams-core-0.9.0.tgz \
+  .local/distribution/ola-893-agentstreams-cli-0.12.0.tgz
 agentstream --help
 ```
 

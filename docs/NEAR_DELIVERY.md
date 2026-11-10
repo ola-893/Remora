@@ -61,6 +61,8 @@ Before claiming private execution, a future adapter needs a verifiable confident
 
 The shared registry address is recorded in [CLI configuration](../packages/cli/src/registry-network.json) and [frontend configuration](../vite-project/public/registry.json). The deployed OutLayer project and pinned worker hash are in [outlayer-network.json](../near/lib/outlayer-network.json). The frontend also serves the public worker binary; execution and encrypted storage run on OutLayer.
 
+To rebuild the worker, install Rust's `wasm32-wasip2` target and run `cargo build --manifest-path near/outlayer-feed/Cargo.toml --target wasm32-wasip2 --release --locked`. Compare its SHA-256 with the pinned worker hash. Updating the live worker requires an OutLayer project-version deployment, matching CLI pin and frontend binary update; rebuilding the frontend alone does not deploy new worker code.
+
 ```sh
 npm run build:near
 node scripts/build-distribution.mjs --runtime-only
