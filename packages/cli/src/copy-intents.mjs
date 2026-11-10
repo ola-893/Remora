@@ -43,7 +43,7 @@ export function intentsAdapter(config, fetchImpl = fetch) {
       const amountOut = quote?.amountOut ?? quote?.amount_out;
       const amountIn = quote?.amountIn ?? quote?.amount_in;
       if (!rawAmount(amountOut) || !rawAmount(amountIn)) throw new Error('INTENTS_QUOTE_AMOUNTS_MISSING');
-      return { amountIn, amountOut, amountInUsd: result.spend?.amount_usd ?? null, warnings: (result.warnings ?? []).map(item => item.code), ownerApproval: result.owner_approval === true };
+      return { source: 'agent-connect', observedAt: new Date().toISOString(), confidentialRequested: config.confidential === true, amountIn, amountOut, amountInUsd: result.spend?.amount_usd ?? null, warnings: (result.warnings ?? []).map(item => item.code), ownerApproval: result.owner_approval === true };
     },
     async execute(order, key) {
       if (!config.live) throw new Error('INTENTS_LIVE_DISABLED');
@@ -72,7 +72,8 @@ export function intentsAdapter(config, fetchImpl = fetch) {
             !rawAmount(details.amount_out) || BigInt(details.amount_out) < BigInt(order.min_amount_out) ||
             !Number.isSafeInteger(at) || at > Date.now() + 5000) throw new Error('INTENTS_SETTLEMENT_MISMATCH');
       }
-      return { status: result.status, final: final.has(result.status), correlationId, details: result.details, updatedAt: Date.parse(result.updated_at) };
+      return { status: result.status, final: final.has(result.status), correlationId, details: result.details, updatedAt: Date.parse(result.updated_at),
+        privacy: { requested: config.confidential === true, providerConfirmed: result.status === 'SUCCESS' && result.details?.confidential === true, independentlyVerified: false } };
     },
   };
 }
