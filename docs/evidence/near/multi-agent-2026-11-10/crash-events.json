@@ -1,0 +1,30 @@
+[
+  {
+    "operation": "spawned",
+    "pid": 25953,
+    "at": "2026-11-10T09:16:51.675Z"
+  },
+  {
+    "operation": "killed-without-stop-heartbeat",
+    "at": "2026-11-10T09:17:12.547Z"
+  },
+  {
+    "operation": "registry-before-cleanup",
+    "row": {
+      "id": "ap_1823f924880507a95de502674a208c04fe4fcc25c3a32f63085459194d81d215",
+      "origin": "https://testnet-api.outlayer.ai",
+      "public_key": "ed25519:2Vsq5LEtuRMf6PMVb87HRh7qrusCbNT8yajHQ2C425rY",
+      "owner_id": "rudepuma4060.testnet",
+      "last_seen": "1794302215",
+      "active": true
+    },
+    "at": "2026-11-10T09:17:44.006Z"
+  },
+  {
+    "operation": "registry-stop",
+    "publisherId": "ap_1823f924880507a95de502674a208c04fe4fcc25c3a32f63085459194d81d215",
+    "method": "stop",
+    "transactionHash": "GonMgrHrP2eVJSdL46cQCuhSF6Q55mLUc3siGNPUprG6",
+    "at": "2026-11-10T09:17:48.510Z"
+  }
+]

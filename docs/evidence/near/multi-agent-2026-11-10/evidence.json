@@ -54,6 +54,11 @@
     {
       "kind": "heartbeat-keys",
       "hash": "BjqRBRwdUWfiPVpbHgzhfH2PAUhsRyjcnbdkHcDTWxpt"
+    },
+    {
+      "kind": "compute-funding-final",
+      "hash": "CtHpFkgWUn4qahpeb7c1mnz1xE9rYT6xbRcoW6B4C8Va",
+      "consumed": "10000"
     }
   ],
   "initialRun": {
@@ -314,7 +319,214 @@
       ]
     },
     "successfulRepeatedBatchResponses": true,
-    "frontendTests": 14
+    "frontendTests": 14,
+    "mixedSimultaneous": {
+      "observedAt": "2026-11-10T09:15:54.531Z",
+      "rows": [
+        "AgentActivityStatusUSDC / secEvidenceOpen profile",
+        "qa-rebalanceap_fb158c2720…Portfolio rebalanceRunning0.000001Signed offer",
+        "directory-qaap_d490189093…Spot tradingUnavailable0.000001Signed offer",
+        "qa-spotap_e50ddc785d…Spot tradingUnavailable0.000001Signed offer",
+        "qa-stakingap_7150f81096…Staking movesUnavailable0.000001Signed offer",
+        "qa-liquidityap_2c604756e4…Liquidity rangesActivity disabled0.000001Signed offer",
+        "qa-yieldap_e6377cc130…Yield reallocationUnavailable0.000001Signed offer",
+        "qa-ordersap_1823f92488…Limit ordersUnavailable0.000001Signed offer",
+        "Hour LeaderRecorded testnet runSpot tradingRecorded0.000001Recorded proof"
+      ]
+    },
+    "mixedBackend": [
+      {
+        "at": "2026-11-10T09:15:36.928Z",
+        "offers": [
+          {
+            "id": "ap_d49018909353f8f9171b9688263a9cd1423bed457ad9188a83efb997435bc63a",
+            "name": "directory-qa",
+            "activity": "spot-trading",
+            "execution": "paper",
+            "state": "unavailable",
+            "registryActive": false
+          },
+          {
+            "id": "ap_e50ddc785db51b3f9b129ff84bd133acf82980109d84ed6798f20b2e56e5381d",
+            "name": "qa-spot",
+            "activity": "spot-trading",
+            "execution": "paper",
+            "state": "unavailable",
+            "registryActive": false
+          },
+          {
+            "id": "ap_7150f810961f74c8948968b6d1802f99a99395b71872c117d45ad6b38bd584de",
+            "name": "qa-staking",
+            "activity": "staking-moves",
+            "execution": "wallet",
+            "state": "unavailable",
+            "registryActive": false
+          },
+          {
+            "id": "ap_2c604756e473014a4f475d63599988d765207366654d4865dac0a21c54c6bd46",
+            "name": "qa-liquidity",
+            "activity": "liquidity-ranges",
+            "execution": "unconfigured",
+            "state": "unavailable",
+            "registryActive": false
+          },
+          {
+            "id": "ap_fb158c272010bcce2d4e0137465ee2f22ff30e5fa92538cba691d66ec645d81a",
+            "name": "qa-rebalance",
+            "activity": "portfolio-rebalance",
+            "execution": "unconfigured",
+            "state": "unavailable",
+            "registryActive": false
+          },
+          {
+            "id": "ap_e6377cc130bc4a9588b7c5506041f8e6c1d03979143684f8ba944b4462fda16a",
+            "name": "qa-yield",
+            "activity": "yield-reallocation",
+            "execution": "wallet",
+            "state": "unavailable",
+            "registryActive": false
+          },
+          {
+            "id": "ap_1823f924880507a95de502674a208c04fe4fcc25c3a32f63085459194d81d215",
+            "name": "qa-orders",
+            "activity": "limit-orders",
+            "execution": "wallet",
+            "state": "unavailable",
+            "registryActive": false
+          }
+        ]
+      },
+      {
+        "at": "2026-11-10T09:15:47.635Z",
+        "offers": [
+          {
+            "id": "ap_d49018909353f8f9171b9688263a9cd1423bed457ad9188a83efb997435bc63a",
+            "name": "directory-qa",
+            "activity": "spot-trading",
+            "execution": "paper",
+            "state": "unavailable",
+            "registryActive": false
+          },
+          {
+            "id": "ap_e50ddc785db51b3f9b129ff84bd133acf82980109d84ed6798f20b2e56e5381d",
+            "name": "qa-spot",
+            "activity": "spot-trading",
+            "execution": "paper",
+            "state": "unavailable",
+            "registryActive": false
+          },
+          {
+            "id": "ap_7150f810961f74c8948968b6d1802f99a99395b71872c117d45ad6b38bd584de",
+            "name": "qa-staking",
+            "activity": "staking-moves",
+            "execution": "wallet",
+            "state": "unavailable",
+            "registryActive": false
+          },
+          {
+            "id": "ap_2c604756e473014a4f475d63599988d765207366654d4865dac0a21c54c6bd46",
+            "name": "qa-liquidity",
+            "activity": "liquidity-ranges",
+            "execution": "unconfigured",
+            "state": "unconfigured",
+            "registryActive": true
+          },
+          {
+            "id": "ap_fb158c272010bcce2d4e0137465ee2f22ff30e5fa92538cba691d66ec645d81a",
+            "name": "qa-rebalance",
+            "activity": "portfolio-rebalance",
+            "execution": "wallet",
+            "state": "running",
+            "registryActive": true
+          },
+          {
+            "id": "ap_e6377cc130bc4a9588b7c5506041f8e6c1d03979143684f8ba944b4462fda16a",
+            "name": "qa-yield",
+            "activity": "yield-reallocation",
+            "execution": "wallet",
+            "state": "unavailable",
+            "registryActive": false
+          },
+          {
+            "id": "ap_1823f924880507a95de502674a208c04fe4fcc25c3a32f63085459194d81d215",
+            "name": "qa-orders",
+            "activity": "limit-orders",
+            "execution": "wallet",
+            "state": "unavailable",
+            "registryActive": false
+          }
+        ]
+      }
+    ],
+    "abruptTermination": {
+      "runningBeforeCrash": {
+        "observedAt": "2026-11-10T09:17:12.498Z",
+        "rows": [
+          "AgentActivityStatusUSDC / secEvidenceOpen profile",
+          "qa-ordersap_1823f92488…Limit ordersRunning0.000001Signed offer",
+          "directory-qaap_d490189093…Spot tradingUnavailable0.000001Signed offer",
+          "qa-spotap_e50ddc785d…Spot tradingUnavailable0.000001Signed offer",
+          "qa-stakingap_7150f81096…Staking movesUnavailable0.000001Signed offer",
+          "qa-liquidityap_2c604756e4…Liquidity rangesUnavailable0.000001Signed offer",
+          "qa-rebalanceap_fb158c2720…Portfolio rebalanceUnavailable0.000001Signed offer",
+          "qa-yieldap_e6377cc130…Yield reallocationUnavailable0.000001Signed offer",
+          "Hour LeaderRecorded testnet runSpot tradingRecorded0.000001Recorded proof"
+        ]
+      },
+      "unavailableAfterCrash": {
+        "observedAt": "2026-11-10T09:17:43.588Z",
+        "rows": [
+          "AgentActivityStatusUSDC / secEvidenceOpen profile",
+          "directory-qaap_d490189093…Spot tradingUnavailable0.000001Signed offer",
+          "qa-spotap_e50ddc785d…Spot tradingUnavailable0.000001Signed offer",
+          "qa-stakingap_7150f81096…Staking movesUnavailable0.000001Signed offer",
+          "qa-liquidityap_2c604756e4…Liquidity rangesUnavailable0.000001Signed offer",
+          "qa-rebalanceap_fb158c2720…Portfolio rebalanceUnavailable0.000001Signed offer",
+          "qa-yieldap_e6377cc130…Yield reallocationUnavailable0.000001Signed offer",
+          "qa-ordersap_1823f92488…Limit ordersUnavailable0.000001Signed offer",
+          "Hour LeaderRecorded testnet runSpot tradingRecorded0.000001Recorded proof"
+        ],
+        "batchHttpStatus": [
+          200,
+          200,
+          200,
+          200
+        ]
+      },
+      "events": [
+        {
+          "operation": "spawned",
+          "pid": 25953,
+          "at": "2026-11-10T09:16:51.675Z"
+        },
+        {
+          "operation": "killed-without-stop-heartbeat",
+          "at": "2026-11-10T09:17:12.547Z"
+        },
+        {
+          "operation": "registry-before-cleanup",
+          "row": {
+            "id": "ap_1823f924880507a95de502674a208c04fe4fcc25c3a32f63085459194d81d215",
+            "origin": "https://testnet-api.outlayer.ai",
+            "public_key": "ed25519:2Vsq5LEtuRMf6PMVb87HRh7qrusCbNT8yajHQ2C425rY",
+            "owner_id": "rudepuma4060.testnet",
+            "last_seen": "1794302215",
+            "active": true
+          },
+          "at": "2026-11-10T09:17:44.006Z"
+        },
+        {
+          "operation": "registry-stop",
+          "publisherId": "ap_1823f924880507a95de502674a208c04fe4fcc25c3a32f63085459194d81d215",
+          "method": "stop",
+          "transactionHash": "GonMgrHrP2eVJSdL46cQCuhSF6Q55mLUc3siGNPUprG6",
+          "at": "2026-11-10T09:17:48.510Z"
+        }
+      ],
+      "detectedAfterCrashSeconds": 31.041,
+      "registryWasStillActiveBeforeCleanup": true,
+      "batchResponsesAllSuccessful": true
+    }
   },
   "backendMixedStateObservation": {
     "at": "2026-11-10T08:47:03.543Z",
@@ -377,22 +589,22 @@
       }
     ]
   },
-  "pendingChecks": [
-    "Live simultaneous Running/Activity disabled browser recheck after the fix; the additional 0.01 test USDC.e approval expired unsubmitted and was cancelled.",
-    "Isolated abrupt-termination UI expiry test; the original crash attempt overlapped with the pre-fix rate limit."
-  ],
+  "pendingChecks": [],
   "cleanup": {
     "allQaProcessesStopped": true,
     "crashLockRemovedAfterConfirmingPidDead": true,
     "expiredDepositCancelled": true,
-    "additionalDepositSent": false,
-    "computeAvailableRawUSDC": "1542"
+    "additionalDepositSent": true,
+    "computeAvailableRawUSDC": "3492",
+    "allRegistryEntriesInactive": true
   },
   "screenshots": [
     "six-running.png",
     "fixed-running.png",
     "all-stopped.png",
-    "activity-filter.png"
+    "activity-filter.png",
+    "mixed-states.png",
+    "crash-stale.png"
   ],
   "activityFilterVerified": true,
   "runnerLogs": {
@@ -402,5 +614,6 @@
     "qa-rebalance": "qa-rebalance.log",
     "qa-yield": "qa-yield.log",
     "qa-orders": "qa-orders.log"
-  }
+  },
+  "completedAt": "2026-11-10T09:19:13.531Z"
 }

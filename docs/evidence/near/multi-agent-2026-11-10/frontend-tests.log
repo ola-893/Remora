@@ -1,0 +1,98 @@
+
+> vite-project@0.0.0 test
+> node --test test/*.test.mjs
+
+TAP version 13
+# Subtest: recorded session accounting is separate from the provider's successful claim
+ok 1 - recorded session accounting is separate from the provider's successful claim
+  ---
+  duration_ms: 0.555
+  type: 'test'
+  ...
+# Subtest: closure without a payout receipt does not imply provider payment
+ok 2 - closure without a payout receipt does not imply provider payment
+  ---
+  duration_ms: 0.285292
+  type: 'test'
+  ...
+# Subtest: closure approval without a final receipt remains pending
+ok 3 - closure approval without a final receipt remains pending
+  ---
+  duration_ms: 0.0625
+  type: 'test'
+  ...
+# Subtest: attached payout appears once and creates no payment per API request
+ok 4 - attached payout appears once and creates no payment per API request
+  ---
+  duration_ms: 0.825667
+  type: 'test'
+  ...
+# Subtest: denial preserves offered rate and snapshot limit, without creating a receipt
+ok 5 - denial preserves offered rate and snapshot limit, without creating a receipt
+  ---
+  duration_ms: 0.13525
+  type: 'test'
+  ...
+# Subtest: missing values remain unavailable and integer amounts retain six decimals
+ok 6 - missing values remain unavailable and integer amounts retain six decimals
+  ---
+  duration_ms: 0.058125
+  type: 'test'
+  ...
+# Subtest: signed listings bind the rate and activity to the publisher ID and origin
+ok 7 - signed listings bind the rate and activity to the publisher ID and origin
+  ---
+  duration_ms: 4.597958
+  type: 'test'
+  ...
+# Subtest: fresh health and enabled activity are required for running status
+ok 8 - fresh health and enabled activity are required for running status
+  ---
+  duration_ms: 19.961917
+  type: 'test'
+  ...
+# Subtest: Explore reads paginated NEAR registrations and expires stopped or stale publishers
+ok 9 - Explore reads paginated NEAR registrations and expires stopped or stale publishers
+  ---
+  duration_ms: 1.01375
+  type: 'test'
+  ...
+# Subtest: Explore refuses malformed registry pagination and stale RPC snapshots
+ok 10 - Explore refuses malformed registry pagination and stale RPC snapshots
+  ---
+  duration_ms: 0.23725
+  type: 'test'
+  ...
+# Subtest: Explore accepts signed limit-order history and builds the matching copy command
+ok 11 - Explore accepts signed limit-order history and builds the matching copy command
+  ---
+  duration_ms: 1.6595
+  type: 'test'
+  ...
+# Subtest: a directory refresh batches public metadata and isolates one invalid publisher
+ok 12 - a directory refresh batches public metadata and isolates one invalid publisher
+  ---
+  duration_ms: 0.87
+  type: 'test'
+  ...
+# Subtest: batch refresh retains stopped, disabled and stale status and rejects a forged offer
+ok 13 - batch refresh retains stopped, disabled and stale status and rejects a forged offer
+  ---
+  duration_ms: 1.913792
+  type: 'test'
+  ...
+# Subtest: batch requests respect the 50-key limit and stop on a server-wide rate limit
+ok 14 - batch requests respect the 50-key limit and stop on a server-wide rate limit
+  ---
+  duration_ms: 0.576458
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 123.651416

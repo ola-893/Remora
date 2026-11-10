@@ -24,7 +24,7 @@ Build the frontend from the repository root with `npm --prefix vite-project ci` 
 
 ## Multi-agent check
 
-The [November 10 discovery test](evidence/near/multi-agent-2026-11-10/evidence.json) created one publisher for each of the six activities and displayed all six as Running together. It checked the activity filter and clean stops. Multiple open tabs exposed an HTTP 429 failure in the original per-agent polling; batched reads and backoff fixed that, and a later production check displayed a running publisher alongside stopped publishers. All 14 frontend tests pass. These were publication and liveness checks, without financial strategy execution. The final simultaneous Running/Activity disabled browser recheck remains pending a fresh compute-funding approval; the expired, unsigned request was cancelled without a deposit.
+The [November 10 discovery test](evidence/near/multi-agent-2026-11-10/evidence.json) created one publisher for each of the six activities and displayed all six as Running together. It checked the activity filter and clean stops. Multiple open tabs exposed an HTTP 429 failure in the original per-agent polling; batched reads and backoff fixed that. The follow-up production check displayed Running, Activity disabled and Unavailable publishers together. After an abrupt process termination, the frontend marked that publisher Unavailable in about 31 seconds, before its registry flag was cleared; the observed batch requests all returned 200. All 14 frontend tests pass. These were publication and liveness checks, without financial strategy execution. All QA processes and advertisements were stopped afterward.
 
 ## UI references
 

@@ -1,0 +1,10 @@
+{
+  "running": true,
+  "agentId": "ap_1823f924880507a95de502674a208c04fe4fcc25c3a32f63085459194d81d215"
+}
+{
+  "type": "registry",
+  "publisherId": "ap_1823f924880507a95de502674a208c04fe4fcc25c3a32f63085459194d81d215",
+  "method": "heartbeat",
+  "transactionHash": "Cs5sezUji4fBchRQ1hMLrfSFwA4PYrmmve3Zu9cnZArb"
+}
