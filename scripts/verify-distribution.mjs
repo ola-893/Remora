@@ -90,7 +90,11 @@ try {
   assert.deepEqual((await run(['earnings', 'show'])).vaults, []);
   await assert.rejects(run(['earnings', 'claim']), /earnings claim --from/);
   assert.equal((await run(['publish', 'stop'])).enabled, false);
-  assert.deepEqual((await run(['discover', '--activity', 'spot-trading'])).listings, []);
+  const directory = await run(['discover', '--activity', 'spot-trading']);
+  assert.ok(Array.isArray(directory.listings));
+  assert.ok(directory.listings.every(listing => /^ap_[a-f0-9]{64}$/.test(listing.id) && listing.activity === 'spot-trading'));
+  assert.equal((await run(['registry', 'show'])).network, 'testnet');
+  assert.equal((await run(['outlayer', 'show'])).network, 'testnet');
   assert.equal((await run(['copy', 'status'])).subscription, null);
   assert.deepEqual((await run(['copy', 'history'])).history, []);
   assert.deepEqual((await run(['copy', 'pending'])).actions, []);

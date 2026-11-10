@@ -91,7 +91,7 @@ export async function outlayerFeedResponse(publisher, path, headers = {}) {
     } else return Response.json({ error: 'NOT_FOUND' }, { status: 404 });
     return Response.json(result);
   } catch (error) {
-    const denied = /^OUTLAYER_FEED_(STREAM_|SESSION_|UNTRUSTED_|QUOTE_)/.test(error.message);
+    const denied = /^OUTLAYER_FEED_(STREAM_|SESSION_|UNTRUSTED_|QUOTE_|PUBLICATION_STOPPED)/.test(error.message);
     if (denied) return Response.json({ error: 'STREAM_ACCESS_DENIED' }, { status: 403 });
     throw error;
   }
