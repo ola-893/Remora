@@ -53,6 +53,8 @@ Release `0.13.0` adds signed pre-execution signals, attested encrypted OutLayer 
 
 ## Guides
 
+- [Implementation status and remaining work](docs/IMPLEMENTATION_STATUS.md)
+
 - [Run the copy demo](docs/NEAR_DEMO.md)
 - [Run the ten-minute NEAR AI and local-model rebalance demo](docs/REBALANCE_DEMO.md)
 - [Set up NEAR testnet and inference](docs/NEAR.md)
