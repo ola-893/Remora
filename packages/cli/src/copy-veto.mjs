@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { mkdir, open } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, basename } from 'node:path';
 import { readOptional, safeTarget } from './files.mjs';
 import { readAgentState, withAgentState } from './agents.mjs';
 
@@ -34,7 +34,7 @@ export async function blockCopyAction(agent, id) {
   const directory = await safeTarget(agent.path, 'veto');
   await mkdir(directory, { recursive: true, mode: 0o700 });
   let file;
-  try { file = await open(await safeTarget(agent.path, 'veto/' + marker(agent,item).split('/').at(-1)), 'wx', 0o600); }
+  try { file = await open(await safeTarget(agent.path, 'veto/' + basename(marker(agent,item))), 'wx', 0o600); }
   catch (error) { if (error.code === 'EEXIST' && await hasVeto(agent,item)) return { actionId:id,status:'blocked' }; throw error; }
   try {
     const at = Date.now();
