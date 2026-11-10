@@ -54,6 +54,7 @@ Release `0.11.0` adds `copy mode veto`. The follower shows each candidate and it
 - [Set up NEAR testnet and inference](docs/NEAR.md)
 - [Delegate and recover a testnet execution grant](docs/EXECUTION_GRANTS.md)
 - [Explore agents and inspect their history](docs/EXPLORE.md)
+- [NEAR discovery, protected delivery and privacy boundaries](docs/NEAR_DELIVERY.md)
 - [Hackathon description and evidence](docs/HACKATHON_NEAR.md)
 
 [MIT license](LICENSE)
