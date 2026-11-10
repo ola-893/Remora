@@ -22,16 +22,25 @@ try {
   const registryPackages = [];
   if (values.registry) {
     for (const item of manifest) {
-      const metadata = JSON.parse((await exec('npm', ['view', `${item.name}@${item.version}`, '--json', '--registry=https://registry.npmjs.org/', '--prefer-online', '--fetch-retries=0'])).stdout);
+      // Exact version and dist-tag endpoints avoid a stale cached packument
+      // immediately after publication, without weakening the integrity check.
+      const escaped = encodeURIComponent(item.name).replace('%40', '@');
+      const response = await fetch(`https://registry.npmjs.org/${escaped}/${item.version}`, { redirect: 'error', signal: AbortSignal.timeout(15000) });
+      assert.equal(response.status, 200);
+      const metadata = await response.json();
+      const tagsResponse = await fetch(`https://registry.npmjs.org/-/package/${escaped}/dist-tags`, { redirect: 'error', signal: AbortSignal.timeout(15000) });
+      assert.equal(tagsResponse.status, 200);
+      const tags = await tagsResponse.json();
       assert.equal(metadata.name, item.name);
       assert.equal(metadata.version, item.version);
       assert.equal(metadata.dist.integrity, item.integrity);
-      assert.equal(metadata['dist-tags'].latest, item.version);
+      assert.equal(tags.latest, item.version);
+      assert.equal(new URL(metadata.dist.tarball).origin, 'https://registry.npmjs.org');
       registryPackages.push({ name: item.name, version: item.version, integrity: metadata.dist.integrity, tarball: metadata.dist.tarball, url: `https://www.npmjs.com/package/${item.name}` });
     }
   }
   // Registry mode installs only the CLI; its published dependency must pull core from npm.
-  const sources = values.registry ? [manifest.filter(m => m.name.endsWith('/agentstreams-cli')).map(m => `${m.name}@${m.version}`)[0]] : manifest.map(m => join(out, m.filename));
+  const sources = values.registry ? [registryPackages.find(m => m.name.endsWith('/agentstreams-cli')).tarball] : manifest.map(m => join(out, m.filename));
   await exec('npm', ['install', '--global', '--prefix', prefix, '--ignore-scripts', '--no-audit', '--no-fund', '--registry=https://registry.npmjs.org/', ...sources], { cwd: root });
   const bin = join(prefix, 'bin/agentstreams');
   const run = async args => JSON.parse((await exec(bin, args, { cwd: project, env: { ...process.env, NEAR_CONFIG: '/not-a-checkout', AGENTSTREAMS_HOME: join(root, 'private') } })).stdout);
