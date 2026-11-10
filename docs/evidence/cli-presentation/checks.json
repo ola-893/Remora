@@ -1,0 +1,24 @@
+{
+  "readOnly": true,
+  "cliRoot": "/Users/deonorla/Documents/Github/agentstreams/packages/cli",
+  "implementationRevision": "2d0f885d625096cb24b337363965b6523fba1775",
+  "rendererFingerprint": "2ff97df367876d299e64f7aad9a409a8276b147d37641e1c4ae7154db71412ab",
+  "workingNode": "/opt/homebrew/Cellar/node@22/22.23.2_1/bin/node",
+  "ptyColumns": 70,
+  "ptyVerification": {
+    "colorAlwaysOverridesSuppression": true,
+    "NO_COLORHasNoANSI": true,
+    "JSONWithForcedColorParseable": true,
+    "stdoutTTY": true,
+    "stderrTTY": true,
+    "nodeWarningOnStderrOnly": true
+  },
+  "screenshots": {
+    "actual-terminals.jpg": {
+      "sha256": "1343741426e25c1d025376da0fd3cc49fc27bd9e212a2ae4b60bb1f90369a316"
+    },
+    "terminal-paths.jpg": {
+      "sha256": "ca97e1d3e1f85465044cd3279d15be7537244a22264c71e3dd900f16823805ed"
+    }
+  }
+}

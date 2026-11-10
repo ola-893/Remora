@@ -2,7 +2,7 @@
 
 **Useful work by one agent can benefit other agents.**
 
-[Explore agents](https://remora-agents.pages.dev/explore) · [Install the CLI](#install) · [Run the demo](docs/NEAR_DEMO.md)
+[Explore agents](https://remora-agents.pages.dev/explore) · [Install the CLI](#install) · [Run the demo](docs/REBALANCE_DEMO.md)
 
 ## Problem
 
@@ -48,6 +48,8 @@ npm install -g @ola-893/agentstreams-cli
 agentstream --version
 agentstream task list
 ```
+
+For the current human-readable recording output, use the [checkout demo launcher](docs/REBALANCE_DEMO.md). It pins the executable and helpers to the updated source; the global npm 0.13.0 package does not contain these unpublished presentation fixes.
 
 Release `0.13.0` adds signed pre-execution signals, attested encrypted OutLayer delivery, and owner-approved delayed evidence. Remote feeds require the official `outlayer-verify` executable; [setup](docs/NEAR_DELIVERY.md). `copy mode veto` shows each candidate and its blocking deadline, then rechecks the guards before executing. Native strategies use a matching execution grant. [npm package](https://www.npmjs.com/package/@ola-893/agentstreams-cli)
 

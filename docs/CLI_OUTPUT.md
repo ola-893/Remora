@@ -4,6 +4,8 @@ Useful work by one agent can benefit other agents. Streaming makes that exchange
 
 This presentation pass is in the source checkout. It has **not** been published to npm. Package versions stay unchanged. No services were deployed and no funded transactions were run for this pass.
 
+For the actual recording, start with the [short two-terminal sequence](REBALANCE_DEMO.md). It audits both shell routes and uses the checkout for every command and helper. The fixture section below is supplemental, not proof that the funded demo is ready.
+
 ## Output modes
 
 | Invocation | Output |
@@ -26,10 +28,11 @@ Run these commands in your terminal, using the current source rather than the gl
 
 ```sh
 cd /Users/deonorla/Documents/Github/agentstreams
-node scripts/rehearse-cli-output.mjs --width 72
-node scripts/rehearse-cli-output.mjs --width 48 --no-delay
-NO_COLOR=1 node scripts/rehearse-cli-output.mjs --width 64 --no-delay
-node scripts/rehearse-cli-output.mjs --json --no-delay | jq -c .
+NODE=/opt/homebrew/opt/node@22/bin/node
+"$NODE" scripts/rehearse-cli-output.mjs --width 72
+"$NODE" scripts/rehearse-cli-output.mjs --width 48 --no-delay
+NO_COLOR=1 "$NODE" scripts/rehearse-cli-output.mjs --width 64 --no-delay
+"$NODE" scripts/rehearse-cli-output.mjs --json --no-delay | jq -c .
 ```
 
 The rehearsal is explicitly labelled **synthetic presentation fixtures**. It exercises the same renderer as the CLI but does not call RPC, inference, OutLayer, a wallet, or a trading venue. Its confirmation and closure events contain fake receipt labels and are not execution evidence. It shows a subscription rate, a proposed decision, an advisory model review, a veto deadline, a confirmation, a policy block, an owner veto, a paper fill and an uncertain outcome. It also demonstrates collapsing repeated waiting messages.
@@ -38,11 +41,12 @@ For an actual local CLI runner with no subscription or transactions, use a fresh
 
 ```sh
 REPO=/Users/deonorla/Documents/Github/agentstreams
+NODE=/opt/homebrew/opt/node@22/bin/node
 REHEARSAL=$(mktemp -d /tmp/remora-output.XXXXXX)
 mkdir -m 700 "$REHEARSAL/private"
 export AGENTSTREAMS_HOME="$REHEARSAL/private"
 cd "$REHEARSAL"
-agentstream() { node "$REPO/packages/cli/bin/agentstreams.mjs" "$@"; }
+agentstream() { "$NODE" "$REPO/packages/cli/bin/agentstreams.mjs" "$@"; }
 
 agentstream agent create rehearsal
 agentstream agent use rehearsal
@@ -59,52 +63,25 @@ This isolates the rehearsal from existing wallets, grants and paid subscriptions
 
 ## Record the prepared two-terminal demo
 
-Complete the setup in [the rebalance demo](REBALANCE_DEMO.md) first. The following commands use its existing `leader` and `follower` agents, separate private state homes and the saved `ACTION`. They do not replace provisioning, inference configuration, funding, guards or grants.
+Use [the short recording sequence](REBALANCE_DEMO.md), with [preparation](DEMO_PREPARATION.md) completed before viewers arrive. Each terminal sources `scripts/demo-shell.zsh` with its role. This replaces stale aliases/functions, pins the checkout and a working Node executable, and gives every helper the same package root. A shell function alone was insufficient for helpers that imported an explicitly supplied global root.
 
-In **both terminals**, select the source CLI for this presentation pass:
+The visible follower command is `remora run`: foreground, human mode, no redirection. `remora --capture "$REMORA_DEMO/follower-terminal.log" run` preserves terminal behavior and suppresses one-use wallet URLs from the transcript. Use `--json` only for internal lookups or machine logs. The separate background leader feed service belongs to preparation, not the displayed runner.
 
-```sh
-REPO=/Users/deonorla/Documents/Github/agentstreams
-DEMO="$HOME/remora-demo-013"
-cd "$DEMO"
-agentstream() { node "$REPO/packages/cli/bin/agentstreams.mjs" "$@"; }
-```
+`--color=auto|always|never` applies to help, results, wallet prompts and errors. Auto mode honors `NO_COLOR`, `FORCE_COLOR` and `TERM`. An explicit `always` overrides environment suppression for a recording; explicit JSON always stays uncolored. The demo shell explicitly chooses `always`; use `REMORA_COLOR=never`, or a command's final `--color=never`, for plain output. Outside the demo shell, `NO_COLOR=1` with the default auto mode produces clean plain text.
 
-Terminal 1 uses `export AGENTSTREAMS_HOME="$DEMO/leader-state"`. Keep the publisher runner from the runbook alive in the background. The prompted leader run will show model tool requests, previews, their evidence source and the returned execution outcome:
+## Actual execution path verification
 
-```sh
-export AGENTSTREAMS_HOME="$DEMO/leader-state"
-ACTION='{"poolId":0,"base":"wrap.testnet","amount":"2000000000000000000000","weights":{"wrap.testnet":2500,"rft.tokenfactory.testnet":7500}}'
-agentstream inference show --agent leader
-agentstream agent run --agent leader --activity portfolio-rebalance --max-steps 8 \
-  --prompt "Evaluate this testnet rebalance objective: $ACTION. Read strategy_guard, call strategy_preview, examine its live Rhea evidence, and use strategy_apply exactly once if the guard and preview permit it. Explain your decision using the returned evidence. Stop after the confirmed result or a refusal."
-```
+The initial global binary was `/opt/homebrew/bin/agentstream`, resolving to `/opt/homebrew/lib/node_modules/@ola-893/agentstreams-cli`. It reported 0.13.0 but had **no** `src/presentation.mjs`. The working checkout shared that version. The older runbook explicitly used the global root for helpers and `--json > logfile &` for the viewed follower. The automation environment also set `TERM=dumb` and `NO_COLOR=1`. A fresh login shell additionally selected a broken Homebrew Node dynamic library; the sourced launcher now pins the working Node 22 installation when available.
 
-In Terminal 2, after starting the paid subscription and selecting veto mode as described in the runbook, run the follower **in the foreground** so stdout is a terminal:
+Read-only checks found an inference-configured leader with publication disabled, no copy subscription and no pending trade. Its runner lock named a PID that no longer existed; the stale lock was archived after verifying those facts. The new demo follower state directory did not exist. An existing QA follower had a stopped subscription and a stored closure receipt. Its status presentation was corrected so a stopped stream no longer appears to be actively paying a per-second rate.
 
-```sh
-export AGENTSTREAMS_HOME="$DEMO/follower-state"
-agentstream copy status --agent follower
-agentstream guard show --agent follower
-agentstream agent run --agent follower
-```
+The screenshots below were captured through browser terminal emulators attached to **actual live PTYs**, because computer-use safety controls denied native terminal-app access. They display real checkout commands against existing state, including an actual foreground idle runner for the stopped QA follower, the persisted wallet connection and the leader’s configured inference provider. They are not synthetic fixture replays. The temporary terminal viewer is a local QA tool, not a shipped dashboard. No funding, grant, deployment or trading operation was repeated. The user's old CLI API-key prompt was left untouched.
 
-Do not also start the background follower from the older log-viewing instructions: only one runner can hold an agent's lock. A `tail` of a redirected runner log shows machine JSON, because redirection deliberately preserves script output. For a human-readable recording with a saved terminal transcript on macOS, replace the foreground runner command with:
+Run `remora-audit` in each idle user pane to inspect that shell's before/after routing. Native access restrictions mean the original panes' live function definitions could not be captured directly; the checked source script replaces them in both roles, and subprocess tests verify that inherited global roots and a leader home cannot leak into follower execution.
 
-```sh
-script -q "$DEMO/follower-terminal.log" node "$REPO/packages/cli/bin/agentstreams.mjs" agent run --agent follower
-```
+![Real CLI output at split-screen width](evidence/cli-presentation/actual-terminals.jpg)
 
-To block an eligible candidate while Terminal 2 continues running, run this from Terminal 1, replacing the example ID with the full action ID shown by the follower:
-
-```sh
-AGENTSTREAMS_HOME="$DEMO/follower-state" agentstream copy pending --agent follower
-AGENTSTREAMS_HOME="$DEMO/follower-state" agentstream copy block YOUR_ACTION_ID --agent follower
-```
-
-An owner veto is labelled separately from a policy block. If the owner does not veto in time, the renderer reports the outcome returned by the existing execution path; it does not grant approval or skip checks. Model review is advisory, including when the model reports no concern or inference is unavailable.
-
-For the cap-change and closure steps, stop the foreground runner with Ctrl+C before issuing Terminal 2's next commands. The runbook configures `close-on-exit false`, so this preserves the paid stream: it continues charging until closed or exhausted. Keep the interruption brief, restart the foreground runner after changing the cap, and use the runbook's close-and-probe helper when finished. Because the foreground runner has already exited, omit the old background `FOLLOWER_PID` kill/wait commands. Use `CLI_ROOT="$REPO/packages/cli"` for the close-proof helper to use this checkout's modules.
+![Fresh leader and follower shell execution paths](evidence/cli-presentation/terminal-paths.jpg)
 
 ## Representative before and after
 
@@ -143,3 +120,5 @@ An uncertain error does not claim that nothing was submitted:
 Focused tests cover output mode/schema compatibility, secret redaction, exact large amounts, unknown token metadata, pending/paper/policy/veto/failure/confirmation distinctions, no-color mode, narrow layouts and repeated-event collapsing. The CLI/core suite also exercises the existing copy, payment, grant, inference and wallet paths. Representative fixtures and a fresh local idle runner were inspected in actual PTYs, including split-screen widths.
 
 This pass does not establish new trading, payment, confidentiality or attestation evidence. Free-form model prose is deliberately hidden, so the recording should explain the displayed structured review and tool evidence. Maintenance heartbeat receipts and repeated waiting/error messages are collapsed only in terminal summaries; machine streams retain every event. Use JSON for full receipt inspection. Underlying strategy, payment, approval, privacy and execution rules remain unchanged.
+
+The final package suite passed **119 tests**, including nine execution-path tests. Actual PTY checks also verified JSON parsing with forced color, `NO_COLOR` without ANSI, and an explicitly colored wallet-status command under `TERM=dumb`. [Machine-readable verification](evidence/cli-presentation/checks.json)
