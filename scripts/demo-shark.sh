@@ -17,7 +17,7 @@ cli guard set execution --agent shark-agent --activity "$ACTIVITY" --targets 0 -
   --max-inputs nep141:wrap.testnet=2000000000000000000000 --max-age 120 --max-slippage-bps 100
 prepare_grant
 cli task run "$ACTIVITY" --agent shark-agent --action-json "$ACTION"
-cli publish set --agent shark-agent --delivery outlayer --activities "$ACTIVITY" --recipient "$SELLER" \
+cli publish set --agent shark-agent --delivery local --url "$FEED_URL" --port 5380 --activities "$ACTIVITY" --recipient "$SELLER" \
   --rate 0.000001 --duration 900 --signal-window 30
 cli publish start --agent shark-agent
 SHARK_ID=$(machine agent show shark-agent | jq -er '.id')
@@ -28,8 +28,17 @@ printf '%s\n' "$SELLER" > "$DEMO/seller.txt"
 # Internal transport worker only. The decision and follower runners stay human/foreground.
 node "$CLI" agent run --agent shark-agent --json > "$DEMO/shark-feed.log" 2>&1 &
 PUBLISH_PID=$!
-sleep 2
-kill -0 "$PUBLISH_PID" 2>/dev/null || die "Publisher exited. Inspect $DEMO/shark-feed.log before retrying."
+feed_ready=0
+for attempt in {1..20}; do
+  kill -0 "$PUBLISH_PID" 2>/dev/null || die "Publisher exited. Inspect $DEMO/shark-feed.log before retrying."
+  if listing=$(curl --fail --silent --max-time 2 "$FEED_URL/.well-known/agentstreams.json") && \
+    jq -e --arg id "$SHARK_ID" '.body.id == $id' <<< "$listing" >/dev/null; then
+    feed_ready=1
+    break
+  fi
+  sleep 1
+done
+[[ "$feed_ready" == 1 ]] || die "Shark's localhost feed did not become ready. Check port 5380 and $DEMO/shark-feed.log."
 jq -n --arg run "$RUN_ID" --arg id "$SHARK_ID" --arg seller "$SELLER" --argjson pid "$$" \
   '{run:$run,id:$id,seller:$seller,pid:$pid}' > "$DEMO/shark-ready.tmp"
 mv "$DEMO/shark-ready.tmp" "$DEMO/shark-ready.json"

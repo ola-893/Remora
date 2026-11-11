@@ -7,6 +7,7 @@ DEMO_VERSION=0.13.1
 DEMO="${REMORA_DEMO:-$HOME/remora-shark-demo}"
 ACTIVITY=portfolio-rebalance
 RPC=https://test.rpc.fastnear.com
+FEED_URL=http://127.0.0.1:5380
 ASSETS=nep141:wrap.testnet,nep141:rft.tokenfactory.testnet
 TOKENS=wrap.testnet,rft.tokenfactory.testnet
 ACTION='{"poolId":0,"base":"wrap.testnet","amount":"2000000000000000000000","weights":{"wrap.testnet":2500,"rft.tokenfactory.testnet":7500}}'
@@ -117,11 +118,6 @@ prepare_identity() {
   fi
   SELLER=$(jq -er '.accountId' <<< "$wallet")
   cli wallet show
-  if [[ ! -f "$AGENTSTREAMS_HOME/outlayer-key.json" ]]; then
-    note 'Enter the funded OutLayer compute API key; never enter a wallet private key.'
-    cli outlayer key --api-key
-  fi
-  command -v outlayer-verify >/dev/null || die 'Install the OutLayer attestation verifier before publication.'
 }
 
 prepare_grant() {
@@ -160,7 +156,6 @@ resolve_cli
 if [[ "$MODE" == --check ]]; then
   cli diagnostics
   local_model_check
-  command -v outlayer-verify >/dev/null || die 'outlayer-verify is not on PATH.'
   okay 'Read-only checks passed. No agent, wallet, grant or stream was changed.'
   exit 0
 fi

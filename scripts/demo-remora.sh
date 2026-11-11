@@ -35,7 +35,7 @@ prepare_grant
 printf 'ready\n' > "$DEMO/$RUN_ID-remora-ready"
 wait_file "$DEMO/$RUN_ID-record" 'Setup complete. Terminal 1 controls the start of recording.'
 heading 'REMORA · subscribe to Shark'
-cli copy "$SHARK_ID" --agent remora-agents
+cli copy "$SHARK_ID" --url "$FEED_URL" --agent remora-agents
 cli guard show --agent remora-agents
 close_stream() {
   CLOSURE_ATTEMPTED=1
@@ -68,7 +68,7 @@ remora_exit() {
 }
 trap remora_exit EXIT
 trap 'exit 143' TERM
-cli copy start "$SHARK_ID" --activity "$ACTIVITY" --agent remora-agents
+cli copy start "$SHARK_ID" --url "$FEED_URL" --activity "$ACTIVITY" --agent remora-agents
 STREAM_OPEN=1
 cli copy mode veto --agent remora-agents --veto-seconds 45
 printf 'subscribed\n' > "$DEMO/$RUN_ID-subscribed"
