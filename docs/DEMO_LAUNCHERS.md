@@ -14,13 +14,15 @@ Terminal 2:
 bash /Users/deonorla/Documents/Github/agentstreams/scripts/demo-remora.sh
 ```
 
-Run both commands now. Setup happens first, with visible progress. Initial wallet approvals open in your default browser; enter inference/compute API keys only at the CLI's hidden prompts. Never enter an owner wallet private key. Shark uses NEAR AI; Remora uses local `qwen2.5:1.5b`. Both use the same owner wallet and **separate funded execution accounts**.
+Run both commands now. Setup happens first, with visible progress. Initial wallet approvals open in your default browser; enter your NEAR AI API key only at the CLI's hidden prompt. Never enter an owner wallet private key. Shark uses NEAR AI; Remora uses local `qwen2.5:1.5b`. Both use the same owner wallet and **separate funded execution accounts**.
 
-Prerequisites: Node >=22.22.2, npm, jq, `outlayer-verify`, running Ollama with `qwen2.5:1.5b`, a funded testnet wallet, a NEAR AI API key, and a funded compute key for the already deployed Remora OutLayer feed. The scripts check local model availability but do not install Ollama or create/top up the OutLayer project. NEAR AI inference can consume your provider credit; blockchain execution uses testnet assets only.
+Prerequisites: Node >=22.22.2, npm, jq, running Ollama with `qwen2.5:1.5b`, a funded testnet wallet, a NEAR AI API key, and port 5380 available on this Mac. No OutLayer compute key, compute top-up, or attestation verifier is required. NEAR AI inference can consume your provider credit; blockchain execution uses testnet assets only.
+
+This same-machine demo uses the CLI's built-in **localhost subscription-gated feed** at `http://127.0.0.1:5380`. The follower supplies that URL explicitly, and feed access still checks the NEAR payment stream. It does not demonstrate OutLayer encrypted/attested delivery or discovery by remote machines. The separate npm OutLayer delivery path still requires compute credentials; a sponsored, key-free OutLayer user flow is not implemented by these launcher changes.
 
 The default workspace is **`$HOME/remora-shark-demo`**, separate from your earlier `remora-demo-013` agents. First use needs fresh agent configuration and initial approvals. Both scripts must use the same workspace. To choose a different project, prefix **both** commands with the same `REMORA_DEMO=/absolute/path` value. Agent state and credentials stay in the CLI's private local storage, not `.env` files.
 
-For fresh state, each execution account is funded with 0.25 test NEAR. The follower subscription vault is topped up only to 0.002 Circle test USDC, deducting its current available balance. OutLayer uses a separate test USDC.e balance. Existing active grants are reused only if they belong to the correct agent/activity; pending, inactive, or mismatched grants stop setup for reconciliation. Targeted grant preparation fills only missing balances. The launchers never retry a failed transaction automatically.
+For fresh state, each execution account is funded with 0.25 test NEAR. The follower subscription vault is topped up only to 0.002 Circle test USDC, deducting its current available balance. Existing active grants are reused only if they belong to the correct agent/activity; pending, inactive, or mismatched grants stop setup for reconciliation. Targeted grant preparation fills only missing balances. The launchers never retry a failed transaction automatically.
 
 ## While recording
 
@@ -47,7 +49,7 @@ bash /Users/deonorla/Documents/Github/agentstreams/scripts/demo-shark.sh --check
 bash /Users/deonorla/Documents/Github/agentstreams/scripts/demo-remora.sh --check
 ```
 
-For manual commands and reconciliation boundaries, see [the npm runbook](NPM_DEMO.md). For narration, see [the voice-over script](DEMO_VOICEOVER.md).
+For reconciliation boundaries, see [the npm runbook](NPM_DEMO.md); its manual transport example uses OutLayer, unlike these localhost launchers. For narration, see [the voice-over script](DEMO_VOICEOVER.md).
 
 ## Claims this recording supports
 
@@ -56,3 +58,5 @@ Name only events that actually appear. Local-model review is advisory; determini
 ## Validation
 
 Both launchers passed Bash syntax checks and real read-only preflight against globally installed npm CLI 0.13.1. A terminal-attached check verified human output with colors, and another verified plain output with `NO_COLOR`. The offline two-terminal PTY test (`python3 scripts/test-demo-launchers.py`) verifies subscription-before-veto ordering, foreground execution, Ctrl+C followed by confirmed closure, and a failed close without automatic retry. Its CLI outcomes are fixtures, not blockchain evidence. A newly funded pair has not been rehearsed end to end by these checks.
+
+The installed npm CLI also served a real localhost feed from an isolated temporary agent without an OutLayer key: the listing was available, an action-feed request without a session returned HTTP 402, and an invalid session returned HTTP 403. That check used no funded transactions. It is not the same-credential, before/after-stream-closure proof.

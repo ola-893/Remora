@@ -10,7 +10,7 @@ Read the spoken paragraphs; use the italic cues to know when to speak. Start aft
 
 *Press Enter. Point to the subscription result in Terminal 2.*
 
-“Remora subscribes to Shark's protected feed through a testnet USDC payment stream. The price is one millionth of a USDC per second. The stream pays for access to the decisions; it isn't a separate payment for every trade.”
+“Remora subscribes to Shark's feed through a testnet USDC payment stream. This demo delivers the feed locally on this Mac, with access gated by that stream. The price is one millionth of a USDC per second. The stream pays for access to the decisions; it isn't a separate payment for every trade.”
 
 *Point to Shark's guard, preview, and returned evidence.*
 
@@ -52,4 +52,4 @@ If the second candidate is not denied: “The actual proposal did not produce th
 
 If closure is uncertain: “The close is not confirmed yet. We need to reconcile the on-chain state before claiming payment stopped.”
 
-Privacy boundary if asked: “The advance feed uses protected delivery. Rhea settlement is public, so someone can independently observe completed on-chain actions. This demo does not claim to hide all DeFi activity.”
+Privacy boundary if asked: “This demo uses a subscription-gated localhost feed, not OutLayer confidential delivery. Rhea settlement is public, so someone can independently observe completed on-chain actions. This demo does not claim to hide all DeFi activity.”
