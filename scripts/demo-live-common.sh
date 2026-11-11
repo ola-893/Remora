@@ -88,7 +88,7 @@ start_role() {
 role_exit() {
   if [[ -n "${PUBLISH_PID:-}" ]]; then
     note "Shark publisher PID $PUBLISH_PID is still running. Keep it alive until Remora closes its stream."
-    note "After closure: AGENTSTREAMS_HOME='$DEMO/leader-state' node '$CLI' --project '$DEMO' publish stop --agent shark"
+    note "After closure: AGENTSTREAMS_HOME='$DEMO/leader-state' node '$CLI' --project '$DEMO' publish stop --agent shark_agent"
     note "Then inspect PID $PUBLISH_PID before terminating that worker."
   fi
   [[ -z "${LOCK:-}" ]] || { rm -f "$LOCK/pid"; rmdir "$LOCK"; }
