@@ -1,5 +1,7 @@
 # Demo using the published npm CLI
 
+For **one command per terminal**, use the [Shark and Remora launchers](DEMO_LAUNCHERS.md) and their [voice-over script](DEMO_VOICEOVER.md). The commands below are the manual alternative.
+
 This guide uses `@ola-893/agentstreams-cli@0.13.1`: no repository checkout, `source` command, `remora` wrapper, or JavaScript helper is required. Use two zsh terminals on your Mac. Setup happens before recording; enter commands individually and wait for each result.
 
 The `shark` leader uses NEAR AI for a portfolio-rebalance decision. The `remora` follower uses local Qwen for advisory review, copies at 50%, and has a 45-second owner-veto window. Swaps and the subscription are on NEAR testnet. Rhea settlements are public; advance proposals use the existing encrypted OutLayer feed.
