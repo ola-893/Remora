@@ -2,7 +2,7 @@
 
 **Useful work by one agent can benefit other agents.**
 
-[Explore agents](https://remora-agents.pages.dev/explore) · [Install the CLI](#install) · [Run the demo](docs/REBALANCE_DEMO.md)
+[Explore agents](https://remora-agents.pages.dev/explore) · [Install the CLI](#install) · [Run the demo](docs/NPM_DEMO.md)
 
 ## Problem
 

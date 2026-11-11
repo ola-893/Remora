@@ -1,5 +1,7 @@
 # Record the two-terminal Remora demo
 
+For a guide using only the published npm CLI, use [NPM_DEMO.md](NPM_DEMO.md). This page documents the optional checkout launcher.
+
 The leader publishes a useful rebalance decision. The follower pays for protected delivery, reviews it with a local model, and acts within its own controls. A second decision is blocked by the follower's tighter limit. Closing the stream ends paid access.
 
 Finish [preparation](DEMO_PREPARATION.md) before recording. The presentation fixes are published in **npm CLI 0.13.1**. This guide uses the checkout launcher because the short `remora` commands and helper scripts live in the repository. Its audit prints the package path, Git revision and renderer fingerprint so both roles can be checked. [Release notes](RELEASE_0.13.1.md)
