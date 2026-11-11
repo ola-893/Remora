@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Terminal 2: local Qwen follower. Runtime uses the published npm package only.
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/demo-live-common.sh"
-NAME=remoraAgents
+NAME=remora-agents
 heading 'REMORA · Terminal 2 · preparation'
 start_role follower
 local_model_check
@@ -13,40 +13,40 @@ RUN_ID=$(jq -er '.run' <<< "$ready")
 SHARK_PID=$(jq -er '.pid' <<< "$ready")
 kill -0 "$SHARK_PID" 2>/dev/null || die 'The saved Shark launcher is no longer running. Start Terminal 1 first.'
 prepare_identity
-cli inference set --agent remoraAgents --provider local --base-url http://127.0.0.1:11434/v1 \
+cli inference set --agent remora-agents --provider local --base-url http://127.0.0.1:11434/v1 \
   --model qwen2.5:1.5b --max-output-tokens 384 --timeout-seconds 45
-cli inference show --agent remoraAgents
-setup=$(machine agent show remoraAgents)
+cli inference show --agent remora-agents
+setup=$(machine agent show remora-agents)
 if ! jq -e '.setup.configured == true' <<< "$setup" >/dev/null; then
-  cli agent setup --agent remoraAgents --network testnet --recipient "$SELLER" --rpc "$RPC" --deploy
+  cli agent setup --agent remora-agents --network testnet --recipient "$SELLER" --rpc "$RPC" --deploy
 fi
-cli guard set payment --agent remoraAgents --budget 0.01 --max-stream 0.002 \
+cli guard set payment --agent remora-agents --budget 0.01 --max-stream 0.002 \
   --max-rate 0.000001 --max-duration 900 --recipient "$SELLER"
-balance=$(machine balance --agent remoraAgents)
+balance=$(machine balance --agent remora-agents)
 jq -e '.vault.active_session == null and .vault.pending_total == "0"' <<< "$balance" >/dev/null || die 'An active session or pending vault transfer requires inspection first.'
 FUND=$(node -e 'const x=JSON.parse(process.argv[1]);const a=BigInt(x.vault.available);const d=2000n-a;console.log(d>0n?"0."+d.toString().padStart(6,"0"):"0")' "$balance")
-if [[ "$FUND" != 0 ]]; then cli fund "$FUND" --agent remoraAgents; fi
-cli payments --enable --agent remoraAgents
-cli guard set payment --agent remoraAgents --poll-seconds 10 --idle-timeout 600 --close-on-exit false
-cli task enable "$ACTIVITY" --agent remoraAgents
-cli guard set execution --agent remoraAgents --activity "$ACTIVITY" --targets 0 --assets "$ASSETS" \
+if [[ "$FUND" != 0 ]]; then cli fund "$FUND" --agent remora-agents; fi
+cli payments --enable --agent remora-agents
+cli guard set payment --agent remora-agents --poll-seconds 10 --idle-timeout 600 --close-on-exit false
+cli task enable "$ACTIVITY" --agent remora-agents
+cli guard set execution --agent remora-agents --activity "$ACTIVITY" --targets 0 --assets "$ASSETS" \
   --max-inputs nep141:wrap.testnet=1000000000000000000000 --copy-bps 5000 --max-age 120 --max-slippage-bps 100
 prepare_grant
 printf 'ready\n' > "$DEMO/$RUN_ID-remora-ready"
 wait_file "$DEMO/$RUN_ID-record" 'Setup complete. Terminal 1 controls the start of recording.'
 heading 'REMORA · subscribe to Shark'
-cli copy "$SHARK_ID" --agent remoraAgents
-cli guard show --agent remoraAgents
+cli copy "$SHARK_ID" --agent remora-agents
+cli guard show --agent remora-agents
 close_stream() {
   CLOSURE_ATTEMPTED=1
   heading 'REMORA · close payment'
-  cli copy stop --agent remoraAgents || return
-  cli copy status --agent remoraAgents || return
-  cli stream status --agent remoraAgents || return
-  cli payments --disable --agent remoraAgents || return
+  cli copy stop --agent remora-agents || return
+  cli copy status --agent remora-agents || return
+  cli stream status --agent remora-agents || return
+  cli payments --disable --agent remora-agents || return
   local status balance
-  status=$(machine copy status --agent remoraAgents) || return
-  balance=$(machine balance --agent remoraAgents) || return
+  status=$(machine copy status --agent remora-agents) || return
+  balance=$(machine balance --agent remora-agents) || return
   jq -e '.subscription.status == "stopped" and (.tradePending | not)' <<< "$status" >/dev/null || return
   jq -e '.vault.active_session == null' <<< "$balance" >/dev/null || return
   STREAM_OPEN=0
@@ -61,22 +61,22 @@ remora_exit() {
     fi
     if [[ "${STREAM_OPEN:-0}" == 1 ]]; then
       printf 'Closure is unconfirmed. Inspect/reconcile before retrying.\n' >&2
-      printf "AGENTSTREAMS_HOME='%s/follower-state' node '%s' --project '%s' copy status --agent remoraAgents\n" "$DEMO" "$CLI" "$DEMO" >&2
+      printf "AGENTSTREAMS_HOME='%s/follower-state' node '%s' --project '%s' copy status --agent remora-agents\n" "$DEMO" "$CLI" "$DEMO" >&2
     fi
   fi
   role_exit
 }
 trap remora_exit EXIT
 trap 'exit 143' TERM
-cli copy start "$SHARK_ID" --activity "$ACTIVITY" --agent remoraAgents
+cli copy start "$SHARK_ID" --activity "$ACTIVITY" --agent remora-agents
 STREAM_OPEN=1
-cli copy mode veto --agent remoraAgents --veto-seconds 45
+cli copy mode veto --agent remora-agents --veto-seconds 45
 printf 'subscribed\n' > "$DEMO/$RUN_ID-subscribed"
 note 'Live local-model review and timed veto. Leave this runner in the foreground.'
 note 'After the second decision is blocked, press Ctrl+C ONCE. This launcher will close the stream.'
 # Bash must survive the foreground child's Ctrl+C so closure runs afterward.
 trap ':' INT
-if cli agent run --agent remoraAgents; then
+if cli agent run --agent remora-agents; then
   runner_status=0
 else
   runner_status=$?
