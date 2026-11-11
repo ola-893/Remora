@@ -2,7 +2,7 @@
 
 This page contains owner-approved setup, funding and grant operations. Do these before recording, one command at a time. **Do not rerun provisioning to inspect formatting.** Inspect existing state first with `remora inspect`, `agentstream grant show`, `agentstream stream status` and the helper `--check` options. An uncertain operation must be reconciled before repeating it.
 
-Use the working checkout, not npm 0.13.0: its version number is shared with the unpublished presentation changes. Each sourced demo shell pins `CLI_ROOT`, the CLI function, subprocesses and a working Node 22 executable. The two roles have separate state homes. `source` prints an audit of the actual shell's prior resolution and the selected checkout revision/fingerprint.
+CLI **0.13.1** now includes the presentation changes on npm. Use the working checkout for this runbook because its short demo launcher and helpers are repository scripts; the older npm 0.13.0 package lacks the renderer. Each sourced demo shell pins `CLI_ROOT`, the CLI function, subprocesses and a working Node 22 executable. The two roles have separate state homes. `source` prints an audit of the actual shell's prior resolution and the selected checkout revision/fingerprint.
 
 Prerequisites: Node 22.22.2+, jq, `outlayer-verify`, Ollama with `qwen2.5:1.5b`, a NEAR AI API key, and the testnet balances described by the wallet requests. Use `rudepuma4060.testnet`, the owner of compute key #2. All owner keys remain in the browser wallet; enter only inference API keys at hidden CLI prompts.
 

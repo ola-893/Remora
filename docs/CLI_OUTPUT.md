@@ -2,7 +2,7 @@
 
 Useful work by one agent can benefit other agents. Streaming makes that exchange payable; guardrails let each follower use it on its own terms. The terminal now presents that story through short state changes, rather than requiring the viewer to interpret transaction objects.
 
-This presentation pass is in the source checkout. It has **not** been published to npm. Package versions stay unchanged. No services were deployed and no funded transactions were run for this pass.
+The presentation changes are published in **CLI 0.13.1**. Upgrade with `npm install -g @ola-893/agentstreams-cli@0.13.1`. Core remains 0.9.1. The short demo launcher and helper scripts remain in the source checkout. No services were deployed and no funded transactions were run for this presentation release. [Release notes](RELEASE_0.13.1.md)
 
 For the actual recording, start with the [short two-terminal sequence](REBALANCE_DEMO.md). It audits both shell routes and uses the checkout for every command and helper. The fixture section below is supplemental, not proof that the funded demo is ready.
 

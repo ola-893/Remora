@@ -49,7 +49,9 @@ agentstream --version
 agentstream task list
 ```
 
-For the current human-readable recording output, use the [checkout demo launcher](docs/REBALANCE_DEMO.md). It pins the executable and helpers to the updated source; the global npm 0.13.0 package does not contain these unpublished presentation fixes.
+Release `0.13.1` includes human-readable terminal output, exact amount formatting, secret redaction, `--verbose`, `--color=auto|always|never`, and read-only executable diagnostics. Pipes and explicit `--json` retain structured output. [Release notes](docs/RELEASE_0.13.1.md)
+
+For recording, use the [demo launcher](docs/REBALANCE_DEMO.md). Its short `remora` commands and helper scripts live in this repository and pin both roles to the same checkout. The standard `agentstream` commands also include the presentation fixes when installed from npm at 0.13.1 or later.
 
 Release `0.13.0` adds signed pre-execution signals, attested encrypted OutLayer delivery, and owner-approved delayed evidence. Remote feeds require the official `outlayer-verify` executable; [setup](docs/NEAR_DELIVERY.md). `copy mode veto` shows each candidate and its blocking deadline, then rechecks the guards before executing. Native strategies use a matching execution grant. [npm package](https://www.npmjs.com/package/@ola-893/agentstreams-cli)
 
