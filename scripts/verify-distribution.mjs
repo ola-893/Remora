@@ -8,6 +8,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { parseArgs } from 'node:util';
 import { pathToFileURL } from 'node:url';
+import { createHash } from 'node:crypto';
 
 const exec = promisify(execFile);
 const root = await realpath(await mkdtemp(join(tmpdir(), 'agentpay-installed-')));
@@ -52,6 +53,18 @@ try {
   assert.match(help, /config limits/);
   assert.match(help, /agent run/);
   assert.match(help, /copy mode [^\n]*veto/);
+  if (help.includes('--color=auto|always|never')) {
+    const diagnostics = await run(['diagnostics', '--json', '--color=always']);
+    const installedRoot = await realpath(join(prefix, 'lib/node_modules/@ola-893/agentstreams-cli'));
+    assert.equal(diagnostics.packageRoot, installedRoot);
+    assert.equal(diagnostics.version, manifest.find(m => m.name.endsWith('/agentstreams-cli')).version);
+    assert.equal(diagnostics.outputMode, 'JSON');
+    assert.equal(diagnostics.color, 'Disabled (always)');
+    const renderer = await readFile(join(installedRoot, 'src/presentation.mjs'));
+    assert.equal(diagnostics.rendererFingerprint, createHash('sha256').update(renderer).digest('hex'));
+    assert.equal(await run(['--version', '--json', '--color=always']), diagnostics.version);
+    assert.match(await run(['--help', '--json', '--color=always']), /--color=auto\|always\|never/);
+  }
   if (help.includes('wallet connect')) {
     assert.equal((await run(['wallet', 'show'])).connected, false);
     assert.equal((await run(['wallet', 'reconcile'])).resolved, true);
@@ -132,6 +145,7 @@ try {
   await writeFile(probe, `await import('@ola-893/agentstreams-core/near'); console.log('ok');`);
   assert.equal((await exec(process.execPath, [probe], { cwd: project })).stdout.trim(), 'ok');
   const report = { verifiedAt: new Date().toISOString(), installedOutsideCheckout: true, installedFrom: values.registry ? 'npm registry; CLI only with transitive core dependency' : 'local tarballs', packages: values.registry ? registryPackages : manifest.map(({ name, version, integrity }) => ({ name, version, integrity })), checks: ['operational command help', 'removed demo/simulate rejected', 'cold testnet setup instructions', 'generic MCP config', 'installed recorded UI HTTP', 'portable native runtime imports', 'named agent isolation', 'copy, guard, task and publisher command routing', 'paper portfolio and named inference without vault setup'], browserVisualQA: false, publishedToNpm: Boolean(values.registry) };
+  if (help.includes('--color=auto|always|never')) report.checks.push('installed presentation module fingerprint, executable root, explicit JSON help/version and color compatibility');
   if (values['verify-near-ai']) {
     assert.match(help, /--provider near-ai/);
     const catalog = await run(['inference', 'models', '--provider', 'near-ai']);
