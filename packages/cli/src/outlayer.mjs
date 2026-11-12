@@ -8,22 +8,14 @@ import { canonical } from '@ola-893/agentstreams-core/internal-evidence-audit';
 import { outlayerNetwork, publicOutlayerRecord, outlayerListing, outlayerServiceJson } from '@ola-893/agentstreams-core/internal-outlayer';
 import { configHome } from './config.mjs';
 import { atomicWrite } from './files.mjs';
-import { promptInferenceKey } from './inference-profile.mjs';
 import { feedKey, readAgentState, withAgentState } from './agents.mjs';
 import { signedListing } from './copy-feed.mjs';
 
 export { outlayerNetwork };
 
-export async function configureOutlayerKey() {
-  const apiKey = await promptInferenceKey('OutLayer compute key');
-  if (!/^[a-z0-9._-]+:[0-9]+:[A-Za-z0-9_-]{32,256}$/.test(apiKey)) throw new Error('INVALID_OUTLAYER_COMPUTE_KEY');
-  await atomicWrite(join(configHome(), 'outlayer-key.json'), JSON.stringify({ version: 1, apiKey }));
-  return { configured: true, network: outlayerNetwork.network, project: outlayerNetwork.project, credentialStoredLocally: true };
-}
-
 async function computeKey() {
   const file = join(configHome(), 'outlayer-key.json');
-  const info = await stat(file).catch(error => { if (error.code === 'ENOENT') throw new Error('OUTLAYER_KEY_REQUIRED: run agentstream outlayer key --api-key.'); throw error; });
+  const info = await stat(file).catch(error => { if (error.code === 'ENOENT') throw new Error('REMORA_COMPUTE_UNAVAILABLE: Remora compute sponsorship is not configured on this host. Users do not provide OutLayer keys.'); throw error; });
   if (!info.isFile() || info.mode & 0o077 || (await stat(configHome())).mode & 0o077) throw new Error('OUTLAYER_KEY_STORAGE_NOT_PRIVATE');
   const { apiKey } = JSON.parse(await readFile(file, 'utf8'));
   if (!/^[a-z0-9._-]+:[0-9]+:[A-Za-z0-9_-]{32,256}$/.test(apiKey ?? '')) throw new Error('INVALID_OUTLAYER_COMPUTE_KEY');

@@ -40,7 +40,6 @@ const help = `Named agents and copy trading:
   agentstreams publish register [--registry CONTRACT_ID]
   agentstreams registry deploy | show
   agentstreams registry set --registry CONTRACT_ID
-  agentstreams outlayer key --api-key             Configure the compute key through a hidden prompt
   agentstreams outlayer show
   agentstreams earnings show | claim --from VAULT
                                                 Approve the claim in the publisher's recipient wallet
