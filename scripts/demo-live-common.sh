@@ -102,11 +102,35 @@ prepare_identity() {
     cli agent create "$NAME"
   fi
   state=$(machine status --agent "$NAME")
-  jq -e '(.pendingTrade | not) and (.subscription == null or .subscription.status == "stopped") and (.publicationEnabled | not)' <<< "$state" >/dev/null || die "Existing active or unresolved $NAME state. Inspect status and reconcile before setup."
+  jq -e '(.pendingTrade | not) and (.subscription == null or .subscription.status == "stopped" or .subscription.status == "paused")' <<< "$state" >/dev/null || die "Existing active or unresolved $NAME subscription/transaction. Inspect status and reconcile before setup."
   local lock
   while IFS= read -r lock; do
     [[ ! -f "$lock" ]] || die "Existing runner lock: $lock. Inspect its process before proceeding."
   done < <(find "$AGENTSTREAMS_HOME/agents" -path "*/$NAME/runner.lock" -type f)
+  if jq -e '.subscription.status == "paused"' <<< "$state" >/dev/null; then
+    local vault
+    vault=$(machine balance --agent "$NAME")
+    jq -e '.vault.active_session == null and .vault.pending_total == "0"' <<< "$vault" >/dev/null || die 'The paused subscription still has an active session or pending funds. Reconcile before restarting.'
+    note 'The previous subscription is paused, and the vault confirms it is closed.'
+  fi
+  if jq -e '.publicationEnabled == true' <<< "$state" >/dev/null; then
+    [[ "$NAME" == shark-agent ]] || die 'Another publication is enabled; inspect it before restarting.'
+    local publication peer peer_vault peer_agents
+    publication=$(machine publish status --agent "$NAME")
+    jq -e --arg url "$FEED_URL" '.publication.origin == $url and .publication.delivery != "outlayer" and .registry == null' <<< "$publication" >/dev/null || die 'An existing remote/registered publisher needs explicit shutdown before restarting.'
+    peer_agents='{"agents":[]}'
+    if [[ -d "$DEMO/follower-state/agents" ]]; then peer_agents=$(other_json agent list); fi
+    if jq -e '.agents | any(.name == "remora-agents")' <<< "$peer_agents" >/dev/null; then
+      peer=$(other_json copy status --agent remora-agents)
+      jq -e '(.tradePending | not) and (.subscription == null or .subscription.status == "stopped" or .subscription.status == "paused")' <<< "$peer" >/dev/null || die 'Remora still has an active or unresolved subscription. Close/reconcile it before restarting Shark.'
+      if jq -e '.subscription != null' <<< "$peer" >/dev/null; then
+        peer_vault=$(other_json balance --agent remora-agents)
+        jq -e '.vault.active_session == null and .vault.pending_total == "0"' <<< "$peer_vault" >/dev/null || die 'Remora still has an active vault session or pending funds. Reconcile before restarting Shark.'
+      fi
+    fi
+    note 'No Shark runner or active demo subscription remains. Resetting the previous local publication.'
+    cli publish stop --agent "$NAME"
+  fi
   wallet=$(machine wallet show)
   if ! jq -e '.signer == "browser-wallet" and (.accountId | type == "string")' <<< "$wallet" >/dev/null; then
     cli wallet connect --network testnet --rpc "$RPC" --owner-id "${SELLER:-rudepuma4060.testnet}"
@@ -124,6 +148,14 @@ prepare_grant() {
   local grant id
   id=$(machine agent show "$NAME" | jq -er '.id')
   grant=$(machine grant show --agent "$NAME")
+  if jq -e --arg id "$id" --argjson now "$(node -p 'Date.now()')" \
+    '.granted == false and .agentId == $id and .state == "active" and .pending == null and .activities == ["portfolio-rebalance"] and (.expiresAt | type == "number") and (.expiresAt <= $now or .remaining < 1)' <<< "$grant" >/dev/null; then
+    cli grant show --agent "$NAME"
+    pause 'The previous demo grant expired or is exhausted. Continue to recover its supported assets to your owner wallet, retire that execution account, then request a new 0.25 test NEAR grant. Ctrl+C cancels.'
+    cli grant revoke --agent "$NAME"
+    grant=$(machine grant show --agent "$NAME")
+    jq -e '.granted == false and (has("state") | not) and (has("pending") | not)' <<< "$grant" >/dev/null || die 'Grant recovery is incomplete. Reconcile it before creating a replacement.'
+  fi
   if jq -e '.granted == true' <<< "$grant" >/dev/null; then
     jq -e --arg id "$id" '.agentId == $id and (.activities | index("portfolio-rebalance")) != null' <<< "$grant" >/dev/null || die 'Existing grant belongs to another agent or activity. Inspect grant show; do not overwrite it.'
     okay 'Reusing the active grant.'

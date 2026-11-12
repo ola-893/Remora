@@ -22,7 +22,7 @@ This same-machine demo uses the CLI's built-in **localhost subscription-gated fe
 
 The default workspace is **`$HOME/remora-shark-demo`**, separate from your earlier `remora-demo-013` agents. First use needs fresh agent configuration and initial approvals. Both scripts must use the same workspace. To choose a different project, prefix **both** commands with the same `REMORA_DEMO=/absolute/path` value. Agent state and credentials stay in the CLI's private local storage, not `.env` files.
 
-For fresh state, each execution account is funded with 0.25 test NEAR. The follower subscription vault is topped up only to 0.002 Circle test USDC, deducting its current available balance. Existing active grants are reused only if they belong to the correct agent/activity; pending, inactive, or mismatched grants stop setup for reconciliation. Targeted grant preparation fills only missing balances. The launchers never retry a failed transaction automatically.
+For fresh state, each execution account is funded with 0.25 test NEAR. The follower subscription vault is topped up only to 0.002 Circle test USDC, deducting its current available balance. Existing active grants are reused only if they belong to the correct agent/activity. An expired or exhausted grant for this demo's rebalance activity gets an explicit recovery prompt: continuing recovers supported assets, retires the old execution account, then requests a new wallet-approved 0.25 test NEAR grant. Pending, mismatched, or incompletely recovered grants still stop setup. Targeted grant preparation fills only missing balances. The launchers never retry a failed transaction automatically.
 
 ## While recording
 
@@ -41,6 +41,8 @@ The transport worker alone uses an internal JSON log (`shark-feed.log`). The vie
 Remora attempts closure on a normal runner exit, Ctrl+C, or termination after a confirmed subscription start. An uncertain close is **not retried automatically**. A power loss, forced kill, network failure, or uncertain subscription-open result can leave payment active; inspect/reconcile its on-chain state. Stopping Shark early deliberately leaves its publisher alive so Remora can finish closing. The launcher prints the exact publication-stop command and worker PID for recovery. Inspect the PID before terminating it.
 
 If a launch lock remains after a crash, read its `pid` file and inspect that process before removing the lock directory. The scripts do not remove existing runner locks or interrupt agents from another session.
+
+On a repeat run, a paused follower is accepted only after the vault confirms no active session or pending funds. A leftover local Shark publication is reset only when no Shark runner lock remains and the previous demo follower has no active/unresolved subscription or vault session. Remote/registered publications still require explicit shutdown. These checks preserve the agent identities and inference settings rather than deleting the demo state.
 
 Read-only preflight, without funding or starting agents:
 
