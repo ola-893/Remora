@@ -6,14 +6,14 @@ This disclosure accompanies the [Remora repository](https://github.com/ola-893/R
 
 | Project | Repository | Relationship |
 | --- | --- | --- |
-| AgentPay | [ola-893/agentPay](https://github.com/ola-893/agentPay) | Remora's recorded source baseline. Ethereum/Sepolia USDC escrow streams, authenticated API reuse, Chainlink CRE policy checks and a workflow dashboard. The creator identifies [Legal Hack 2026](https://dorahacks.io/hackathon/legal-hack-2026/bounties) as the earlier hackathon submission. The supplied link is the event's bounty page, not an independently verified project submission record. |
+| AgentPay | [ola-893/agentPay](https://github.com/ola-893/agentPay) | Remora's predecessor and recorded source baseline. USDC escrow streams on Ethereum Sepolia, authenticated API reuse, Chainlink CRE policy checks and a workflow dashboard. |
 | Remora | [ola-893/Remora](https://github.com/ola-893/Remora) | This NEAR entry, previously published under the repository name agentStreams. Published npm identifiers remain `@ola-893/agentstreams-cli` and `@ola-893/agentstreams-core`; the CLI command remains `agentstream`. These are component names, not additional submissions. |
 | Pump | [ola-893/pump](https://github.com/ola-893/pump) | Another NEAR hackathon project by the creator, centered on strategy investment and investor vaults. It is disclosed here under Q-015. |
-| PumpCoin | [ola-893/Pumpcoin](https://github.com/ola-893/Pumpcoin) | The separate EVM predecessor identified in Pump's README. Its relationship to Pump does not make it the AgentPay source baseline for Remora. |
+| PumpCoin | [ola-893/Pumpcoin](https://github.com/ola-893/Pumpcoin) | Pump's EVM predecessor for self-hosted trading agents and investor vaults. Its earlier submission and code reuse are described in Pump's README. |
 
-The creator described the earlier idea as “Pump Coin.” Public repository names differ: AgentPay's README describes Chainlink CRE payments, whereas Pump's README identifies PumpCoin as its EVM predecessor. This disclosure retains the repository identities rather than silently treating them as one project. The exact earlier entry name, submission URL and any award outcome have not been independently verified. No award outcome is asserted.
+The creator confirmed the two project lineages: AgentPay inspired Remora, and PumpCoin inspired Pump. The creator identified Legal Hack 2026 as the earlier event in discussing AgentPay. The available link identifies the event, and the exact project entry URL is unverified. [Legal Hack 2026 bounty page](https://dorahacks.io/hackathon/legal-hack-2026/bounties) · [Pump's disclosure of PumpCoin](https://github.com/ola-893/pump#near-hackathon-disclosure)
 
-The creator reports that the earlier demo was incomplete. AgentPay's public README nevertheless records completed Sepolia payment runs. We therefore do not describe all earlier functionality as unfinished or claim its earlier test receipts as Remora results.
+AgentPay's public README records completed Sepolia payment runs. Those receipts are evidence for the earlier AgentPay implementation. Pump's README documents the incomplete PumpCoin hackathon demo and its separate infrastructure tests. [AgentPay results](https://github.com/ola-893/agentPay#verified-demo) · [PumpCoin disclosure in Pump](https://github.com/ola-893/pump#near-hackathon-disclosure)
 
 ## Baseline and reuse
 
@@ -86,6 +86,6 @@ git diff --no-index --no-ext-diff --binary "$AUDIT/agentPay" "$AUDIT/Remora" > "
 
 The [live NEAR rules](https://nearhackathon.com/HACKATHON.md), checked November 12, 2026, allow existing products and extensions (Q-002/Q-004), require a separated scope and linked diff (Q-003), and require disclosure of inherited libraries/templates and AI code (Q-005). The eligible window begins October 19 and ends November 14, 2026 at 23:59 UTC (Q-001).
 
-This README and disclosure identify AgentPay's prior submission, the inherited baseline, reuse, the dedicated branch, source differences, related projects and the NEAR scope. For Q-015, each of the creator's NEAR entry READMEs must name the other: Remora names Pump; Pump's README must also name Remora before submission. This document alone cannot satisfy a missing reciprocal disclosure in another repository.
+The creator is entering Pump and Remora in NEAR HACKATHON. Remora's README names Pump, and Pump's README names Remora. Both READMEs describe their own project scope and prior work for Q-015. The creator reports that Pump's application was already submitted. Its repository README now includes the reciprocal disclosure. [Remora README](../README.md#hackathon-disclosure-and-earlier-work) · [Pump README update](https://github.com/ola-893/pump/commit/9c2a002fa674a6707a2aabb87158104a2cf335fe)
 
-The earlier event link is creator-supplied. Obtain its exact entry URL/name if available, and resolve any naming ambiguity before submitting. Eligibility remains the organizers' decision. Keep this repository public through judging. The X thread remains a draft until the creator publishes it. Do not submit the application again if it has already been saved; use the organizers' change-request process instead.
+The organizers assess eligibility. Keep this repository public through judging. The creator publishes the X demo thread and uses the official change-request process for any needed changes to an already submitted application. [Request changes](https://nearhackathon.com/request-changes)
