@@ -1,0 +1,260 @@
+{
+  "method": "SHA-256 file-byte comparison. A changed or current-only path does not prove original authorship or exclude adapted reuse. Generated files, assets and evidence are included when tracked.",
+  "baselineRepository": "https://github.com/ola-893/agentPay",
+  "baselineCommit": "a52becad8121de9d3caa9e9a4400fd1e0e5999ef",
+  "remoraRepository": "https://github.com/ola-893/Remora",
+  "remoraCommit": "5e00bd34bb39a82038a7c40661c1fb8ac80c43df",
+  "counts": {
+    "baselineFiles": 1033,
+    "remoraFiles": 403,
+    "samePathIdentical": 7,
+    "samePathChanged": 18,
+    "remoraOnlyPaths": 378,
+    "baselineOnlyPaths": 1008
+  },
+  "sharedPaths": [
+    {
+      "path": ".env.example",
+      "status": "changed",
+      "baselineSHA256": "2e2c68b37dc5d7590b033036995bef3a40fbfc61f5c79f86fbf78a47c35e0424",
+      "remoraSHA256": "54de0cb99fcbb7e6a14a99e12a5e26a9c2a31b4a2ae8e4a47042ffced702c8d5"
+    },
+    {
+      "path": ".gitignore",
+      "status": "changed",
+      "baselineSHA256": "7db1a562ba57d44549d2e5351dd7b2e644b0241d557f00fb3c94ac79c1c7fbc5",
+      "remoraSHA256": "cd13cc725dacf5376d5a35d65ebe19bf8a80f0cb1ce86ee5783686dad483fdc4"
+    },
+    {
+      "path": "LICENSE",
+      "status": "changed",
+      "baselineSHA256": "12268a2cb2caaf6fe57c45d8c1c2df83e490a71f5997e95d7b1f6fcc1d9b920d",
+      "remoraSHA256": "aacccf76cfe5fd8cd21b629400ff75a51eecb52148113ae4e0f7bf7e1c81e4a0"
+    },
+    {
+      "path": "README.md",
+      "status": "changed",
+      "baselineSHA256": "77cf378489a890b23a791276f6a6999a9d2466b7527f1f30263e7d88a6bfeb41",
+      "remoraSHA256": "a6f4113314040538b17611e295e1834b5c83362b2f5fb511b184abc8e9fe594a"
+    },
+    {
+      "path": "docs/.gitbook.yaml",
+      "status": "changed",
+      "baselineSHA256": "574f9079b013da77007c703388927fcb9ad51fac62e9baeab3b25a7896c99495",
+      "remoraSHA256": "c1c58c5130dcc69e989bd89fdd1a12d9ddf4555e6395bb1d71beb4ba79ede3f5"
+    },
+    {
+      "path": "package-lock.json",
+      "status": "changed",
+      "baselineSHA256": "5c0650ce58e5629ebd2cfa46edbc691e32db4476e02e8655edc52197e7770a13",
+      "remoraSHA256": "8a835d6b392f4736485f549553a3a9614bd33b10406e977c5965494239678c95"
+    },
+    {
+      "path": "package.json",
+      "status": "changed",
+      "baselineSHA256": "a30200db4df63295821ebac619ea473025568ddc4c288c316702326ea2ad8bbe",
+      "remoraSHA256": "af4954b32e7fc1887f706c91af6ddb07acf5c5cf7d7aa30f62db0fc5f4e4a437"
+    },
+    {
+      "path": "vite-project/.gitignore",
+      "status": "identical",
+      "baselineSHA256": "fe718e7babb14f3cbad2d97f08889b9ce5215ed3fe0e43b2b8cfbfb3b9b844e8",
+      "remoraSHA256": "fe718e7babb14f3cbad2d97f08889b9ce5215ed3fe0e43b2b8cfbfb3b9b844e8"
+    },
+    {
+      "path": "vite-project/eslint.config.js",
+      "status": "identical",
+      "baselineSHA256": "28b7e931b7b0c14b787ffc78d1232dd397bb6c5b72bcb10ac3cbbcdd90d87a92",
+      "remoraSHA256": "28b7e931b7b0c14b787ffc78d1232dd397bb6c5b72bcb10ac3cbbcdd90d87a92"
+    },
+    {
+      "path": "vite-project/index.html",
+      "status": "changed",
+      "baselineSHA256": "c5bcdbaca5d1d4ce16bda876696245b8ff5517558fb7081f9ecbcb9effd5b3f7",
+      "remoraSHA256": "cc573a73d3008ac914a9c97515194ec2d1e87bd93f1303ce03ef4b84ca7ba6f6"
+    },
+    {
+      "path": "vite-project/netlify.toml",
+      "status": "identical",
+      "baselineSHA256": "d434ed07ddd63252f129f1435f2b0ceaa5e926855f66d8491672fbe2cbc9d3ee",
+      "remoraSHA256": "d434ed07ddd63252f129f1435f2b0ceaa5e926855f66d8491672fbe2cbc9d3ee"
+    },
+    {
+      "path": "vite-project/package-lock.json",
+      "status": "changed",
+      "baselineSHA256": "c24ff41521e57b1f08258d87cd0dfdce6f914606f6b136b1d763c667ec070a95",
+      "remoraSHA256": "41272b2033211f3f9b3930e7e432229e58fb6dd0a0ba08cb902ad4eb781365d6"
+    },
+    {
+      "path": "vite-project/package.json",
+      "status": "changed",
+      "baselineSHA256": "9b0dcee8ed788d3d9986b8e55ee4d0ae865edd0b93e2198ff89a8ae35917e5b5",
+      "remoraSHA256": "7913caedd984d34b332a30684ad73608257ac93210991dd6c407e352e81c1962"
+    },
+    {
+      "path": "vite-project/postcss.config.cjs",
+      "status": "identical",
+      "baselineSHA256": "2200ef93a39da2bf04ff6b3cd63f79be6b67dd7963cf06355175b05f400dd722",
+      "remoraSHA256": "2200ef93a39da2bf04ff6b3cd63f79be6b67dd7963cf06355175b05f400dd722"
+    },
+    {
+      "path": "vite-project/public/_redirects",
+      "status": "identical",
+      "baselineSHA256": "66584af744075248a042165adbdbd6a0551fa708a85650ea1e3e777eee17080c",
+      "remoraSHA256": "66584af744075248a042165adbdbd6a0551fa708a85650ea1e3e777eee17080c"
+    },
+    {
+      "path": "vite-project/src/AppRoutes.jsx",
+      "status": "changed",
+      "baselineSHA256": "00b9a64a5a789cae9b22829efc267f351aee80c1fe651b0383e0fb97ee0ef033",
+      "remoraSHA256": "6ca4ba0505c8920a46ba7ed3242b74d16b6c18c655e110faa873f7e4dc0ff39c"
+    },
+    {
+      "path": "vite-project/src/components/Header.jsx",
+      "status": "changed",
+      "baselineSHA256": "c71474aa156061b43867697a3de356588146ff861b1d09e62b2502ae073c75a9",
+      "remoraSHA256": "23682a13cf6067f7628696f27fb71291af9ec42928b33be2d3f18b94f56974ef"
+    },
+    {
+      "path": "vite-project/src/components/Layout.jsx",
+      "status": "changed",
+      "baselineSHA256": "a7f2727c684c9e68c9acb9e180e9f11a984127beb5340dbc67a834f66aeb1f67",
+      "remoraSHA256": "526442879d63b1deeae04674f172affa79c5a45709147d267553248832c1f3aa"
+    },
+    {
+      "path": "vite-project/src/components/ui/ErrorBoundary.jsx",
+      "status": "changed",
+      "baselineSHA256": "9804c6c7c1f1c0a10fee5af3fbd4aae15f4686df3b7ade01696fdcd32c4a3f24",
+      "remoraSHA256": "d3d22c71a58295c5407b92e7c2be2e323b748c5946d7d080a8c0f31221ee0b6e"
+    },
+    {
+      "path": "vite-project/src/components/ui/index.js",
+      "status": "identical",
+      "baselineSHA256": "182cf803a3cdb77361988d7749d1143866c5875fa97087375c335e1a31a726f2",
+      "remoraSHA256": "182cf803a3cdb77361988d7749d1143866c5875fa97087375c335e1a31a726f2"
+    },
+    {
+      "path": "vite-project/src/index.css",
+      "status": "changed",
+      "baselineSHA256": "d842def78476285d66f58daf46c021f76dad16055f6b3c6f116c7ceedcb6eaec",
+      "remoraSHA256": "b30956849088d0233ffb0c0045c90d1f8eae1bbb28ba5162c95ad3a499aeffe4"
+    },
+    {
+      "path": "vite-project/src/lib/navigation.js",
+      "status": "changed",
+      "baselineSHA256": "34c6aa7a22a4ad2582884b98b46884d1024ff5473971124b9215f402c08d1e80",
+      "remoraSHA256": "47f5c28bc167cb99b0bf32864073aa586f17fabea379737f95efc2658d364579"
+    },
+    {
+      "path": "vite-project/src/main.jsx",
+      "status": "identical",
+      "baselineSHA256": "54b2313173eb40aa1e15ed62e46167d89953227a9bcf680a1b8478ec8ee5f228",
+      "remoraSHA256": "54b2313173eb40aa1e15ed62e46167d89953227a9bcf680a1b8478ec8ee5f228"
+    },
+    {
+      "path": "vite-project/tailwind.config.cjs",
+      "status": "changed",
+      "baselineSHA256": "0cbfd91adbc9ce5774cd1d92aa6d5ad2cb68b3e6ed68729db3794e63ab2f14d4",
+      "remoraSHA256": "0781da9ce8536a5d860bc698f5b7d032e568a6840774432dbf6c255a28258d4e"
+    },
+    {
+      "path": "vite-project/vite.config.js",
+      "status": "changed",
+      "baselineSHA256": "0ce465b236c3f87e35b009a63c8d56c7f9a3a869613be5d94698a78dc640b084",
+      "remoraSHA256": "4e939fa6b9324ecbf7b06dc70e8ca401fd263c3dd573333035b5c52acfac6909"
+    }
+  ],
+  "identicalRelocatedFiles": [
+    {
+      "remoraPath": "brand/remora/assets/fonts/Inter-400.woff2",
+      "baselinePaths": [
+        "video/agentpay-demo/assets/fonts/Inter-400.woff2"
+      ],
+      "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+    },
+    {
+      "remoraPath": "brand/remora/assets/fonts/Inter-700.woff2",
+      "baselinePaths": [
+        "video/agentpay-demo/assets/fonts/Inter-700.woff2"
+      ],
+      "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+    },
+    {
+      "remoraPath": "brand/remora/assets/fonts/Inter-OFL.txt",
+      "baselinePaths": [
+        "video/agentpay-demo/assets/licenses/Inter.txt"
+      ],
+      "sha256": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a"
+    },
+    {
+      "remoraPath": "brand/remora/assets/fonts/JetBrainsMono-400.woff2",
+      "baselinePaths": [
+        "video/agentpay-demo/assets/fonts/JetBrainsMono-400.woff2"
+      ],
+      "sha256": "14425ba9c695763c1547f48a206b7aa60350a33ae23de09f0407877f3fcd89eb"
+    },
+    {
+      "remoraPath": "brand/remora/intro-short/assets/fonts/Inter-400.woff2",
+      "baselinePaths": [
+        "video/agentpay-demo/assets/fonts/Inter-400.woff2"
+      ],
+      "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+    },
+    {
+      "remoraPath": "brand/remora/intro-short/assets/fonts/Inter-700.woff2",
+      "baselinePaths": [
+        "video/agentpay-demo/assets/fonts/Inter-700.woff2"
+      ],
+      "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+    },
+    {
+      "remoraPath": "brand/remora/intro-short/assets/fonts/Inter-OFL.txt",
+      "baselinePaths": [
+        "video/agentpay-demo/assets/licenses/Inter.txt"
+      ],
+      "sha256": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a"
+    },
+    {
+      "remoraPath": "brand/remora/intro-short/assets/fonts/JetBrainsMono-400.woff2",
+      "baselinePaths": [
+        "video/agentpay-demo/assets/fonts/JetBrainsMono-400.woff2"
+      ],
+      "sha256": "14425ba9c695763c1547f48a206b7aa60350a33ae23de09f0407877f3fcd89eb"
+    },
+    {
+      "remoraPath": "brand/remora/intro/assets/fonts/Inter-400.woff2",
+      "baselinePaths": [
+        "video/agentpay-demo/assets/fonts/Inter-400.woff2"
+      ],
+      "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+    },
+    {
+      "remoraPath": "brand/remora/intro/assets/fonts/Inter-700.woff2",
+      "baselinePaths": [
+        "video/agentpay-demo/assets/fonts/Inter-700.woff2"
+      ],
+      "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+    },
+    {
+      "remoraPath": "brand/remora/intro/assets/fonts/Inter-OFL.txt",
+      "baselinePaths": [
+        "video/agentpay-demo/assets/licenses/Inter.txt"
+      ],
+      "sha256": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a"
+    },
+    {
+      "remoraPath": "brand/remora/intro/assets/fonts/JetBrainsMono-400.woff2",
+      "baselinePaths": [
+        "video/agentpay-demo/assets/fonts/JetBrainsMono-400.woff2"
+      ],
+      "sha256": "14425ba9c695763c1547f48a206b7aa60350a33ae23de09f0407877f3fcd89eb"
+    },
+    {
+      "remoraPath": "vite-project/public/agentstreams.svg",
+      "baselinePaths": [
+        "vite-project/public/agentpay.svg"
+      ],
+      "sha256": "7393be2d8d7ca4b57f28ba3a1b46f3385c8466897f5d38a3eb40ec5972057d97"
+    }
+  ]
+}

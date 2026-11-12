@@ -30,4 +30,6 @@ The recorded leader used local Gemma. NEAR AI is an available provider, and the 
 
 ## Source and baseline
 
-The source export script records `a52becad8121de9d3caa9e9a4400fd1e0e5999ef` as the inherited baseline. The public checkout starts with the NEAR workspace and includes the vault, CLI, copy feed and Remora frontend. [Source export script](../scripts/prepare-submission.mjs#L10)
+Remora extends [AgentPay](https://github.com/ola-893/agentPay), previously submitted by the creator to [Legal Hack 2026](https://dorahacks.io/hackathon/legal-hack-2026/bounties). Its payment-stream idea, deterministic policy architecture and inherited source count as baseline. The [full provenance disclosure](HACKATHON_PROVENANCE.md) separates the earlier Ethereum/Chainlink implementation, reused scaffolding/assets, NEAR contribution, AI assistance and related Pump/PumpCoin projects.
+
+The source export script records [AgentPay commit `a52beca`](https://github.com/ola-893/agentPay/tree/a52becad8121de9d3caa9e9a4400fd1e0e5999ef) as the inherited baseline. That commit resolves in AgentPay, not in this checkout's separate Git history. Review the [cross-repository source diff](evidence/provenance/agentpay-remora-diffstat.txt), [hash comparison](evidence/provenance/agentpay-baseline-comparison.json), and [reproduction instructions](HACKATHON_PROVENANCE.md#reproduce-the-source-diff). The public checkout starts with the NEAR workspace; publication dates alone do not prove original authorship. [Source export script](../scripts/prepare-submission.mjs#L10)

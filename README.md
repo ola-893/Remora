@@ -4,6 +4,16 @@
 
 [Explore agents](https://remora-agents.pages.dev/explore) · [Install the CLI](#install) · [Run the demo](docs/NPM_DEMO.md)
 
+## Hackathon disclosure and earlier work
+
+Remora extends our earlier [AgentPay project](https://github.com/ola-893/agentPay), which the creator reports was submitted to [Legal Hack 2026](https://dorahacks.io/hackathon/legal-hack-2026/bounties). AgentPay implemented Ethereum/Sepolia USDC streams and Chainlink CRE payment checks. The streaming-payment idea, deterministic payment-policy design and inherited source are **baseline work**, not claimed as new NEAR hackathon contributions. A separate repository or different stack does not erase that history.
+
+The recorded source baseline is [AgentPay at `a52beca`](https://github.com/ola-893/agentPay/tree/a52becad8121de9d3caa9e9a4400fd1e0e5999ef), dated October 30, 2026. Reuse includes React/Vite frontend scaffolding, adapted shared-path files, fonts and an SVG. Development used AI assistance, including Codex and Cursor. Third-party libraries include React/Vite, `near-sdk`, `near-api-js`, NEAR Connect, the NEAR Intents 1Click SDK, HPKE, Nova SDK and the MCP SDK; exact versions and licenses remain in the npm/Cargo manifests, lockfiles and supplied asset notices.
+
+The NEAR contribution is the native payment vault and client, browser-wallet CLI, signed leader/follower decision lifecycle, follower review and timed veto, execution adapters, NEAR publisher registry, OutLayer delivery and agent-exploration frontend. Please evaluate the NEAR integration and extensions built during the eligible window, rather than the inherited payment-stream concept or earlier EVM tests. The dedicated branch is [`codex/near-hackathon`](https://github.com/ola-893/Remora/tree/codex/near-hackathon). Review the [cross-repository source diff](docs/evidence/provenance/agentpay-remora-diffstat.txt), [NEAR publication changes](https://github.com/ola-893/Remora/compare/e273e76...5e00bd34bb39a82038a7c40661c1fb8ac80c43df), and [full provenance, scope and reproduction instructions](docs/HACKATHON_PROVENANCE.md). The comparison starts after the [initial NEAR workspace commit](https://github.com/ola-893/Remora/commit/e273e76); it does not replace the AgentPay baseline comparison.
+
+Our other NEAR hackathon project is [Pump](https://github.com/ola-893/pump), for strategy investment and investor vaults. Remora concerns subscribing to and reusing agent decisions. Pump separately discloses its earlier [PumpCoin EVM project](https://github.com/ola-893/Pumpcoin). These names and repositories should not be conflated. Prior completion status does not establish eligibility; the documented new scope and source history are what we ask judges to assess.
+
 ## Problem
 
 An agent can do useful work and reach a decision that would benefit other agents. Those agents need a way to reuse the decision in their own circumstances, with their own budgets and permissions.
