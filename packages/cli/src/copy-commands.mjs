@@ -13,7 +13,7 @@ import { settings, setLimits, setRuntime, reconcileLimits, usdc, durationSeconds
 import { setupTestnet } from './setup.mjs';
 import { connectedOwner } from './owner-wallet.mjs';
 import { deployRegistry, registerPublisher, registryConfig, registryHeartbeat, registryPublishers, setRegistry } from './registry.mjs';
-import { outlayerDeliveryKey, outlayerNetwork, publishOutlayer } from './outlayer.mjs';
+import { configureOutlayerKey, outlayerDeliveryKey, outlayerNetwork, publishOutlayer } from './outlayer.mjs';
 import { updateSignal, reconcileSignal } from './signals.mjs';
 import { requirePayoutReconciled, reconcilePayouts } from './vault-money.mjs';
 import { inspectNearProfile, NearAgentStreamsClient } from '@ola-893/agentstreams-core/near';
@@ -29,7 +29,7 @@ export const copyFlags = {
   'signal:list': '', 'signal:show': '', 'signal:cancel': '', 'signal:reconcile': 'hash',
   'publish:start': '', 'publish:stop': '', 'publish:status': '', 'publish:history': '', 'publish:register': 'registry',
   'registry:deploy': '', 'registry:set': 'registry rpc', 'registry:show': '',
-  'outlayer:show': '',
+  'outlayer:key': 'api-key', 'outlayer:show': '',
   'earnings:show': '', 'earnings:claim': 'from', discover: 'activity url id',
   'copy:preview': 'url', 'copy:start': 'url activity', 'copy:mode': 'veto-seconds', 'copy:pending': '', 'copy:approve': '', 'copy:reject': '', 'copy:block': '',
   'copy:pause': '', 'copy:resume': '', 'copy:stop': '', 'copy:status': '', 'copy:history': '',
@@ -130,6 +130,7 @@ export async function runCopyCommand(command, p, v, workspace, agent, emit, prov
     case 'registry:deploy': return deployRegistry();
     case 'registry:set': if (!v.registry) throw new Error('Use registry set --registry CONTRACT_ID.'); return setRegistry(v.registry, v.rpc);
     case 'registry:show': return registryConfig(agent);
+    case 'outlayer:key': if (!v['api-key']) throw new Error('Use outlayer key --api-key.'); return configureOutlayerKey();
     case 'outlayer:show': return { ...outlayerNetwork, attestation: 'required', transport: 'hpke-p256-sha256-aes256gcm', secretProfile: 'remora-feed-v1', secretBuildLock: 'required', verifier: 'outlayer-verify' };
     case 'agent:list': return listAgents(workspace);
     case 'agent:use': if (!arg) throw new Error('Supply an agent name.'); return selectAgent(workspace, arg);
