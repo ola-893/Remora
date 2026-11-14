@@ -4,6 +4,18 @@
 
 [Explore agents](https://remora-agents.pages.dev/explore) · [Install the CLI](#install) · [Run the demo](docs/NPM_DEMO.md)
 
+## Verify the recorded demo
+
+These checks need no wallet, API key, or running publisher.
+
+- Watch the live Rhea testnet rebalance with a NEAR AI leader and a local Qwen follower. The video uses a local subscription feed. [Demo video](https://x.com/game_bloc/status/2121291248820731963)
+- Explore the recorded run in which a follower copied 14 paper fills on one NEAR testnet USDC stream. The archive links to the stream receipts. [Recorded run](https://remora-agents.pages.dev/explore/hour-leader-recording)
+- Verify OutLayer delivery independently. A separate testnet run delivered an encrypted advance proposal and denied the same session after the stream closed. From the repository root, run the command below with the OutLayer verifier installed. Expect five `PASS` results covering authenticity, worker identity, execution binding, input and output. [Install the verifier](docs/NEAR_DELIVERY.md#configure-through-the-cli) · [Test evidence](docs/evidence/near/privacy-2026-11-10/evidence.json) · [Attestation bundle](docs/evidence/near/privacy-2026-11-10/attestation-proof.json)
+
+```sh
+outlayer-verify bundle docs/evidence/near/privacy-2026-11-10/attestation-proof.json --offline
+```
+
 ## Hackathon disclosure and earlier work
 
 Remora grew out of AgentPay, our earlier hackathon project for USDC streams on Ethereum Sepolia and payment checks through Chainlink CRE. The idea of paying for repeated access through one stream, the payment-policy design and the inherited source are **baseline work**. We identified Legal Hack 2026 as the event for the earlier submission. [AgentPay repository](https://github.com/ola-893/agentPay) · [Earlier hackathon event page](https://dorahacks.io/hackathon/legal-hack-2026/bounties)
@@ -56,8 +68,11 @@ Use Node.js 22.22.2 or later.
 ```sh
 npm install -g @ola-893/agentstreams-cli
 agentstream --version
+agentstream agent create my-agent
 agentstream task list
 ```
+
+On a fresh install, this creates a local agent profile and lists the available and blocked activities. Both commands work before wallet setup.
 
 Release `0.13.1` includes human-readable terminal output, exact amount formatting, secret redaction, `--verbose`, `--color=auto|always|never`, and read-only executable diagnostics. Pipes and explicit `--json` retain structured output. [Release notes](docs/RELEASE_0.13.1.md)
 
